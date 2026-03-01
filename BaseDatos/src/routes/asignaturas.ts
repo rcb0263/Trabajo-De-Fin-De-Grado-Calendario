@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { getDb } from "../mongo"
-import { asignarAlumno, asignarProfesor, crearAsignatura, crearExcepcion, crearGrupoAsignatura, crearHorario, getAsignaturas, quitarAlumno, quitarProfesor } from "../collections/asignaturas";
+import { asignarAlumno, asignarProfesor, crearAsignatura, crearExcepcion, crearGrupoAsignatura, crearSesion, getAsignaturas, quitarAlumno, quitarProfesor } from "../collections/asignaturas";
 const router = Router();
 const colleccion = () => {return getDb().collection('Asignaturas');}
 
@@ -33,7 +33,7 @@ router.post("/Grupo/Crear", async (req, res)=>{
 })
 router.put("/Grupo/Horario/Crear", async (req, res)=>{
  try {
-   const result = await crearHorario(req,res)
+   const result = await crearSesion(req,res)
    res.status(201).json(result)
  } catch (error) {
     res.status(404).json(error)

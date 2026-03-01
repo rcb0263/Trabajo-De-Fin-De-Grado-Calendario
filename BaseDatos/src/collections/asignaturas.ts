@@ -145,15 +145,12 @@ export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo
     }
 }
 
-
-
 export const crearExcepcion= async (req:any, res: any)=>{
     const idGrupo:string = req.body?.idGrupo
-    const aula:string = req.body?.aula
-    const fecha:string = req.body?.fecha
-    const horaInicio: Hora = req.body?.horaInicio
-    const horaFin: Hora = req.body?.horaInicio
     const tipo = req.body?.tipo
+    const excepcion:Excepcion = req.body?.excepcion
+    const fecha:string = excepcion.fecha
+    const aula:string = excepcion.aula
     let coleccion = '';
     const eMsg:string[] = []
     const db = getDb()
@@ -183,38 +180,35 @@ export const crearExcepcion= async (req:any, res: any)=>{
         eMsg.push("aula debe ser un string")
     }
     const fechaRegex = /^\d{2}\/\d{2}\/\d{2}$/
-    if (!fecha || typeof fecha !== "string" || !fechaRegex.test(fecha)) {
+    if (!fecha || typeof fecha !== "string" ) {
         eMsg.push("fecha debe ser un string con formato dd/mm/yy")
     }
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
-        const excepcion:Excepcion ={
-            aula: aula,
-            fecha: fecha,
-            horaInicio: {
-                hora: 0,
-                minuto: 0
-            },
-            horaFin: {
-                hora: 0,
-                minuto: 0
-            }
-        }
-        const result = await db
-        .collection(coleccion)
-        .updateOne(
+        const get =  await db.collection(ColeccionAula).findOne(
+        { aula: excepcion.aula }
+        );
+        console.log(get)
+        const result = await db.collection(coleccion).updateOne(
             {_id: new ObjectId(idGrupo)},
             { $addToSet: { fechas: excepcion } }
         )
-        return res.status(200).json(result)
+
+        const result2 = await db.collection(ColeccionAula).updateOne(
+        { aula: excepcion.aula },
+        { $addToSet: { exepciones: excepcion } }
+        );
+        console.log('\n\n\n\n\n\n')
+        console.log(get)
+        return res.status(200).json(get)
     }
 
 }
 
-export const crearHorario= async (req: any, res: any)=>{ //crea el grupo y luego en routes añade el string al campo de la asignatura
+export const crearSesion= async (req: any, res: any)=>{ //crea el grupo y luego en routes añade el string al campo de la asignatura
     const idGrupo:string = req.body?.idGrupo
-    const horario:Sesion = req.body?.horario
+    const sesion:Sesion = req.body?.sesion
     const eMsg:string[] = []
     const db = getDb()
     if(!idGrupo || typeof(idGrupo)!="string" || !ObjectId.isValid(idGrupo) ){
@@ -225,7 +219,7 @@ export const crearHorario= async (req: any, res: any)=>{ //crea el grupo y luego
             eMsg.push("No se encuentra esa asignatura")
         }
     }
-    if(!horario || !validarSesion(horario) ){
+    if(!sesion || !validarSesion(sesion) ){
         eMsg.push("sesiones debe ser un array con al menos un elemento")
     }
     if(eMsg.length >0){
@@ -235,7 +229,7 @@ export const crearHorario= async (req: any, res: any)=>{ //crea el grupo y luego
         .collection(ColeccionTeoria)
         .updateOne(
             {_id: new ObjectId(idGrupo)},
-            { $addToSet: { horarios: horario } }
+            { $addToSet: { horarios: sesion } }
         )
         return res.status(200).json(result)
     }
