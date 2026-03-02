@@ -179,7 +179,7 @@ export const crearExcepcion= async (req:any, res: any)=>{
     if(!aula || typeof(aula)!="string"){
         eMsg.push("aula debe ser un string")
     }
-    const fechaRegex = /^\d{2}\/\d{2}\/\d{2}$/
+    if(!excepcion || ! await validarEcepcion(excepcion))
     if (!fecha || typeof fecha !== "string" ) {
         eMsg.push("fecha debe ser un string con formato dd/mm/yy")
     }
