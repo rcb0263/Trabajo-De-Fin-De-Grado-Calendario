@@ -53,56 +53,63 @@ export type Usuario ={
    _id?: ObjectId,
    nombre: string,
    mail: string,
-   grupos: ObjectId[], //id de grupos de privilegio
    asignaturas: ObjectId[] //id de la asignatura
    fechaDeCreacion: Date
 }
 
-export type Alumno ={
-   _id?: ObjectId,
-   nombre: string,
-   grupos: ObjectId[], //id de grupos de privilegio
-   asignaturas: ObjectId[]
-   fechaDeCreacion: Date
-}
 
+
+/*
 export type Grupo = {
     _id?: ObjectId,
     nombre: string,
     miembros: MiembroGrupo[],
-    privilegiosAsignatura: PrivilegiosAsignatura[] | boolean,
-    privilegiosAlumno: PrivilegiosUsuario | boolean,
+    privilegiosModificarLeve: PrivilegiosAsignatura[] | boolean,
+    privilegiosModificarSerio: PrivilegiosUsuario | boolean,
     privilegiosProfesor: PrivilegiosUsuario | boolean,
     privilegiosAula: PrivilegiosAula[],
     privilegiosAdmin: privilegiosAdmin 
 }
+*/
+
+
+export type PrivilegiosAula ={
+    objetivo: ObjectId, //user/grupo/asignatura...
+    miembros: MiembroGrupo[],
+    eliminarHorarios: boolean,
+    cambiarNombre: boolean
+    eliminarAula: boolean
+}
+export type PrivilegiosAsignatura ={
+    objetivo: ObjectId, //user/grupo/asignatura...
+    miembros: MiembroGrupo[],
+    cambiarBasicos: boolean,
+    cambiarGrupos: boolean,
+}
+export type PrivilegiosGrupoAsignatura ={
+    objetivo: ObjectId, //user/grupo/asignatura...
+    miembros: MiembroGrupo[],
+    datosBasicos: boolean, //asignatura, grupo, tipo
+    datosAvanzados: boolean, //profesores, alumnos
+    horarios: boolean,
+    excepciones: boolean,
+}
+export type PrivilegiosUsuario={
+    objetivo: ObjectId, //user/grupo/asignatura...
+    miembros: MiembroGrupo[],
+    datosBasicos: boolean,
+    asignaturas:boolean,
+
+}
+export type privilegiosAdmin ={
+    miembros: string[]
+}
+
 type MiembroGrupo ={
     miembro: ObjectId[],
-    fechaFin: Date
-}
-type PrivilegiosAula ={
-    editarHorario: boolean
+    fechaFin: Date //  dd/mm/yyyy
 }
 
-type PrivilegiosAsignatura ={
-    asignatura: ObjectId, //asignatura específica
-    cambiarAula: boolean, //cambiar el aula en el que se da la asignatura
-    cambiarHorario: boolean, //cambiar el horario de la asignatura
-    crearExcepciones: boolean, //crear o eliminar excepciones de una asignatura 
-    admin: boolean
-}
-
-type PrivilegiosUsuario={
-    _id?: ObjectId,
-    editarUsuario: boolean,
-    admin: boolean
-}
-
-type privilegiosAdmin ={
-    Alumnos: boolean,
-    Profesores: boolean,
-    Aulas: boolean,
-}
 
 export type Aula = {
     _id?: ObjectId,
