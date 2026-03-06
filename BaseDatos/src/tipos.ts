@@ -74,6 +74,7 @@ export type Grupo = {
 
 
 export type PrivilegiosAula ={
+    nombre: string,
     objetivo: ObjectId, //user/grupo/asignatura...
     miembros: MiembroGrupo[],
     eliminarHorarios: boolean,
@@ -81,12 +82,14 @@ export type PrivilegiosAula ={
     eliminarAula: boolean
 }
 export type PrivilegiosAsignatura ={
+    nombre: string,
     objetivo: ObjectId, //user/grupo/asignatura...
     miembros: MiembroGrupo[],
     cambiarBasicos: boolean,
     cambiarGrupos: boolean,
 }
 export type PrivilegiosGrupoAsignatura ={
+    nombre: string,
     objetivo: ObjectId, //user/grupo/asignatura...
     miembros: MiembroGrupo[],
     datosBasicos: boolean, //asignatura, grupo, tipo
@@ -95,6 +98,7 @@ export type PrivilegiosGrupoAsignatura ={
     excepciones: boolean,
 }
 export type PrivilegiosUsuario={
+    nombre: string,
     objetivo: ObjectId, //user/grupo/asignatura...
     miembros: MiembroGrupo[],
     datosBasicos: boolean,
@@ -102,6 +106,7 @@ export type PrivilegiosUsuario={
 
 }
 export type privilegiosAdmin ={
+    nombre: string,
     miembros: string[]
 }
 

@@ -5,6 +5,7 @@
     import rutasAlumnos from "./routes/alumnos";
     import rutasProfesores from "./routes/profesores";
     import rutasAulas from "./routes/aulas";
+    import rutasPrivilegios from "./routes/privilegios";
 
     connectMongoDB();
 
@@ -15,6 +16,7 @@
     app.use('/profesores', rutasProfesores)
     app.use('/aulas', rutasAulas)
     app.use('/auth', rutasAuth)
+    app.use('/privilegios', rutasPrivilegios)
 
     //Aplicar las rutas
     app.listen(3000, ()=>console.log("El API se ha conectado"))

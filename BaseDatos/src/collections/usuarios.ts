@@ -43,7 +43,6 @@ export const crearUsuario = async (req: any, res: any, tipoUsuario:string)=>{
         const datos:Usuario ={
             nombre: nombre,
             mail: mail,
-            grupos: [],
             asignaturas: [],
             fechaDeCreacion: new Date(),
         }
