@@ -19,7 +19,6 @@ export const getAsignaturas = async ()=>{
 
 export const crearAsignatura = async (req: any, res: any)=>{
     const nombre = req.body?.nombre //   grupo: string
-    const grupo = req.body?.grupo //   grupo: string
     const grado = req.body?.grado //   grado: string,
     const curso = req.body?.curso //   curso: number,
     const año = req.body?.año //   año: string,
@@ -27,9 +26,6 @@ export const crearAsignatura = async (req: any, res: any)=>{
     const eMsg:string[] = []
     if(!nombre || typeof(nombre)!="string"){
         eMsg.push("nombre debe ser un string")
-    }
-    if(!grupo || typeof(grupo)!="string"){
-        eMsg.push("grupo debe ser un string")
     }
     if(!grado || typeof(grado)!="string"){
         eMsg.push("grado debe ser un string")
@@ -47,8 +43,8 @@ export const crearAsignatura = async (req: any, res: any)=>{
         res.status(401).json({message: eMsg})
     }else{
         const datos:Asignatura ={
+            privilegios: [],
             nombre: nombre,
-            grupo: grupo,
             grado: grado,
             teoria: [],
             practicas: [],
@@ -66,9 +62,9 @@ export const crearAsignatura = async (req: any, res: any)=>{
 
 export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo y luego en routes añade el string al campo de la asignatura
     const idAsignatura:string = req.body?.idAsignatura
-    const tipo = req.body?.tipo
+    const tipo: 'Teoria'|'Practica' = req.body?.tipo
     const profesor: string = req.body?.profesor
-    const grupo = req.body?.grupo
+    const grupo:string = req.body?.grupo
     const horario: Sesion[] = req.body?.horario
     const eMsg:string[] = []
     const db = getDb()
@@ -96,6 +92,7 @@ export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo
         return res.status(400).json({message: eMsg})
     }else{
         const datos:GrupoAsignatura ={
+            privilegios: [],
             tipo: tipo,
             asignatura: idAsignatura,
             profesores: [],
@@ -121,7 +118,7 @@ export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo
 
             horario.map(async (sesion)=>{
                 const horarioAula: sesionAula = {
-                    asignatura: new ObjectId(idAsignatura),
+                    asignatura: idAsignatura,
                     dia: sesion.dia,
                     horaInicio: sesion.horaInicio,
                     horaFin: sesion.horaFin
@@ -189,7 +186,6 @@ export const crearExcepcion= async (req:any, res: any)=>{
         const get =  await db.collection(ColeccionAula).findOne(
         { aula: excepcion.aula }
         );
-        console.log(get)
         const result = await db.collection(coleccion).updateOne(
             {_id: new ObjectId(idGrupo)},
             { $addToSet: { fechas: excepcion } }
@@ -199,8 +195,6 @@ export const crearExcepcion= async (req:any, res: any)=>{
         { aula: excepcion.aula },
         { $addToSet: { exepciones: excepcion } }
         );
-        console.log('\n\n\n\n\n\n')
-        console.log(get)
         return res.status(200).json(get)
     }
 
@@ -590,7 +584,6 @@ const AulaDisponibleExcepciones = (aula: Aula, excepcionNueva: Excepcion)=>{ // 
 }
 
 const validarEcepcion = async (excepcion: Excepcion): Promise<boolean> => {
-    //excepcion.fecha = 'dd/mm/yyyy'
     const [dd, mm, yyyy] = excepcion.fecha.split('/').map(Number);
     const date = new Date(yyyy, mm-1, dd )
     let dia :  'L' | 'M' | 'X' | 'J' | 'V';

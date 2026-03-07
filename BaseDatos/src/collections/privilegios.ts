@@ -3,7 +3,7 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
 
-import { Asignatura, Aula, Excepcion, GrupoAsignatura, Hora, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Sesion, sesionAula, Usuario } from "../tipos"
+import { Asignatura, Aula, Excepcion, GrupoAsignatura, Hora, MiembroGrupo, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Sesion, sesionAula, Usuario } from "../tipos"
 
 
 const ColeccionPrivilegios = "Privilegios"
@@ -16,9 +16,9 @@ const ColeccionProfesores = "Profesores"
 
 
 export const crearPrivilegiosUsuario = async (req: any, res: any)=>{
-    const nombre = req.body?.nombre 
-    const idUsuario = req.body?.idUsuario 
-    const tipoUsuario = req.body?.tipoUsuario
+    const nombre:string = req.body?.nombre 
+    const idUsuario:string = req.body?.idUsuario 
+    const tipoUsuario:string = req.body?.tipoUsuario
     const datosBasicos:boolean = req.body?.datosBasicos 
     const asignaturas:boolean = req.body?.asignaturas 
     let coleccion = '';
@@ -59,6 +59,10 @@ export const crearPrivilegiosUsuario = async (req: any, res: any)=>{
             asignaturas: asignaturas,
         }
         const result = await db.collection(ColeccionPrivilegios).insertOne(datos)
+        const result2 = await db.collection(coleccion).updateOne(
+            {_id: new ObjectId(idUsuario)},
+            { $addToSet: { miembros: datos } }
+        )
         return result
     }
 }
@@ -178,6 +182,68 @@ export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
             excepciones: excepciones
         }
         const result = await db.collection(ColeccionPrivilegios).insertOne(datos)
+        return result
+    }
+}
+
+export const añadirMiembroPrivilegios = async (req: any, res: any)=>{
+    const idUsuario:string = req.body?.idUsuario 
+    const idPrivilegio:string = req.body?.idPrivilegio 
+    const tipoUsuario = req.body?.tipoUsuario
+    const fechaFin:string = req.body?.fechaFin
+
+    let coleccion = '';
+    const db = getDb()
+    const eMsg:string[] = []
+    if(fechaFin){
+        const [dd, mm, yyyy] = fechaFin.split('/').map(Number);
+        const date = new Date(yyyy, mm-1, dd )
+        if (isNaN(date.getTime())) {
+            eMsg.push("fechaFin debe ser una fecha en el formato dd/mm/yyyy")
+        }
+    }
+    if(tipoUsuario && typeof(tipoUsuario)=="string" ){
+        if(tipoUsuario=='Alumno'){
+            coleccion=ColeccionAlumnos
+        }else if(tipoUsuario=='Profesor'){
+            coleccion=ColeccionProfesores
+        }else{
+            eMsg.push("tipoUsuario debe ser un 'Alumno' o 'Profesor' ")
+        }
+    }else{
+        eMsg.push("tipoUsuario debe ser un string")
+    }
+    if(!idUsuario || typeof(idUsuario)!="string" || !ObjectId.isValid(idUsuario) ){
+        eMsg.push("idUsuario debe ser un string de 24 caracteres hexadecimales")
+    }else{
+        if(coleccion!=''){
+            const grupo = await db.collection(coleccion).findOne({ _id: new ObjectId(idUsuario) });
+            if(!grupo){
+                eMsg.push("No se encuentra ese usuario")
+            }
+        }
+    }
+    if(!idPrivilegio || typeof(idPrivilegio)!="string" || !ObjectId.isValid(idPrivilegio) ){
+        eMsg.push("idPrivilegio debe ser un string de 24 caracteres hexadecimales")
+    }else{
+        const grupo = await db.collection(ColeccionPrivilegios).findOne({ _id: new ObjectId(idPrivilegio) });
+        if(!grupo){
+            eMsg.push("No se encuentra ese usuario")
+        }
+    }
+    if(eMsg.length >0){
+        res.status(401).json({message: eMsg})
+    }else{
+        const datos: MiembroGrupo ={
+            miembro: idUsuario
+        }
+        if(fechaFin){
+            datos.fechaFin = fechaFin
+        }
+        const result = await db.collection(ColeccionPrivilegios).updateOne(
+            {_id: new ObjectId(idPrivilegio)},
+            { $addToSet: { miembros: datos } }
+        )
         return result
     }
 }
