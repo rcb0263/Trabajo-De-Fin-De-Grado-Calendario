@@ -41,6 +41,7 @@ export const crearUsuario = async (req: any, res: any, tipoUsuario:string)=>{
         res.status(400).json({message: eMsg})
     }else{
         const datos:Usuario ={
+            privilegios: [],
             nombre: nombre,
             mail: mail,
             asignaturas: [],

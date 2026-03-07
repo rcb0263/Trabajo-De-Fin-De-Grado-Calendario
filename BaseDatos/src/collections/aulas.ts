@@ -28,6 +28,7 @@ export const crearAula = async (req: any, res: any)=>{
             res.status(400).json({message: 'El aula ya existe'})
         }
         const datos:Aula ={
+            privilegios: [],
             aula: nombre,
             horarios: [],
             exepciones: []

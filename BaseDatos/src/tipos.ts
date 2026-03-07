@@ -51,11 +51,12 @@ export type Administrador ={
 }
 
 export type Usuario ={
-   _id?: ObjectId,
-   nombre: string,
-   mail: string,
-   asignaturas: string[] //id de la asignatura
-   fechaDeCreacion: Date
+    _id?: ObjectId,
+    privilegios: string[],
+    nombre: string,
+    mail: string,
+    asignaturas: string[] //id de la asignatura
+    fechaDeCreacion: Date
 }
 
 
@@ -113,12 +114,13 @@ export type privilegiosAdmin ={
 
 export type MiembroGrupo ={
     miembro: string,
-    fechaFin?: string //  dd/mm/yyyy
+    fechaFin: string //  dd/mm/yyyy
 }
 
 
 export type Aula = {
     _id?: ObjectId,
+    privilegios: string[],
     aula: string,
     horarios: sesionAula[],
     exepciones: Excepcion[]
