@@ -16,7 +16,7 @@ export const getAsignaturas = async ()=>{
     const asignaturas = await  db.collection<Asignatura>(ColeccionAsignaturas).find().toArray()
     return asignaturas
 }
-
+//verifyIsAdmin
 export const crearAsignatura = async (req: any, res: any)=>{
     const nombre = req.body?.nombre //   grupo: string
     const grado = req.body?.grado //   grado: string,
@@ -24,8 +24,16 @@ export const crearAsignatura = async (req: any, res: any)=>{
     const año = req.body?.año //   año: string,
     const semestre = req.body?.semestre //    semestre: 'Primero'|'Segundo',
     const eMsg:string[] = []
+    const db = getDb()
+
+    //confirmar que es unico
     if(!nombre || typeof(nombre)!="string"){
         eMsg.push("nombre debe ser un string")
+    }else{
+        const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
+        if(!existeAsignatura){
+            eMsg.push("ya existe una asignatura con ese nombre para ese año ")
+        }
     }
     if(!grado || typeof(grado)!="string"){
         eMsg.push("grado debe ser un string")
@@ -53,13 +61,12 @@ export const crearAsignatura = async (req: any, res: any)=>{
             semestre: semestre,
             fechaDeCreacion: new Date(),
         }
-        const db = getDb()
 
         const result = await db.collection(ColeccionAsignaturas).insertOne(datos)
         return result
     }
 }
-
+//verifyIsAdmin
 export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo y luego en routes añade el string al campo de la asignatura
     const idAsignatura:string = req.body?.idAsignatura
     const tipo: 'Teoria'|'Practica' = req.body?.tipo
@@ -67,24 +74,37 @@ export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo
     const grupo:string = req.body?.grupo
     const horario: Sesion[] = req.body?.horario
     const eMsg:string[] = []
+    let coleccion = '';
     const db = getDb()
-    if (!idAsignatura || typeof idAsignatura !== "string" || !ObjectId.isValid(idAsignatura)) {
-        eMsg.push("idAsignatura debe ser un string de 24 caracteres hexadecimales");
-    } else {
-        const asignatura = await db.collection(ColeccionAsignaturas).findOne({ _id: new ObjectId(idAsignatura) });
-        if (!asignatura) {
-            eMsg.push("No se encuentra esa asignatura");
-        }
-    }
+    
     if(!tipo || typeof(tipo)!="string" || (tipo!= 'Teoria' && tipo!='Practica') ){
         eMsg.push("tipo debe ser un string")
     }
+    if(tipo == 'Teoria') coleccion = ColeccionTeoria
+    if(tipo == 'Practica') coleccion = ColeccionPractica
+
+    if (!idAsignatura || typeof idAsignatura !== "string" || !ObjectId.isValid(idAsignatura)) {
+        eMsg.push("idAsignatura debe ser un string de 24 caracteres hexadecimales");
+    } else {
+        const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({ _id: new ObjectId(idAsignatura) });
+        if (!existeAsignatura) {
+            eMsg.push("No se encuentra esa asignatura");
+        }
+    }
+    //confirmar que es unico
+    if(!grupo || typeof(grupo)!="string"){
+        eMsg.push("grupo debe ser un string")
+    }else{
+        const existeGrupo = await db.collection(coleccion).countDocuments({idAsignatura: idAsignatura, grupo: grupo})
+        if(existeGrupo>0){
+            eMsg.push("ya existe un grupo "+grupo +" para esa asignatura")
+        }
+    }
+
     if(profesor && (typeof(profesor)!="string" || !ObjectId.isValid(profesor) ) ){
         eMsg.push("profesor debe ser un string")
     }
-    if(!grupo || typeof(grupo)!="string"){
-        eMsg.push("grupo debe ser un string")
-    }
+    
     if(tipo == 'Teoria' && horario && !(await validarNoSolape(horario))) {
         eMsg.push("horario debe ser un horario valido que no solape")
     }
@@ -141,7 +161,7 @@ export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo
         }
     }
 }
-
+//verifyIsAdmin or verify privilegios datosBasicos=true || datosAvanzados
 export const crearExcepcion= async (req:any, res: any)=>{
     const idGrupo:string = req.body?.idGrupo
     const tipo = req.body?.tipo
@@ -199,7 +219,7 @@ export const crearExcepcion= async (req:any, res: any)=>{
     }
 
 }
-
+//verifyIsAdmin or verify privilegios datosBasicos=true
 export const crearSesion= async (req: any, res: any)=>{ //crea el grupo y luego en routes añade el string al campo de la asignatura
     const idGrupo:string = req.body?.idGrupo
     const sesion:Sesion = req.body?.sesion
@@ -228,7 +248,7 @@ export const crearSesion= async (req: any, res: any)=>{ //crea el grupo y luego 
         return res.status(200).json(result)
     }
 }
-
+//verifyIsAdmin or verify privilegios datosAvanzados=true
 export const asignarProfesor= async (req:any, res: any)=>{
     const idGrupo:string = req.body?.idGrupo
     const idProfesor :string = req.body?.idProfesor
@@ -288,7 +308,7 @@ export const asignarProfesor= async (req:any, res: any)=>{
     }
 
 }
-
+//verifyIsAdmin or verify privilegios datosAvanzados=true
 export const quitarProfesor= async (req:any, res: any)=>{
     const idGrupo:string = req.body?.idGrupo
     const idProfesor :string = req.body?.idProfesor
@@ -358,6 +378,8 @@ export const quitarProfesor= async (req:any, res: any)=>{
     }
 
 }
+
+//verifyIsAdmin or verifyIsAlumno mover a usuarios
 export const asignarAlumno= async (req:any, res: any)=>{
     const idGrupo:string = req.body?.idGrupo
     const idAlumno :string = req.body?.idAlumno
@@ -417,7 +439,7 @@ export const asignarAlumno= async (req:any, res: any)=>{
     }
 
 }
-
+//verifyIsAdmin or verifyIsAlumno mover a usuarios
 export const quitarAlumno= async (req:any, res: any)=>{
     const idGrupo:string = req.body?.idGrupo
     const idAlumno :string = req.body?.idAlumno
@@ -582,7 +604,6 @@ const AulaDisponibleExcepciones = (aula: Aula, excepcionNueva: Excepcion)=>{ // 
 
     return disponible
 }
-
 const validarEcepcion = async (excepcion: Excepcion): Promise<boolean> => {
     const [dd, mm, yyyy] = excepcion.fecha.split('/').map(Number);
     const date = new Date(yyyy, mm-1, dd )
@@ -627,3 +648,15 @@ const validarEcepcion = async (excepcion: Excepcion): Promise<boolean> => {
 
     return true;
 }
+
+const verifyIsAdmin = () =>{}
+/*
+const grupo = await db.collection<PrivilegiosAsignatura>(ColeccionPrivilegios).findOne(
+    {
+        _id: { 
+            $in: asignatura.privilegios.map(id => new ObjectId(id)) 
+        },
+        "miembros.miembro": userId
+    })
+*/
+const verifyIsProfesor = () =>{}

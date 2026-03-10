@@ -1,16 +1,22 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
-
 import { Usuario } from "../tipos"
+import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken"
 
 
 const ColeccionAlumnos= "Alumnos"
 const ColeccionProfesores = "Profesores"
 
+const SECRET = process.env.SECRET||""; 
+
+
 export const crearUsuario = async (req: any, res: any, tipoUsuario:string)=>{
     const nombre:string = req.body?.nombre //   grupo: string
     const mail:string = req.body?.mail //   grupo: string
+    const password:string = req.body?.password
     let coleccion = ''
+    const db = getDb()
     const eMsg:string[] = []
     if(tipoUsuario=='Alumno'){
         coleccion=ColeccionAlumnos
@@ -22,34 +28,73 @@ export const crearUsuario = async (req: any, res: any, tipoUsuario:string)=>{
     if(!nombre || typeof(nombre)!="string"){
         eMsg.push("nombre debe ser un string")
     }
-    const db = getDb()
+    if(!password || typeof(password)!="string"){
+        eMsg.push("password debe ser un string")
+    }
     if(!mail || typeof(mail)!="string"||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){
         eMsg.push("mail debe ser un correo electronico valido")
     }else{
-        const existeMailAlumno = await db
-        .collection(ColeccionAlumnos)
-        .findOne({ mail });
-        const existeMailProfesor = await db
-        .collection(ColeccionProfesores)
-        .findOne({ mail });
+        const existeMail = await db
+        .collection(coleccion)
+        .countDocuments({ mail });
 
-        if (existeMailAlumno || existeMailProfesor) {
-        eMsg.push("Ya existe un usuario con ese correo electrónico");
+        if (existeMail >0) {
+        eMsg.push("Ya existe un "+ tipoUsuario +" con ese correo electrónico");
         }
     }
     if(eMsg.length >0){
-        res.status(400).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
+        const passEncripta = await bcrypt.hash(password,10)
+        console.log('2222222 ',passEncripta)
         const datos:Usuario ={
-            privilegios: [],
             nombre: nombre,
             mail: mail,
+            passwordHash: passEncripta,
             asignaturas: [],
-            fechaDeCreacion: new Date(),
+            fechaDeCreacion: new Date()
         }
         const result = await db.collection(coleccion).insertOne(datos)
         return result
     }
+}
+export const logIn = async (req:any, res:any, tipoUsuario:string)=>{
+    const mail:string = req.body?.mail
+    const password:string = req.body?.password
+    let coleccion = ''
+    const db = getDb()
+    const eMsg:string[] = []
+    if(tipoUsuario=='Alumno'){
+        coleccion=ColeccionAlumnos
+    }else if(tipoUsuario=='Profesor'){
+        coleccion=ColeccionProfesores
+    }else{
+        return res.status(400).json({message: 'el tipo esta mal en el codigo'})
+    }
+
+    if(!password || typeof(password)!="string"){
+        return res.status(400).json({message:"password debe ser un string"})
+    }
+    const user = await db.collection<Usuario>(coleccion).findOne({mail})
+    if(!user) {
+        eMsg.push("mail debe ser un correo electronico valido")
+    }else{
+
+        const validPass = await bcrypt.compare(password, user.passwordHash)
+        if(!validPass) {
+            eMsg.push("contraseña incorrecta")
+        }
+        console.log('validPass: '+validPass)
+    }
+    if(eMsg.length >0){
+        return res.status(400).json({message: eMsg})
+    }else{
+        const token = jwt.sign({userId: user!._id?.toString(), mail: user!.mail}, SECRET,{
+            expiresIn: "1h"
+        })
+        return token
+    }
+
 }
 export const getAlumnos= async ()=>{
     const db = getDb()

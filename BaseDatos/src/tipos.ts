@@ -16,6 +16,20 @@ export type Sesion ={
     horaInicio: Hora,
     horaFin: Hora,
 }
+export type sesionAula ={
+    asignatura: string, 
+    dia: 'L'|'M'|'X'|'J'|'V' , 
+    horaInicio: Hora,
+    horaFin: Hora,
+}
+
+export type Aula = {
+    _id?: ObjectId,
+    privilegios: string[],
+    aula: string,
+    horarios: sesionAula[],
+    exepciones: Excepcion[]
+}
 
 export type GrupoAsignatura ={
     _id?: ObjectId,
@@ -28,7 +42,6 @@ export type GrupoAsignatura ={
     horarios: Sesion[],
     fechas: Excepcion[]
 }
-
 
 export type Asignatura = {
     _id?: ObjectId
@@ -52,8 +65,8 @@ export type Administrador ={
 
 export type Usuario ={
     _id?: ObjectId,
-    privilegios: string[],
     nombre: string,
+    passwordHash: string,    
     mail: string,
     asignaturas: string[] //id de la asignatura
     fechaDeCreacion: Date
@@ -84,8 +97,8 @@ export type PrivilegiosAula ={
     eliminarAula: boolean
 }
 export type PrivilegiosAsignatura ={
-    nombre: string,
     objetivo: string, //user/grupo/asignatura...
+    nombre: string,
     miembros: MiembroGrupo[],
     cambiarBasicos: boolean,
     cambiarGrupos: boolean,
@@ -111,24 +124,9 @@ export type privilegiosAdmin ={
     nombre: string,
     miembros: string[]
 }
-
 export type MiembroGrupo ={
     miembro: string,
     fechaFin: string //  dd/mm/yyyy
 }
 
 
-export type Aula = {
-    _id?: ObjectId,
-    privilegios: string[],
-    aula: string,
-    horarios: sesionAula[],
-    exepciones: Excepcion[]
-}
-
-export type sesionAula ={
-    asignatura: string, 
-    dia: 'L'|'M'|'X'|'J'|'V' , 
-    horaInicio: Hora,
-    horaFin: Hora,
-}
