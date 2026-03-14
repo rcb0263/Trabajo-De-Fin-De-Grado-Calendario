@@ -15,6 +15,7 @@ router.get("/Get/Asignaturas",async (req, res)=>{
     res.status(404).json(error)
  }
 })
+
 router.post("/Crear", async (req, res)=>{
  try {
     const result = await crearAsignatura(req,res)

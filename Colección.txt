@@ -1,65 +1,7 @@
 Colección:
 
- usuarios:
-  usuario1 {
-   _id: ObjectId,
-   nombre: string,
-   apellidos: string,
-   email: string,
-   posición: 'estudiante' | 'profesor | 'administrador' | 'invitado',
-   fecha_Inicio: dia/mes/año,
-   fecha_Fin: dia/mes/año,
-  }
-
- Grupos:
-  AdminAtencionAlEstudiante {
-   _id: ObjectId,
-   miembros: [ObjectId],
-   permisos:{
-    Objetivo: 'estudiante',
-    PostUsuario: true,
-    PostAsignatura: true,
-    CambiarAsignatura: {estudiantes: true, profesores: false, nombre: false, horario: false, fecha: false}
-   }
-  }
-
- Asignaturas:
-  Asignatura1 {
-   _id: ObjectId
-   nombre: string,
-   nombresAlternativos: string[],
-   Mañana: {
-    Profesor: string,
-    Horarios: [{
-	  dia: 'Lunes'|...|'Viernes' , 
-	  hora: {
-		aula: ObjectId, 
-		inicio: 'hora/minuto', 
-		duracion: 'horas/minutos'
-	  }
-	}]
-    Excepciones: {[dia: 'Lunes'|...|Viernes, hora:{aula: ObjectId, inicio: 'hora/minuto', duracion: 'horas/minutos'}, tipo: 'cancelar'| 'recuperación'| 'examen']},
-    Estudiantes: ObjectId[]
-   }
-   Tarde: {...}
-   Año: ObjectId? o string
-   Semestre: 'Primero'|'Segundo'|'Otro'
-   
-  }
-
- Años:
-  Año2526 {
-   examenes: {
-    ordinarios: {inicio: string, fin: string},
-    extraordinarios: {inicio: string, fin: string}
-   }
-   fechas:{
-    primerSemestre: {inicio: string, fin: string},
-    segundoSemestre: {inicio: string, fin: string}
-   }
-  }
-
-
-
-
+Usuarios {campo unico: correo}
+asignaturas {campo unico: nombre+año}
+grupos de asigaturas {campo unico: asignatura(id de asignatura)+grupo}
+aulas {campo unico: aula(nombre del aula)}
 

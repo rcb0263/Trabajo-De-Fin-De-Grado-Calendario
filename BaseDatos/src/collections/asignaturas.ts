@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
 
-import { Asignatura, Aula, Excepcion, GrupoAsignatura, Hora, Sesion, sesionAula, Usuario } from "../tipos"
+import { Asignatura, Aula, Excepcion, GrupoAsignatura, GrupoPrivilegioTipo, Hora, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Sesion, sesionAula, Usuario } from "../tipos"
 
 
 const ColeccionAsignaturas = "Asignaturas"
@@ -196,7 +196,7 @@ export const crearExcepcion= async (req:any, res: any)=>{
     if(!aula || typeof(aula)!="string"){
         eMsg.push("aula debe ser un string")
     }
-    if(!excepcion || ! await validarEcepcion(excepcion))
+    if(!excepcion || ! await ValidarEcepcion(excepcion))
     if (!fecha || typeof fecha !== "string" ) {
         eMsg.push("fecha debe ser un string con formato dd/mm/yy")
     }
@@ -604,7 +604,7 @@ const AulaDisponibleExcepciones = (aula: Aula, excepcionNueva: Excepcion)=>{ // 
 
     return disponible
 }
-const validarEcepcion = async (excepcion: Excepcion): Promise<boolean> => {
+const ValidarEcepcion = async (excepcion: Excepcion): Promise<boolean> => {
     const [dd, mm, yyyy] = excepcion.fecha.split('/').map(Number);
     const date = new Date(yyyy, mm-1, dd )
     let dia :  'L' | 'M' | 'X' | 'J' | 'V';
@@ -649,14 +649,9 @@ const validarEcepcion = async (excepcion: Excepcion): Promise<boolean> => {
     return true;
 }
 
+
 const verifyIsAdmin = () =>{}
 /*
-const grupo = await db.collection<PrivilegiosAsignatura>(ColeccionPrivilegios).findOne(
-    {
-        _id: { 
-            $in: asignatura.privilegios.map(id => new ObjectId(id)) 
-        },
-        "miembros.miembro": userId
-    })
+
 */
 const verifyIsProfesor = () =>{}

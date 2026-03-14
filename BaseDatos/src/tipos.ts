@@ -74,52 +74,40 @@ export type Usuario ={
 
 
 
-/*
-export type Grupo = {
-    _id?: ObjectId,
-    nombre: string,
-    miembros: MiembroGrupo[],
-    privilegiosModificarLeve: PrivilegiosAsignatura[] | boolean,
-    privilegiosModificarSerio: PrivilegiosUsuario | boolean,
-    privilegiosProfesor: PrivilegiosUsuario | boolean,
-    privilegiosAula: PrivilegiosAula[],
-    privilegiosAdmin: privilegiosAdmin 
-}
-*/
 
 
-export type PrivilegiosAula ={
-    nombre: string,
-    objetivo: string, //user/grupo/asignatura...
-    miembros: MiembroGrupo[],
-    eliminarHorarios: boolean,
-    cambiarNombre: boolean
-    eliminarAula: boolean
-}
-export type PrivilegiosAsignatura ={
-    objetivo: string, //user/grupo/asignatura...
-    nombre: string,
-    miembros: MiembroGrupo[],
-    cambiarBasicos: boolean,
-    cambiarGrupos: boolean,
-}
-export type PrivilegiosGrupoAsignatura ={
-    nombre: string,
-    objetivo: string, //user/grupo/asignatura...
-    miembros: MiembroGrupo[],
-    datosBasicos: boolean, //asignatura, grupo, tipo
-    datosAvanzados: boolean, //profesores, alumnos
-    horarios: boolean,
-    excepciones: boolean,
-}
-export type PrivilegiosUsuario={
-    nombre: string,
-    objetivo: string, //user/grupo/asignatura...
-    miembros: MiembroGrupo[],
-    datosBasicos: boolean,
-    asignaturas:boolean,
+export type GrupoPrivilegioTipo =
+  | PrivilegiosAsignatura
+  | PrivilegiosGrupoAsignatura
+  | PrivilegiosAula
+  | PrivilegiosUsuario
 
+export type GrupoPrivilegio = {
+  _id?: ObjectId
+  nombre: string
+  objetivo: string // user / grupo / asignatura...
+  miembros: MiembroGrupo[]
 }
+
+export type PrivilegiosAula = GrupoPrivilegio & {
+    basicos: boolean,
+    avanzados: boolean
+}
+export type PrivilegiosAsignatura = GrupoPrivilegio & {
+    basicos: boolean,
+    avanzados: boolean
+}
+export type PrivilegiosGrupoAsignatura = GrupoPrivilegio & {
+    basicos: boolean, //basicos: asignatura, grupo, tipo, horarios
+    avanzados: boolean, //avanzados: profesores, alumnos
+    profesores: boolean
+}
+export type PrivilegiosUsuario = GrupoPrivilegio & {
+    basicos: boolean,
+    avanzados: boolean,
+    asignaturas:boolean
+}
+
 export type privilegiosAdmin ={
     nombre: string,
     miembros: string[]

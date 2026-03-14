@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { getDb } from "../mongo"
-import { añadirMiembroPrivilegios, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario } from "../collections/privilegios";
+import { añadirMiembroPrivilegios, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, ObtenerGruposPrivilegios } from "../collections/privilegios";
 const router = Router();
 
 router.get("/",(req, res)=>{
@@ -42,6 +42,23 @@ router.put("/addMiembro", async (req, res)=>{
  try {
     const result = await añadirMiembroPrivilegios(req,res)
     res.status(201).json(result)
+ } catch (error) {
+    res.status(404).json(error)
+ }
+})
+router.put("/addMiembro", async (req, res)=>{
+ try {
+    const result = await añadirMiembroPrivilegios(req,res)
+    res.status(201).json(result)
+ } catch (error) {
+    res.status(404).json(error)
+ }
+})
+
+router.get("/Get/Gruposprivilegiados",async (req, res)=>{
+ try {
+   const result = await ObtenerGruposPrivilegios(req, res)
+   res.status(201).json(result)
  } catch (error) {
     res.status(404).json(error)
  }
