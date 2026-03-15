@@ -1,13 +1,14 @@
 import { Router } from "express"
 import { getDb } from "../mongo"
 import { crearUsuario, getAlumnos } from "../collections/usuarios";
+import { esAdmin } from "../collections/privilegios";
 const router = Router();
 const colleccion = () => {return getDb().collection('Alumnos');}
 
 router.get("/",(req, res)=>{
     res.send("Se ha conectado a la ruta alumnos correctamente")
 })
-router.post("/Crear", async (req, res)=>{
+router.post("/Crear",esAdmin, async (req, res)=>{
  try {
     const result = await crearUsuario(req,res, 'Alumno')
     res.status(201).json(result)

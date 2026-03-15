@@ -2,6 +2,7 @@ import { Router } from "express"
 import { getDb } from "../mongo"
 import { crearUsuario, getProfesores, logIn } from "../collections/usuarios";
 import { AuthRequest, verifyToken } from "../middleware/verifytoken";
+import { esAdmin } from "../collections/privilegios";
 const router = Router();
 const colleccion = () => {return getDb().collection('Alumnos');}
 
@@ -32,4 +33,5 @@ router.get("/GetUserIdFromToken", verifyToken, async (req: AuthRequest, res)=>{
     res.status(409).json(error)
  }
 })
+//
 export default router;

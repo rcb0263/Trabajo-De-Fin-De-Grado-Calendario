@@ -3,7 +3,7 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
 
-import { Asignatura, Aula, Excepcion, GrupoAsignatura, GrupoPrivilegio, GrupoPrivilegioTipo, Hora, MiembroGrupo, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Sesion, sesionAula, Usuario } from "../tipos"
+import { Asignatura, Aula, GrupoAsignatura, GrupoPrivilegio, GrupoPrivilegioTipo, MiembroGrupo, PrivilegiosAdmin, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Usuario } from "../tipos"
 
 
 const ColeccionPrivilegios = "Privilegios"
@@ -14,6 +14,33 @@ const ColeccionAula = "Aulas"
 const ColeccionAlumnos= "Alumnos"
 const ColeccionProfesores = "Profesores"
 
+
+export const crearAdminGrupo = async (req: any, res: any)=>{
+    const nombre:string = req.body?.nombre
+    const idUsuario:string = req.body?.idUsuario
+    const db = getDb()
+    const eMsg:string[] = []
+
+    if(!idUsuario || typeof(idUsuario)!="string" || !ObjectId.isValid(idUsuario) ){
+        eMsg.push("idUsuario debe ser un string de 24 caracteres hexadecimales")
+    }else{
+        const grupo = await db.collection(ColeccionAula).findOne({ _id: new ObjectId(idUsuario) });
+        if(!grupo){
+            eMsg.push("No se encuentra ese usuario")
+        }
+    }
+    if(eMsg.length >0){
+        res.status(401).json({message: eMsg})
+    }else{
+        const datos:PrivilegiosAdmin ={
+            nombre: nombre,
+            miembros: [],
+            admin: "Admin"
+        }
+        const result = await db.collection(ColeccionPrivilegios).insertOne(datos)
+        return result
+    }
+}
 
 export const crearPrivilegiosUsuario = async (req: any, res: any)=>{
     const nombre:string = req.body?.nombre 
@@ -341,21 +368,33 @@ export const ObtenerGruposPrivilegios = async (req: any, res: any) => {
 //Privilegios Generales
 export const esPrivilegiadoBasico = async (req: any, res: any):Promise<boolean> =>{
     const grupos:GrupoPrivilegioTipo[] = await ObtenerGruposPrivilegios(req, res) as GrupoPrivilegioTipo[];
-    return grupos.some((grupo)=>{grupo.basicos == true})
+    return (grupos.some((grupo)=>grupo.basicos == true)|| await esAdmin(req,res))
 }
 export const esPrivilegiadoAvanzado = async (req: any, res: any):Promise<boolean> =>{
     const grupos:GrupoPrivilegioTipo[] = await ObtenerGruposPrivilegios(req, res) as GrupoPrivilegioTipo[];
-    return grupos.some((grupo)=>{grupo.avanzados == true})
+    return (grupos.some((grupo)=>grupo.avanzados == true)|| await esAdmin(req,res))
 }
 
 //Privilegios especificos
     //Usuario
 export const esPrivilegiadoUsuarioAsignaturas = async (req: any, res: any):Promise<boolean> =>{
     const grupos:PrivilegiosUsuario[] = await ObtenerGruposPrivilegios(req, res) as PrivilegiosUsuario[];
-    return grupos.some((grupo)=>{grupo.asignaturas == true})
+    return (grupos.some((grupo)=>grupo.asignaturas == true)|| await esAdmin(req,res))
 }
     //Grupo Asignatura
 export const esPrivilegiadoGrupoAsignaturaProfesores  = async (req: any, res: any):Promise<boolean> =>{
     const grupos:PrivilegiosGrupoAsignatura[] = await ObtenerGruposPrivilegios(req, res) as PrivilegiosGrupoAsignatura[];
-    return grupos.some((grupo)=>{grupo.profesores == true})
+    return (grupos.some((grupo)=>grupo.profesores == true) || await esAdmin(req,res))
+}
+
+//Admin
+export const esAdmin = async (req: any, res: any):Promise<boolean>  => {
+    const db = getDb()
+    const grupos = await db.collection<PrivilegiosAdmin>(ColeccionPrivilegios).findOne(
+        {
+            admin: 'Admin',
+            miembros: req.user
+        })
+    if(grupos) return true
+    return false
 }

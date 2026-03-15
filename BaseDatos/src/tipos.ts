@@ -108,7 +108,9 @@ export type PrivilegiosUsuario = GrupoPrivilegio & {
     asignaturas:boolean
 }
 
-export type privilegiosAdmin ={
+export type PrivilegiosAdmin ={
+    _id?: ObjectId,
+    admin: 'Admin',
     nombre: string,
     miembros: string[]
 }

@@ -1,8 +1,8 @@
 import { Router } from "express"
-import { getDb } from "../mongo"
 import { asignarAlumno, asignarProfesor, crearAsignatura, crearExcepcion, crearGrupoAsignatura, crearSesion, getAsignaturas, quitarAlumno, quitarProfesor } from "../collections/asignaturas";
+import { esAdmin, esPrivilegiadoGrupoAsignaturaProfesores } from "../collections/privilegios";
+
 const router = Router();
-const colleccion = () => {return getDb().collection('Asignaturas');}
 
 router.get("/",(req, res)=>{
     res.send("Se ha conectado a la ruta Asignaturas correctamente")
@@ -16,7 +16,7 @@ router.get("/Get/Asignaturas",async (req, res)=>{
  }
 })
 
-router.post("/Crear", async (req, res)=>{
+router.post("/Crear", esAdmin, async (req, res)=>{
  try {
     const result = await crearAsignatura(req,res)
     res.status(201).json(result)
@@ -24,7 +24,7 @@ router.post("/Crear", async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.post("/Grupo/Crear", async (req, res)=>{
+router.post("/Grupo/Crear", esAdmin, async (req, res)=>{
  try {
    const result = await crearGrupoAsignatura(req,res)
    res.status(201).json(result)
@@ -32,7 +32,7 @@ router.post("/Grupo/Crear", async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.put("/Grupo/Horario/Crear", async (req, res)=>{
+router.put("/Grupo/Horario/Crear", esAdmin, async (req, res)=>{
  try {
    const result = await crearSesion(req,res)
    res.status(201).json(result)
@@ -40,7 +40,7 @@ router.put("/Grupo/Horario/Crear", async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.put("/Grupo/Excepcion/Crear", async (req, res)=>{
+router.put("/Grupo/Excepcion/Crear", esPrivilegiadoGrupoAsignaturaProfesores, async (req, res)=>{
  try {
    const result = await crearExcepcion(req,res)
    res.status(201).json(result)
@@ -48,7 +48,7 @@ router.put("/Grupo/Excepcion/Crear", async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.put("/Grupo/Profesor/Add", async (req, res)=>{
+router.put("/Grupo/Profesor/Add", esAdmin, async (req, res)=>{
  try {
    const result = await asignarProfesor(req,res)
    res.status(201).json(result)
@@ -56,7 +56,7 @@ router.put("/Grupo/Profesor/Add", async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.put("/Grupo/Profesor/Remove", async (req, res)=>{
+router.put("/Grupo/Profesor/Remove", esAdmin, async (req, res)=>{
  try {
    const result = await quitarProfesor(req,res)
    res.status(201).json(result)
@@ -64,7 +64,7 @@ router.put("/Grupo/Profesor/Remove", async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.put("/Grupo/Alumno/Add", async (req, res)=>{
+router.put("/Grupo/Alumno/Add", esAdmin, async (req, res)=>{
  try {
    const result = await asignarAlumno(req,res)
    res.status(201).json(result)
@@ -72,7 +72,7 @@ router.put("/Grupo/Alumno/Add", async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.put("/Grupo/Alumno/Remove", async (req, res)=>{
+router.put("/Grupo/Alumno/Remove", esAdmin, async (req, res)=>{
  try {
    const result = await quitarAlumno(req,res)
    res.status(201).json(result)
