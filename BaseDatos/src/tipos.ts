@@ -25,34 +25,34 @@ export type sesionAula ={
 
 export type Aula = {
     _id?: ObjectId,
-    privilegios: string[],
-    aula: string,
-    horarios: sesionAula[],
-    exepciones: Excepcion[]
+    privilegios: string[], 
+    aula: string,           //basico
+    horarios: sesionAula[], //desde la asignatura
+    exepciones: Excepcion[] //desde la asignatura
 }
 
 export type GrupoAsignatura ={
     _id?: ObjectId,
     privilegios: string[],
     tipo: 'Teoria' | 'Practica',
-    asignatura: string,
-    profesores: string[],
-    grupo: string, //A, B, C, ...
-    alumnos: string[],
-    horarios: Sesion[],
-    fechas: Excepcion[]
+    asignatura: string,             //basico
+    profesores: string[],           //avanzado
+    grupo: string, //A, B, C, ...   //basico
+    alumnos: string[],              //Desde el alumno
+    horarios: Sesion[],             //avanzado
+    fechas: Excepcion[]             //profesores
 }
 
 export type Asignatura = {
     _id?: ObjectId
     privilegios: string[],
-    nombre: string
-    grado: string,
-    teoria: string[],
-    practicas: string[],
-    curso: number,
-    año: number,
-    semestre: 'Primero'|'Segundo',
+    nombre: string,                 //basico
+    grado: string,                  //basico
+    teoria: string[],               //avanzado
+    practicas: string[],            //avanzado
+    curso: number,                  //basico 1º,2º,3º,4º
+    año: number,                    //basico 2020, 2021, 2022, ...
+    semestre: 'Primero'|'Segundo',  //basico
     fechaDeCreacion: Date
 }
 //encima de esto he creado asignaturas
@@ -65,10 +65,10 @@ export type Administrador ={
 
 export type Usuario ={
     _id?: ObjectId,
-    nombre: string,
-    passwordHash: string,    
-    mail: string,
-    asignaturas: string[] //id de la asignatura
+    nombre: string,         //basico
+    passwordHash: string,   //basico 
+    mail: string,           //avanzado
+    asignaturas: string[]   //asignaturas
     fechaDeCreacion: Date
 }
 
