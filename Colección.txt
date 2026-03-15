@@ -1,7 +1,24 @@
 Colección:
 
 Usuarios {campo unico: correo}
-asignaturas {campo unico: nombre+año}
-grupos de asigaturas {campo unico: asignatura(id de asignatura)+grupo}
+Crear, hecho
+Eliminar, ModificarBasico (nombre, password), 
+ModificarAvanzado (mail, asignaturas), 
+Asignaturas (asignaturas)
+
+Asignaturas {campo unico: nombre+año}
+Crear, hecho
+Eliminar, 
+ModificarBasico (nombre, grado, curso, año), 
+ModificarAvanzado (mail, asignaturas)
+
+Grupos de asigaturas {campo unico: asignatura(id de asignatura)+grupo}
+Crear, hecho
+Eliminar,
+ModificarBasico (asignatura, grupo),
+ModificarAvanzado (profesores, horarios)
+Profesores (fechas)
+
 aulas {campo unico: aula(nombre del aula)}
+
 
