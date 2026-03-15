@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { getDb } from "../mongo"
-import { crearUsuario, getAlumnos } from "../collections/usuarios";
+import { crearUsuario, eliminarUsuario, getAlumnos } from "../collections/usuarios";
 import { esAdmin } from "../collections/privilegios";
 const router = Router();
 const colleccion = () => {return getDb().collection('Alumnos');}
@@ -11,6 +11,14 @@ router.get("/",(req, res)=>{
 router.post("/Crear",esAdmin, async (req, res)=>{
  try {
     const result = await crearUsuario(req,res, 'Alumno')
+    res.status(201).json(result)
+ } catch (error) {
+    res.status(404).json(error)
+ }
+})
+router.delete("/Eliminar",esAdmin, async (req, res)=>{
+ try {
+    const result = await eliminarUsuario(req,res, 'Alumno')
     res.status(201).json(result)
  } catch (error) {
     res.status(404).json(error)

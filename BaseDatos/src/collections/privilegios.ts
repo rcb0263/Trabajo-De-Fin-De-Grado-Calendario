@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
 
 import { Asignatura, Aula, GrupoAsignatura, GrupoPrivilegio, GrupoPrivilegioTipo, MiembroGrupo, PrivilegiosAdmin, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Usuario } from "../tipos"
+import { NextFunction } from "express"
 
 
 const ColeccionPrivilegios = "Privilegios"
@@ -366,29 +367,45 @@ export const ObtenerGruposPrivilegios = async (req: any, res: any) => {
 }
 
 //Privilegios Generales
-export const esPrivilegiadoBasico = async (req: any, res: any):Promise<boolean> =>{
+export const esPrivilegiadoBasico = async (req: any, res: any, next: NextFunction)=>{
     const grupos:GrupoPrivilegioTipo[] = await ObtenerGruposPrivilegios(req, res) as GrupoPrivilegioTipo[];
-    return (grupos.some((grupo)=>grupo.basicos == true)|| await esAdmin(req,res))
+    if (!grupos.some((grupo)=>grupo.basicos == true) || await esAdmin(req, res)) {
+        return res.status(403).json({ message: "No tienes permisos basicos" })
+    }
+
+    next()
 }
-export const esPrivilegiadoAvanzado = async (req: any, res: any):Promise<boolean> =>{
+export const esPrivilegiadoAvanzado = async (req: any, res: any, next: NextFunction) =>{
     const grupos:GrupoPrivilegioTipo[] = await ObtenerGruposPrivilegios(req, res) as GrupoPrivilegioTipo[];
-    return (grupos.some((grupo)=>grupo.avanzados == true)|| await esAdmin(req,res))
+    if (!grupos.some((grupo)=>grupo.avanzados == true) || await esAdmin(req, res)) {
+        return res.status(403).json({ message: "No tienes permisos avanzados" })
+    }
+
+    next()
 }
 
 //Privilegios especificos
     //Usuario
-export const esPrivilegiadoUsuarioAsignaturas = async (req: any, res: any):Promise<boolean> =>{
+export const esPrivilegiadoUsuarioAsignaturas = async (req: any, res: any, next: NextFunction)=>{
     const grupos:PrivilegiosUsuario[] = await ObtenerGruposPrivilegios(req, res) as PrivilegiosUsuario[];
-    return (grupos.some((grupo)=>grupo.asignaturas == true)|| await esAdmin(req,res))
+    if (!grupos.some((grupo)=>grupo.asignaturas == true) || await esAdmin(req, res)) {
+        return res.status(403).json({ message: "No tienes permisos de asignaturas" })
+    }
+
+    next()
 }
     //Grupo Asignatura
-export const esPrivilegiadoGrupoAsignaturaProfesores  = async (req: any, res: any):Promise<boolean> =>{
+export const esPrivilegiadoGrupoAsignaturaProfesores  = async (req: any, res: any, next: NextFunction) =>{
     const grupos:PrivilegiosGrupoAsignatura[] = await ObtenerGruposPrivilegios(req, res) as PrivilegiosGrupoAsignatura[];
-    return (grupos.some((grupo)=>grupo.profesores == true) || await esAdmin(req,res))
+    if (!grupos.some((grupo)=>grupo.profesores == true) || await esAdmin(req, res)) {
+        return res.status(403).json({ message: "No tienes permisos de profesores" })
+    }
+
+    next()
 }
 
 //Admin
-export const esAdmin = async (req: any, res: any):Promise<boolean>  => {
+export const esAdmin = async (req: any, res: any) => {
     const db = getDb()
     const grupos = await db.collection<PrivilegiosAdmin>(ColeccionPrivilegios).findOne(
         {
@@ -397,4 +414,13 @@ export const esAdmin = async (req: any, res: any):Promise<boolean>  => {
         })
     if(grupos) return true
     return false
+}
+export const verifyAdmin = async (req: any,res: any, next: NextFunction)  => {
+    const db = getDb()
+    const esAdministrador = await esAdmin(req, res)
+    if (!esAdministrador) {
+        return res.status(403).json({ message: "No tienes permisos de administrador" })
+    }
+
+    next()
 }

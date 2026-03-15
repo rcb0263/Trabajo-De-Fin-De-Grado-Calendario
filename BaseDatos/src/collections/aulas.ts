@@ -19,8 +19,8 @@ export const crearAula = async (req: any, res: any)=>{
     if(!nombre || typeof(nombre)!="string"){
         eMsg.push("nombre debe ser un string")
     }else{
-        const existeAula = await db.collection(ColeccionAula).countDocuments({aula: nombre})
-        if(existeAula>0){
+        const existeAula = await db.collection(ColeccionAula).findOne({aula: nombre})
+        if(existeAula){
             eMsg.push("ya existe ese aula")
         }
     }
@@ -67,6 +67,45 @@ export const eliminarAula = async (req: any, res: any)=>{
         }
 
         const result = await db.collection(ColeccionAula).deleteOne({aula: nombre})
+        return result
+    }
+}
+//verifyIsAdmin
+export const modificarAula = async (req: any, res: any)=>{
+    const nombre:string = req.body?.nombre
+    const nuevoNombre:string = req.body?.nuevoNombre
+    const eMsg:string[] = []
+    const db = getDb()
+    if(!nombre || typeof(nombre)!="string"){
+        eMsg.push("nombre debe ser un string")
+    }else{
+        const existeAula = await db.collection(ColeccionAula).findOne({aula: nombre})
+        if(!existeAula){
+            eMsg.push("no existe ese aula")
+        }
+    }
+    if(!nuevoNombre || typeof(nuevoNombre)!="string"){
+        eMsg.push("nuevoNombre debe ser un string")
+    }else{
+        const existeAula = await db.collection(ColeccionAula).findOne({aula: nuevoNombre})
+        if(!existeAula){
+            eMsg.push("ya existe un aula con el nuevoNombre")
+        }
+    }
+    if(eMsg.length >0){
+        res.status(400).json({message: eMsg})
+    }else{
+        const db = getDb()
+        console.log(db)
+        const aula = await  db.collection<Aula>(ColeccionAula).findOne({aula: nombre})
+        if(aula){
+            res.status(400).json({message: 'El aula ya existe'})
+        }
+
+        const result = await db.collection(ColeccionAula).updateOne(
+            {aula: nombre},
+            {aula: nuevoNombre}
+        )
         return result
     }
 }

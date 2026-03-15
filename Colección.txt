@@ -1,24 +1,27 @@
 Colección:
-
+//Cambiar las de campos unicos
 Usuarios {campo unico: correo}
-Crear, hecho
-Eliminar, ModificarBasico (nombre, password), 
-ModificarAvanzado (mail, asignaturas), 
-Asignaturas (asignaturas)
+Crear,                                  hecho
+Eliminar,                               hecho?
+ModificarBasico (nombre, password),     hecho?
+ModificarAvanzado (mail),               hecho? Revisar
+Asignaturas (asignaturas)               hecho?
 
 Asignaturas {campo unico: nombre+año}
-Crear, hecho
-Eliminar, 
-ModificarBasico (nombre, grado, curso, año), 
-ModificarAvanzado (mail, asignaturas)
+Crear,                                                  hecho
+Eliminar,                                               hecho?
+ModificarBasico (nombre, grado, curso, año, semestre),  hecho? Revisar 
+ModificarAvanzado (teoría, práctica)                    hecho  es crear/eliminar de Grupos de asigaturas
 
-Grupos de asigaturas {campo unico: asignatura(id de asignatura)+grupo}
-Crear, hecho
-Eliminar,
-ModificarBasico (asignatura, grupo),
-ModificarAvanzado (profesores, horarios)
-Profesores (fechas)
+Grupos de asignaturas {campo unico: asignatura(id de asignatura)+grupo}
+Crear,                                      hecho
+Eliminar,                                   hecho?
+ModificarBasico (grupo),                    hecho?  Revisar
+ModificarAvanzado (profesores, sesion)      hecho?
+Profesores (crear/eliminar excepción)       hecho?
 
 aulas {campo unico: aula(nombre del aula)}
-
+Crear,                                      hecho
+Eliminar,                                   hecho
+modificar nombre                            hecho?
 

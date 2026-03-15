@@ -31,7 +31,7 @@ export type Aula = {
     exepciones: Excepcion[] //desde la asignatura
 }
 
-export type GrupoAsignatura ={
+export type GrupoAsignatura ={ // {asignatura:asignatura, grupo:grupo}
     _id?: ObjectId,
     privilegios: string[],
     tipo: 'Teoria' | 'Practica',
@@ -50,8 +50,8 @@ export type Asignatura = {
     grado: string,                  //basico
     teoria: string[],               //avanzado
     practicas: string[],            //avanzado
-    curso: number,                  //basico 1º,2º,3º,4º
-    año: number,                    //basico 2020, 2021, 2022, ...
+    curso: number,                  //basico 2020, 2021, 2022, ...
+    año: number,                    //basico 1º,2º,3º,4º,...
     semestre: 'Primero'|'Segundo',  //basico
     fechaDeCreacion: Date
 }
