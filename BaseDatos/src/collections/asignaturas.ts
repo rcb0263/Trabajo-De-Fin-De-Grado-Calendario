@@ -93,8 +93,8 @@ export const eliminarAsignatura = async (req: any, res: any)=>{
     }
 }
 export const ModificarAsignaturaBasico = async (req: any, res: any)=>{
-    const cambiarNombre:boolean = req.body?.nombre //   grupo: string
-    const cambiarGrado:boolean = req.body?.grado //   grado: string,
+    const nuevoNombre:boolean = req.body?.nombre //   grupo: string
+    const nuevoGrado:boolean = req.body?.grado //   grado: string,
     const nombre = req.body?.nombre //   grupo: string
     const grado = req.body?.grado //   grado: string,
     const curso = req.body?.curso //   curso: number,
@@ -102,7 +102,7 @@ export const ModificarAsignaturaBasico = async (req: any, res: any)=>{
     const semestre = req.body?.semestre //    semestre: 'Primero'|'Segundo',
     const db = getDb()
     const eMsg:string[] = []
-    if(!(cambiarGrado || cambiarNombre || curso || año || semestre)){
+    if(!(nuevoGrado || nuevoNombre || curso || año || semestre)){
         eMsg.push("debes introducir al menos un cambio")
     }
     if(!nombre || typeof(nombre)!="string"){
@@ -132,8 +132,8 @@ export const ModificarAsignaturaBasico = async (req: any, res: any)=>{
         return res.status(400).json({message: eMsg})
     }else{
         const datosModificar: any = {}
-        if (cambiarNombre==true) datosModificar.nombre = nombre
-        if (cambiarGrado) datosModificar.grado = grado
+        if (nuevoNombre==true) datosModificar.nombre = nuevoNombre
+        if (nuevoGrado) datosModificar.grado = nuevoGrado
         if (curso) datosModificar.curso = curso
         if (año) datosModificar.año = año
         if (semestre) datosModificar.semestre = semestre
@@ -426,7 +426,7 @@ export const eliminarExcepcion= async (req:any, res: any)=>{
     }
 }
 
-//verifyIsAdmin or verify privilegios datosBasicos=true
+
 export const crearSesion= async (req: any, res: any)=>{ //crea el grupo y luego en routes añade el string al campo de la asignatura
     const idGrupo:string = req.body?.idGrupo
     const sesion:Sesion = req.body?.sesion

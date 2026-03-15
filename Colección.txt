@@ -4,19 +4,19 @@ Usuarios {campo unico: correo}
 Crear,                                  hecho
 Eliminar,                               hecho?
 ModificarBasico (nombre, password),     hecho?
-ModificarAvanzado (mail),               hecho? Revisar
+ModificarAvanzado (mail),               hecho?
 Asignaturas (asignaturas)               hecho?
 
 Asignaturas {campo unico: nombre+año}
 Crear,                                                  hecho
 Eliminar,                                               hecho?
-ModificarBasico (nombre, grado, curso, año, semestre),  hecho? Revisar 
+ModificarBasico (nombre, grado, curso, año, semestre),  hecho?
 ModificarAvanzado (teoría, práctica)                    hecho  es crear/eliminar de Grupos de asigaturas
 
 Grupos de asignaturas {campo unico: asignatura(id de asignatura)+grupo}
 Crear,                                      hecho
 Eliminar,                                   hecho?
-ModificarBasico (grupo),                    hecho?  Revisar
+ModificarBasico (grupo),                    hecho?
 ModificarAvanzado (profesores, sesion)      hecho?
 Profesores (crear/eliminar excepción)       hecho?
 

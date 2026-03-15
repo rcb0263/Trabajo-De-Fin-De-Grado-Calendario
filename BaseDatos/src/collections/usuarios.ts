@@ -140,6 +140,7 @@ export const ModificarUsuarioBasico = async (req: any, res: any, tipoUsuario:str
 }
 export const ModificarUsuarioAvanzados = async (req: any, res: any, tipoUsuario:string)=>{
     const mail:string = req.body?.mail
+    const nuevoMail:string = req.body?.nuevoMail
     let coleccion = ''
     const db = getDb()
     const eMsg:string[] = []
@@ -154,19 +155,30 @@ export const ModificarUsuarioAvanzados = async (req: any, res: any, tipoUsuario:
         eMsg.push("mail debe ser un correo electronico valido")
     }else{
         const existeMail = await db
-        .collection(coleccion)
+        .collection<Usuario>(coleccion)
         .findOne({ mail });
 
         if (!existeMail) {
             eMsg.push("No existe un "+ tipoUsuario +" con ese correo electrónico");
         }
     }
+    if(!nuevoMail || typeof(nuevoMail)!="string"||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nuevoMail)){
+        eMsg.push("nuevoMail debe ser un correo electronico valido")
+    }else{
+        const existeMail = await db
+        .collection<Usuario>(coleccion)
+        .findOne({ mail: nuevoMail });
+
+        if (existeMail) {
+            eMsg.push("Ya existe un "+ tipoUsuario +" con ese correo electrónico");
+        }
+    }
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
-        const result = await db.collection(coleccion).updateOne(
+        const result = await db.collection<Usuario>(coleccion).updateOne(
             { mail },
-            { $set: {mail: mail} }
+            { $set: {mail: nuevoMail} }
         )
         return result
     }
