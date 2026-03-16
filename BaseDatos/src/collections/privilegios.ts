@@ -35,7 +35,7 @@ export const crearAdminGrupo = async (req: any, res: any)=>{
     }else{
         const datos:PrivilegiosAdmin ={
             nombre: nombre,
-            miembros: [],
+            miembros: [idUsuario],
             admin: "Admin"
         }
         const result = await db.collection(ColeccionPrivilegios).insertOne(datos)
@@ -412,7 +412,7 @@ export const esAdmin = async (req: any, res: any) => {
             admin: 'Admin',
             miembros: req.user
         })
-    if(grupos) return true
+    if(!grupos) return true
     return false
 }
 export const verifyAdmin = async (req: any,res: any, next: NextFunction)  => {

@@ -1,10 +1,18 @@
 import { Router } from "express"
 import { getDb } from "../mongo"
-import { añadirMiembroPrivilegios, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, eliminarMiembroPrivilegios, esAdmin, ObtenerGruposPrivilegios } from "../collections/privilegios";
+import { añadirMiembroPrivilegios, crearAdminGrupo, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, eliminarMiembroPrivilegios, esAdmin, ObtenerGruposPrivilegios } from "../collections/privilegios";
 const router = Router();
 
 router.get("/",(req, res)=>{
     res.send("Se ha conectado a la ruta profesores correctamente")
+})
+router.post("/Admin/Crear", async (req, res)=>{
+ try {
+    const result = await crearAdminGrupo(req,res)
+    res.status(201).json(result)
+ } catch (error) {
+    res.status(404).json(error)
+ }
 })
 router.post("/Usuario/Crear", esAdmin, async (req, res)=>{
  try {

@@ -16,6 +16,7 @@ export const getAsignaturas = async ()=>{
     const asignaturas = await  db.collection<Asignatura>(ColeccionAsignaturas).find().toArray()
     return asignaturas
 }
+//Funciona
 export const crearAsignatura = async (req: any, res: any)=>{
     const nombre = req.body?.nombre //   grupo: string
     const grado = req.body?.grado //   grado: string,
@@ -30,7 +31,7 @@ export const crearAsignatura = async (req: any, res: any)=>{
         eMsg.push("nombre debe ser un string")
     }else{
         const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
-        if(!existeAsignatura){
+        if(existeAsignatura){
             eMsg.push("ya existe una asignatura con ese nombre para ese año ")
         }
     }
@@ -65,6 +66,7 @@ export const crearAsignatura = async (req: any, res: any)=>{
         return result
     }
 }
+//Funciona
 export const eliminarAsignatura = async (req: any, res: any)=>{
     const nombre = req.body?.nombre //   grupo: string
     const curso = req.body?.curso //   curso: number,
@@ -77,7 +79,7 @@ export const eliminarAsignatura = async (req: any, res: any)=>{
     }else{
         const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
         if(!existeAsignatura){
-            eMsg.push("ya existe una asignatura con ese nombre para ese año ")
+            eMsg.push("No existe una asignatura con ese nombre para ese año ")
         }
     }
     if(!curso ||typeof(curso)!= "number" ){
@@ -92,9 +94,10 @@ export const eliminarAsignatura = async (req: any, res: any)=>{
         return result
     }
 }
+//Funciona
 export const ModificarAsignaturaBasico = async (req: any, res: any)=>{
-    const nuevoNombre:boolean = req.body?.nombre //   grupo: string
-    const nuevoGrado:boolean = req.body?.grado //   grado: string,
+    const nuevoNombre:boolean = req.body?.nuevoNombre //   grupo: string
+    const nuevoCurso:boolean = req.body?.nuevoCurso //   grado: string,
     const nombre = req.body?.nombre //   grupo: string
     const grado = req.body?.grado //   grado: string,
     const curso = req.body?.curso //   curso: number,
@@ -102,8 +105,14 @@ export const ModificarAsignaturaBasico = async (req: any, res: any)=>{
     const semestre = req.body?.semestre //    semestre: 'Primero'|'Segundo',
     const db = getDb()
     const eMsg:string[] = []
-    if(!(nuevoGrado || nuevoNombre || curso || año || semestre)){
+    if(!(nuevoCurso || nuevoNombre || grado || año || semestre)){
         eMsg.push("debes introducir al menos un cambio")
+    }
+    if(!curso ||typeof(curso)!= "number" ){
+        eMsg.push("curso debe ser un numero")
+    }
+    if(grado && typeof(grado)!="string"){
+        eMsg.push("grado debe ser un string")
     }
     if(!nombre || typeof(nombre)!="string"){
         eMsg.push("nombre debe ser un string")
@@ -111,16 +120,10 @@ export const ModificarAsignaturaBasico = async (req: any, res: any)=>{
         const existeAsignatura = await db
         .collection(ColeccionAsignaturas)
         .findOne({nombre: nombre, curso: curso});
-
+        console.log(existeAsignatura)
         if (!existeAsignatura) {
             eMsg.push("No existe esa Asignatura");
         }
-    }
-    if(grado && typeof(grado)!="string"){
-        eMsg.push("grado debe ser un string")
-    }
-    if(!curso ||typeof(curso)!= "number" ){
-        eMsg.push("curso debe ser un numero")
     }
     if(año && typeof(año)!="number"){
         eMsg.push("año debe ser un number")
@@ -132,13 +135,13 @@ export const ModificarAsignaturaBasico = async (req: any, res: any)=>{
         return res.status(400).json({message: eMsg})
     }else{
         const datosModificar: any = {}
-        if (nuevoNombre==true) datosModificar.nombre = nuevoNombre
-        if (nuevoGrado) datosModificar.grado = nuevoGrado
-        if (curso) datosModificar.curso = curso
+        if (nuevoNombre) datosModificar.nombre = nuevoNombre
+        if (nuevoCurso) datosModificar.curso = nuevoCurso
+        if (grado) datosModificar.grado = grado
         if (año) datosModificar.año = año
         if (semestre) datosModificar.semestre = semestre
 
-
+        console.log(datosModificar)
         const result = await db.collection(ColeccionAsignaturas).updateOne(
             {nombre: nombre, curso: curso},
             {$set: datosModificar }
@@ -146,7 +149,8 @@ export const ModificarAsignaturaBasico = async (req: any, res: any)=>{
         return result
     }
 }
-//verifyIsAdmin
+
+//Funciona /revisar dentro de no solape validarSesion
 export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo y luego en routes añade el string al campo de la asignatura
     const idAsignatura:string = req.body?.idAsignatura
     const tipo: 'Teoria'|'Practica' = req.body?.tipo
@@ -175,8 +179,8 @@ export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo
     if(!grupo || typeof(grupo)!="string"){
         eMsg.push("grupo debe ser un string")
     }else{
-        const existeGrupo = await db.collection(coleccion).countDocuments({idAsignatura: idAsignatura, grupo: grupo})
-        if(existeGrupo>0){
+        const existeGrupo = await db.collection(coleccion).findOne({asignatura: idAsignatura, grupo: grupo})
+        if(existeGrupo){
             eMsg.push("ya existe un grupo "+grupo +" para esa asignatura")
         }
     }
@@ -210,7 +214,7 @@ export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo
             }
             
             const result = await db.collection(ColeccionTeoria).insertOne(datos)
-            const Gid = result.insertedId;
+            const Gid = String(result.insertedId);
             await db.collection(ColeccionAsignaturas).updateOne(
             { _id: new ObjectId(idAsignatura) },
             { $addToSet: { teoria: Gid } }
@@ -241,42 +245,51 @@ export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo
         }
     }
 }
-export const EliminarGrupoAsignatura = async (req: any, res: any, tipo:'Teoria' | 'Practica')=>{
-    const nombre:string = req.body?.nombre
-    const curso:number = req.body?.curso
+//Funciona
+export const EliminarGrupoAsignatura = async (req: any, res: any)=>{
+    const asignatura:string = req.body?.asignatura
     const grupo:string = req.body?.grupo
+    const tipo: 'Teoria'|'Practica' = req.body?.tipo
     const db = getDb()
     const eMsg:string[] = []
-    if(!nombre || typeof(nombre)!="string"){
-        eMsg.push("nombre debe ser un string")
+    if(!asignatura || typeof(asignatura)!="string"){
+        eMsg.push("asignatura debe ser un string")
     }else{
         const existeAsignatura = await db
         .collection(ColeccionAsignaturas)
-        .findOne({nombre: nombre, curso: curso});
-
+        .findOne({_id: new ObjectId(asignatura)});
         if (!existeAsignatura) {
             eMsg.push("No existe esa Asignatura");
         }
     }
-    if(!curso ||typeof(curso)!= "number" ){
-        eMsg.push("curso debe ser un numero")
+    if(!tipo || typeof(tipo)!="string" || (tipo!= 'Teoria' && tipo!='Practica') ){
+        eMsg.push("tipo debe ser un string")
     }
-    if(!grupo ||typeof(grupo)!= "number" ){
-        eMsg.push("curso debe ser un numero")
+    if(!grupo ||typeof(grupo)!= "string" ){
+        eMsg.push("grupo debe ser un string")
     }
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
         if (tipo=='Teoria'){
+            const existeGrupo = await db.collection<GrupoAsignatura>(ColeccionTeoria).findOne({asignatura: asignatura, grupo: grupo})
+            if(!existeGrupo){
+                return res.status(400).json({message: "No existe ese grupo"})
+            }
             const result = await db.collection<Asignatura>(ColeccionAsignaturas).updateOne(
-                {nombre: nombre, curso: curso},
-                {$pull: {teoria: grupo}}
+                {_id: new ObjectId(asignatura)},
+                {$pull: {teoria: String(existeGrupo._id)}}
             )
+            console.log(result.acknowledged)
             return result
         }else if (tipo=='Practica'){
+            const existeGrupo = await db.collection<GrupoAsignatura>(ColeccionTeoria).findOne({asignatura: asignatura, grupo: grupo})
+            if(!existeGrupo){
+                return res.status(400).json({message: "No existe ese grupo"})
+            }
             const result = await db.collection<Asignatura>(ColeccionAsignaturas).updateOne(
-                {nombre: nombre, curso: curso},
-                {$pull: {practicas: grupo}}
+                {_id: new ObjectId(asignatura)},
+                {$pull: {practicas:  String(existeGrupo._id)}}
             )
             return result
         }
@@ -745,7 +758,7 @@ export const quitarAlumno= async (req:any, res: any)=>{
 
 }
 
-const validarNoSolape= (sesiones: Sesion[]): boolean => {
+const validarNoSolape= async (sesiones: Sesion[]): Promise<boolean> => {
     return sesiones.every(async (sesion, i)=>{
         const interno = sesiones.every((h, j) => {
             if (j==i) return true
@@ -761,8 +774,8 @@ const validarNoSolape= (sesiones: Sesion[]): boolean => {
 
             return false
         });
-        //if (!interno) return false
-        await validarSesion(sesion)
+        if (!interno) return false
+        return await validarSesion(sesion)
     })
 }
 
@@ -807,9 +820,13 @@ const validarSesion = async (sesion: Sesion): Promise<boolean> => {
     if (!aula) return false;
 
     // Validar disponibilidad
-    if (!AulaDisponibleSesiones(aula, sesion)) return false;
+    if (!AulaDisponibleSesiones(aula, sesion)){
+        return false;
+    }else{
+        return true
+    }
 
-    return true;
+    
 
 }
 
