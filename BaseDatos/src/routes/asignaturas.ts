@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { asignarAlumno, asignarProfesor, crearAsignatura, crearExcepcion, crearGrupoAsignatura, crearSesion, eliminarAsignatura, EliminarGrupoAsignatura, getAsignaturas, ModificarAsignaturaBasico, quitarAlumno, quitarProfesor } from "../collections/asignaturas";
+import { asignarAlumno, asignarProfesor, crearAsignatura, crearExcepcion, crearGrupoAsignatura, crearSesion, eliminarAsignatura, eliminarExcepcion, EliminarGrupoAsignatura, getAsignaturas, ModificarAsignaturaBasico, ModificarGrupoAsignaturaBasico, quitarAlumno, quitarProfesor } from "../collections/asignaturas";
 import { esPrivilegiadoGrupoAsignaturaProfesores, verifyAdmin } from "../collections/privilegios";
 
 const router = Router();
@@ -45,7 +45,7 @@ router.put("/Modificar/Basico", verifyAdmin, async (req, res)=>{
 router.post("/Grupo/Crear", verifyAdmin, async (req, res)=>{
  try {
    const result = await crearGrupoAsignatura(req,res)
-   res.status(201).json(result)
+   res.status(201).json()
  } catch (error) {
     res.status(404).json(error)
  }
@@ -53,6 +53,15 @@ router.post("/Grupo/Crear", verifyAdmin, async (req, res)=>{
 router.put("/Grupo/Eliminar",  verifyAdmin, async (req, res)=>{
  try {
    const result = await EliminarGrupoAsignatura(req,res)
+   if(result.deletedCount > 0) return res.status(201).json(result)  
+   return res.status(400).json({message:"no existía ese grupo"})
+ } catch (error) {
+    res.status(404).json(error)
+ }
+})
+router.put("/Grupo/Modificar/Basico",  verifyAdmin, async (req, res)=>{
+ try {
+   const result = await ModificarGrupoAsignaturaBasico(req,res)
    if(result.modifiedCount > 0) return res.status(201).json(result)  
    return res.status(400).json({message:"no existía ese grupo"})
  } catch (error) {
@@ -68,9 +77,18 @@ router.put("/Grupo/Horario/Crear", verifyAdmin, async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.put("/Grupo/Excepcion/Crear", esPrivilegiadoGrupoAsignaturaProfesores, async (req, res)=>{
+//esPrivilegiadoGrupoAsignaturaProfesores, 
+router.put("/Grupo/Excepcion/Crear", async (req, res)=>{
  try {
    const result = await crearExcepcion(req,res)
+   res.status(201).json(result)
+ } catch (error) {
+    res.status(404).json(error)
+ }
+})
+router.put("/Grupo/Excepcion/Eliminar", async (req, res)=>{
+ try {
+   const result = await eliminarExcepcion(req,res)
    res.status(201).json(result)
  } catch (error) {
     res.status(404).json(error)

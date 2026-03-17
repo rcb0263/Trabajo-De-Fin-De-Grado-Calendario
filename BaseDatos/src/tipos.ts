@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb"
 
 export type Excepcion ={
     aula: string, 
-    fecha: string,//'dd/mm/yyyy'
+    fecha: string,
     horaInicio: Hora,
     horaFin: Hora,
 }
