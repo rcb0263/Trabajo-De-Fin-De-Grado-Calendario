@@ -220,7 +220,7 @@ export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo
 
             await Promise.all(horario.map(async (sesion)=>{
                 const horarioAula: sesionAula = {
-                    asignatura: idAsignatura,
+                    asignatura: Gid,
                     dia: sesion.dia,
                     horaInicio: sesion.horaInicio,
                     horaFin: sesion.horaFin
@@ -454,7 +454,7 @@ export const eliminarExcepcion= async (req:any, res: any)=>{
     }
 }
 
-
+//Funciona
 export const crearSesion= async (req: any, res: any)=>{ //crea el grupo y luego en routes añade el string al campo de la asignatura
     const idGrupo:string = req.body?.idGrupo
     const sesion:Sesion = req.body?.sesion
@@ -463,13 +463,17 @@ export const crearSesion= async (req: any, res: any)=>{ //crea el grupo y luego 
     if(!idGrupo || typeof(idGrupo)!="string" || !ObjectId.isValid(idGrupo) ){
         eMsg.push("idGrupo debe ser un string de 24 caracteres hexadecimales")
     }else{
-        const asignatura = await db.collection(ColeccionTeoria).findOne({ _id: new ObjectId(idGrupo) });
-        if (!asignatura) {
-            eMsg.push("No se encuentra esa asignatura")
+        const grupo = await db.collection<GrupoAsignatura>(ColeccionTeoria).findOne({ _id: new ObjectId(idGrupo) });
+        if (!grupo) {
+            eMsg.push("No se encuentra ese grupo")
+        }else{
+            if(! noSolapeInterno([...grupo.horarios, sesion])){
+                eMsg.push("sesion no debe solapar con otros horarios del grupo")
+            }
         }
     }
-    if(!sesion || !validarSesion(sesion) ){
-        eMsg.push("sesiones debe ser un array con al menos un elemento")
+    if(!sesion || !(await validarSesion(sesion)) ){
+        eMsg.push("sesion debe tener los campos {aula, dia, horaInicio, horaFin}")
     }
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
@@ -480,9 +484,21 @@ export const crearSesion= async (req: any, res: any)=>{ //crea el grupo y luego 
             {_id: new ObjectId(idGrupo)},
             { $addToSet: { horarios: sesion } }
         )
+
+        const horarioAula: sesionAula = {
+                asignatura: idGrupo,
+                dia: sesion.dia,
+                horaInicio: sesion.horaInicio,
+                horaFin: sesion.horaFin
+        }
+        await db.collection(ColeccionAula).updateOne(
+            { aula: sesion.aula },
+            { $addToSet: { horarios: horarioAula } }
+        );
         return res.status(200).json(result)
     }
 }
+//Funciona
 export const eliminarSesion= async (req: any, res: any)=>{ //crea el grupo y luego en routes añade el string al campo de la asignatura
     const idGrupo:string = req.body?.idGrupo
     const sesion:Sesion = req.body?.sesion
@@ -491,17 +507,34 @@ export const eliminarSesion= async (req: any, res: any)=>{ //crea el grupo y lue
     if(!idGrupo || typeof(idGrupo)!="string" || !ObjectId.isValid(idGrupo) ){
         eMsg.push("idGrupo debe ser un string de 24 caracteres hexadecimales")
     }else{
-        const asignatura = await db.collection(ColeccionTeoria).findOne({ _id: new ObjectId(idGrupo) });
-        if (!asignatura) {
-            eMsg.push("No se encuentra esa asignatura")
+        const grupo = await db.collection<GrupoAsignatura>(ColeccionTeoria).findOne({ _id: new ObjectId(idGrupo) });
+        if (!grupo) {
+            eMsg.push("No se encuentra ese grupo")
+        }else{
+            if(noSolapeInterno([...grupo.horarios, sesion])){
+                eMsg.push("sesion debe solapar con otros horarios del grupo")
+            }
         }
     }
     if(!sesion || await validarEliminarSesion(sesion) ){//es una sesión valida que solapa
-        eMsg.push("sesiones debe ser un array con al menos un elemento")
+        eMsg.push("sesion debe ser una sola sesión")
     }
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
+        const horarioAula: sesionAula = {
+            asignatura: idGrupo,
+            dia: sesion.dia,
+            horaInicio: sesion.horaInicio,
+            horaFin: sesion.horaFin
+        }
+        const result2 = await db.collection<Aula>(ColeccionAula).updateOne(
+            { aula: sesion.aula },
+            { $pull: { horarios: horarioAula } }
+        );
+        if(result2.modifiedCount==0){
+            return res.status(200).json({message: 'no se pudo eliminar el horario', result2})
+        }
         const result = await db
         .collection<GrupoAsignatura>(ColeccionTeoria)
         .updateOne(
@@ -511,6 +544,7 @@ export const eliminarSesion= async (req: any, res: any)=>{ //crea el grupo y lue
         return res.status(200).json(result)
     }
 }
+
 //verifyIsAdmin or verify privilegios datosAvanzados=true
 export const asignarProfesor= async (req:any, res: any)=>{
     const idGrupo:string = req.body?.idGrupo
@@ -775,30 +809,12 @@ export const quitarAlumno= async (req:any, res: any)=>{
 
 const validarNoSolape = async (sesiones: Sesion[]): Promise<boolean> => {
 
-    // 1️⃣ Validar solape (SIN async)
-    const noSolapan = sesiones.every((sesion, i) => {
-        return sesiones.every((h, j) => {
-            if (i === j) return true;
-            if (h.dia !== sesion.dia) return true;
-
-            if (
-                sesion.horaFin.hora < h.horaInicio.hora ||
-                h.horaFin.hora < sesion.horaInicio.hora ||
-                (sesion.horaFin.hora === h.horaInicio.hora && sesion.horaFin.minuto <= h.horaInicio.minuto) ||
-                (sesion.horaInicio.hora === h.horaFin.hora && sesion.horaInicio.minuto >= h.horaFin.minuto)
-            ) {
-                return true;
-            }
-
-            return false;
-        });
-    });
-
-    if (!noSolapan) {
+    // Validar solape interno
+    if (!noSolapeInterno(sesiones)) {
         return false;
     }
 
-    // 2️⃣ Validar cada sesión (async)
+    // Validar cada sesión (async)
     const resultados = await Promise.all(
         sesiones.map(s => validarSesion(s))
     );
@@ -806,27 +822,46 @@ const validarNoSolape = async (sesiones: Sesion[]): Promise<boolean> => {
     return resultados.every(r => r === true);
 };
 
+const noSolapeInterno = (sesiones: Sesion[]): boolean => {
+    return sesiones.every((sesion, i) => {
+        return sesiones.every((h, j) => {
+            if (i === j) return true;
+            if (h.dia !== sesion.dia) return true;
+
+            return (
+                sesion.horaFin.hora < h.horaInicio.hora ||
+                h.horaFin.hora < sesion.horaInicio.hora ||
+                (sesion.horaFin.hora === h.horaInicio.hora && sesion.horaFin.minuto <= h.horaInicio.minuto) ||
+                (sesion.horaInicio.hora === h.horaFin.hora && sesion.horaInicio.minuto >= h.horaFin.minuto)
+            );
+        });
+    });
+};
+
 
 const validarEliminarSesion = async (sesion: Sesion): Promise<boolean> => {
     const diasValidos = new Set(['L','M','X','J','V']);
     const db = getDb()
-    
-
     // Validar día
     if (!diasValidos.has(sesion.dia)) return false;
-
     // Validar horas (formato + orden)
     if (!validarHorario(sesion.horaInicio, sesion.horaFin)) return false;
-
     // Validar aula
     if (!sesion.aula ) return false;
     const aula = await db.collection<Aula>(ColeccionAula)
         .findOne({ aula: sesion.aula });
     if (!aula) return false;
-
     // Validar disponibilidad
-    if (AulaDisponibleSesiones(aula, sesion)) return false;
-
+    const result = aula.horarios.some(horario=>{
+        if(horario.dia  == sesion.dia
+        && horario.horaFin  == sesion.horaFin
+        && horario.horaInicio  == sesion.horaInicio
+        ){
+            return true
+        }
+        return false
+    } )
+    if(!result){return false}
     return true;
 }
 const validarSesion = async (sesion: Sesion): Promise<boolean> => {
@@ -836,16 +871,13 @@ const validarSesion = async (sesion: Sesion): Promise<boolean> => {
 
     // Validar día
     if (!diasValidos.has(sesion.dia)) return false;
-
     // Validar horas (formato + orden)
     if (!validarHorario(sesion.horaInicio, sesion.horaFin)) return false;
-
     // Validar aula
     if (!sesion.aula ) return false;
     const aula = await db.collection<Aula>(ColeccionAula)
         .findOne({ aula: sesion.aula });
     if (!aula) return false;
-
     // Validar disponibilidad
     if (!AulaDisponibleSesiones(aula, sesion)){
         return false;
@@ -872,9 +904,7 @@ const validarHora = (hora:Hora): boolean => {
 }
 const AulaDisponibleSesiones = (aula: Aula, sesionNueva: Sesion)=>{ // A[10:00, 11:00] B[10:30, 11:30]
     const disponible = aula.horarios.every(h => {
-
         if (h.dia !== sesionNueva.dia) return true;
-
         if(validarHorario(sesionNueva.horaFin, h.horaInicio) 
             || validarHorario(h.horaFin, sesionNueva.horaInicio) 
             || sesionNueva.horaFin.hora == h.horaInicio.hora &&sesionNueva.horaFin.minuto == h.horaInicio.minuto

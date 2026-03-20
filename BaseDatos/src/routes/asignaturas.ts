@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { asignarAlumno, asignarProfesor, crearAsignatura, crearExcepcion, crearGrupoAsignatura, crearSesion, eliminarAsignatura, eliminarExcepcion, EliminarGrupoAsignatura, getAsignaturas, ModificarAsignaturaBasico, ModificarGrupoAsignaturaBasico, quitarAlumno, quitarProfesor } from "../collections/asignaturas";
+import { asignarAlumno, asignarProfesor, crearAsignatura, crearExcepcion, crearGrupoAsignatura, crearSesion, eliminarAsignatura, eliminarExcepcion, EliminarGrupoAsignatura, eliminarSesion, getAsignaturas, ModificarAsignaturaBasico, ModificarGrupoAsignaturaBasico, quitarAlumno, quitarProfesor } from "../collections/asignaturas";
 import { esPrivilegiadoGrupoAsignaturaProfesores, verifyAdmin } from "../collections/privilegios";
 
 const router = Router();
@@ -77,6 +77,15 @@ router.put("/Grupo/Horario/Crear", verifyAdmin, async (req, res)=>{
     res.status(404).json(error)
  }
 })
+router.put("/Grupo/Horario/Eliminar", verifyAdmin, async (req, res)=>{
+ try {
+   const result = await eliminarSesion(req,res)
+   res.status(201).json(result)
+ } catch (error) {
+    res.status(404).json(error)
+ }
+})
+
 //esPrivilegiadoGrupoAsignaturaProfesores, 
 router.put("/Grupo/Excepcion/Crear", async (req, res)=>{
  try {
@@ -86,6 +95,7 @@ router.put("/Grupo/Excepcion/Crear", async (req, res)=>{
     res.status(404).json(error)
  }
 })
+
 router.put("/Grupo/Excepcion/Eliminar", async (req, res)=>{
  try {
    const result = await eliminarExcepcion(req,res)
@@ -94,6 +104,7 @@ router.put("/Grupo/Excepcion/Eliminar", async (req, res)=>{
     res.status(404).json(error)
  }
 })
+
 router.put("/Grupo/Profesor/Add", verifyAdmin, async (req, res)=>{
  try {
    const result = await asignarProfesor(req,res)
