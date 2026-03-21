@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { getDb } from "../mongo"
-import { crearUsuario, getProfesores, logIn } from "../collections/usuarios";
+import { crearUsuario, getAsignaturas, getProfesores, logIn } from "../collections/usuarios";
 import { AuthRequest, verifyToken } from "../middleware/verifytoken";
 import { esAdmin } from "../collections/privilegios";
 const router = Router();
@@ -15,6 +15,13 @@ router.post("/Crear", async (req, res)=>{
     res.status(201).json(result)
  } catch (error) {
     res.status(404).json(error)
+ }
+})
+router.get("/GetAsignaturas",  async (req: AuthRequest, res)=>{
+ try {
+   await getAsignaturas(req,res, 'Profesor')
+ } catch (error) {
+    res.status(401).json(error)
  }
 })
 router.get("/Login", async (req, res)=>{

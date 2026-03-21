@@ -1,12 +1,14 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
-import { Usuario } from "../tipos"
+import { GrupoAsignatura, Usuario } from "../tipos"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
 
 const ColeccionAlumnos= "Alumnos"
 const ColeccionProfesores = "Profesores"
+const ColeccionTeoria = "Teoria"
+const ColeccionPractica = "Practica"
 
 const SECRET = process.env.SECRET||""; 
 
@@ -223,6 +225,50 @@ export const ModificarUsuarioAsignaturas= async (req: any, res: any, tipoUsuario
     }
 }
 
+export const getAsignaturas = async (req: any, res: any, tipoUsuario:string) => {
+    const mail:string = req.body?.mail //   grupo: string
+    let coleccion = ''
+    const db = getDb()
+    const eMsg:string[] = []
+    if(tipoUsuario=='Alumno'){
+        coleccion=ColeccionAlumnos
+    }else if(tipoUsuario=='Profesor'){
+        coleccion=ColeccionProfesores
+    }else{
+        return res.status(400).json({message: 'el tipo esta mal en el codigo'})
+    }
+    if(!mail || typeof(mail)!="string"||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){
+        eMsg.push("mail debe ser un correo electronico valido")
+    }
+    if(eMsg.length >0){
+        return res.status(400).json({message: eMsg})
+    }else{
+        const existeMail = await db
+        .collection<Usuario>(coleccion)
+        .findOne({ mail });
+        if (!existeMail) {
+            return res.status(400).json({message: "No existe ese "+ tipoUsuario })
+        }
+        const asignaturasIds = existeMail.asignaturas;
+        const Asignaturas = await Promise.all(
+            asignaturasIds.map(async (e)=>{
+                const res = await db
+                .collection<GrupoAsignatura>(ColeccionTeoria)
+                .findOne({_id: new ObjectId(e)})
+                if (res){
+                    return res as GrupoAsignatura
+                }
+                const res2 = await db
+                .collection<GrupoAsignatura>(ColeccionPractica)
+                .findOne({_id: new ObjectId(e)})
+                return res2 as GrupoAsignatura
+            })
+        )
+        console.log(Asignaturas)
+        return res.status(201).json({Asignaturas})
+    }
+}
+
 export const logIn = async (req:any, res:any, tipoUsuario:string)=>{
     const mail:string = req.body?.mail
     const password:string = req.body?.password
@@ -270,3 +316,4 @@ export const getProfesores= async ()=>{
     const alumnos = await  db.collection<Usuario>(ColeccionProfesores).find().toArray()
     return alumnos;
 }
+
