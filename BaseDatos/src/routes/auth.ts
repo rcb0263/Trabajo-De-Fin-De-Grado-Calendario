@@ -7,8 +7,6 @@ import { Usuario } from "../tipos";
 
 const router = Router();
 const colleccion = () => {return getDb().collection<User>('placeholder');}
-const colleccionAlumnos = () => {return getDb().collection<User>('Alumnos');}
-const colleccionProfesores = () => {return getDb().collection<User>('Profesores');}
 
 const SECRET = process.env.SECRET||""; 
 

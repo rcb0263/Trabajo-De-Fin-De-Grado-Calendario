@@ -8,56 +8,56 @@ router.get("/",(req, res)=>{
 })
 router.post("/Admin/Crear", async (req, res)=>{
  try {
-    const result = await crearAdminGrupo(req,res)
-    res.status(201).json(result)
+    await crearAdminGrupo(req,res)
+    
  } catch (error) {
     res.status(404).json(error)
  }
 })
 router.post("/Usuario/Crear", esAdmin, async (req, res)=>{
  try {
-    const result = await crearPrivilegiosUsuario(req,res)
-    res.status(201).json(result)
+    await crearPrivilegiosUsuario(req,res)
+    
  } catch (error) {
     res.status(404).json(error)
  }
 })
 router.post("/Asignatura/Crear", esAdmin, async (req, res)=>{
  try {
-    const result = await crearPrivilegiosAsignatura(req,res)
-    res.status(201).json(result)
+    await crearPrivilegiosAsignatura(req,res)
+    
  } catch (error) {
     res.status(404).json(error)
  }
 })
 router.post("/GrupoAsignatura/Crear", esAdmin, async (req, res)=>{
  try {
-    const result = await crearPrivilegiosGrupoAsignatura(req,res)
-    res.status(201).json(result)
+    await crearPrivilegiosGrupoAsignatura(req,res)
+    
  } catch (error) {
     res.status(404).json(error)
  }
 })
 router.post("/Aula/Crear", esAdmin, async (req, res)=>{
  try {
-    const result = await crearPrivilegiosAula(req,res)
-    res.status(201).json(result)
+    await crearPrivilegiosAula(req,res)
+    
  } catch (error) {
     res.status(404).json(error)
  }
 })
 router.put("/addMiembro", esAdmin, async (req, res)=>{
  try {
-    const result = await añadirMiembroPrivilegios(req,res)
-    res.status(201).json(result)
+    await añadirMiembroPrivilegios(req,res)
+    
  } catch (error) {
     res.status(404).json(error)
  }
 })
 router.put("/eliminarMiembro", esAdmin, async (req, res)=>{
  try {
-    const result = await eliminarMiembroPrivilegios(req,res)
-    res.status(201).json(result)
+    await eliminarMiembroPrivilegios(req,res)
+    
  } catch (error) {
     res.status(404).json(error)
  }

@@ -56,7 +56,7 @@ export const crearUsuario = async (req: any, res: any, tipoUsuario:string)=>{
             fechaDeCreacion: new Date()
         }
         const result = await db.collection(coleccion).insertOne(datos)
-        return result
+        return res.status(201).json(result)
     }
 }
 export const eliminarUsuario = async (req: any, res: any, tipoUsuario:string)=>{
@@ -86,7 +86,7 @@ export const eliminarUsuario = async (req: any, res: any, tipoUsuario:string)=>{
         return res.status(400).json({message: eMsg})
     }else{
         const result = await db.collection(coleccion).deleteOne({mail: mail})
-        return result
+        return res.status(201).json(result)
     }
 }
 
@@ -137,7 +137,7 @@ export const ModificarUsuarioBasico = async (req: any, res: any, tipoUsuario:str
             { mail },
             { $set: datosModificar }
         )
-        return result
+        return res.status(201).json(result)
     }
 }
 export const ModificarUsuarioAvanzados = async (req: any, res: any, tipoUsuario:string)=>{
@@ -182,7 +182,7 @@ export const ModificarUsuarioAvanzados = async (req: any, res: any, tipoUsuario:
             { mail },
             { $set: {mail: nuevoMail} }
         )
-        return result
+        return res.status(201).json(result)
     }
 }
 export const ModificarUsuarioAsignaturas= async (req: any, res: any, tipoUsuario:string)=>{
@@ -221,7 +221,7 @@ export const ModificarUsuarioAsignaturas= async (req: any, res: any, tipoUsuario
             { mail },
             { $set: {asignaturas: asignaturas} }
         )
-        return result
+        return res.status(201).json(result)
     }
 }
 

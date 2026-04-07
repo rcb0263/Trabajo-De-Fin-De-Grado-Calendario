@@ -63,7 +63,7 @@ export const crearAsignatura = async (req: any, res: any)=>{
         }
 
         const result = await db.collection(ColeccionAsignaturas).insertOne(datos)
-        return result
+        return res.status(201).json(result)
     }
 }
 //Funciona
@@ -91,7 +91,7 @@ export const eliminarAsignatura = async (req: any, res: any)=>{
         const result = await db
             .collection(ColeccionAsignaturas)
             .deleteOne({nombre: nombre, curso: curso})
-        return result
+        return res.status(201).json(result)
     }
 }
 //Funciona
@@ -144,7 +144,7 @@ export const ModificarAsignaturaBasico = async (req: any, res: any)=>{
             {nombre: nombre, curso: curso},
             {$set: datosModificar }
         )
-        return result
+        return res.status(201).json(result)
     }
 }
 
@@ -239,7 +239,7 @@ export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo
             { _id: new ObjectId(idAsignatura) },
             { $addToSet: { practicas: Gid } }
             );
-            return result.insertedId.toString()
+            return res.status(201).json(result.insertedId.toString())
         }
     }
 }
@@ -279,7 +279,7 @@ export const EliminarGrupoAsignatura = async (req: any, res: any)=>{
                 {$pull: {teoria: String(existeGrupo._id)}}
             )
             const result2 = await db.collection<GrupoAsignatura>(ColeccionTeoria).deleteOne({_id: existeGrupo._id})
-            return result2
+            return res.status(201).json(result2)
         }else if (tipo=='Practica'){
             const existeGrupo = await db.collection<GrupoAsignatura>(ColeccionPractica).findOne({asignatura: asignatura, grupo: grupo})
             
@@ -292,7 +292,7 @@ export const EliminarGrupoAsignatura = async (req: any, res: any)=>{
             )
             const result2 = await db.collection<GrupoAsignatura>(ColeccionPractica).deleteOne({_id: existeGrupo._id})
 
-            return result2
+            return res.status(201).json(result2)
         }
     }
 }
@@ -333,7 +333,7 @@ export const ModificarGrupoAsignaturaBasico = async (req: any, res: any)=>{
                 {asignatura:asignatura, grupo:grupo},
                 {$set: { grupo: nuevoGrupo } }
             )
-            return result
+            return res.status(201).json(result)
     }
 }
 //Funciona
@@ -823,7 +823,6 @@ const noSolapeInterno = (sesiones: Sesion[]): boolean => {
         });
     });
 };
-
 
 const validarEliminarSesion = async (sesion: Sesion): Promise<boolean> => {
     const diasValidos = new Set(['L','M','X','J','V']);

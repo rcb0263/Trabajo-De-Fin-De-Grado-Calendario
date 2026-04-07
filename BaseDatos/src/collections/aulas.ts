@@ -40,7 +40,7 @@ export const crearAula = async (req: any, res: any)=>{
             exepciones: []
         }
         const result = await db.collection(ColeccionAula).insertOne(datos)
-        return result
+        return res.status(200).json(result)
     }
 }
 //verifyIsAdmin
@@ -67,7 +67,7 @@ export const eliminarAula = async (req: any, res: any)=>{
         }
 
         const result = await db.collection(ColeccionAula).deleteOne({aula: nombre})
-        return result
+        return res.status(200).json(result)
     }
 }
 //verifyIsAdmin
@@ -106,6 +106,6 @@ export const modificarAula = async (req: any, res: any)=>{
             {aula: nombre},
             {aula: nuevoNombre}
         )
-        return result
+        return res.status(200).json(result)
     }
 }

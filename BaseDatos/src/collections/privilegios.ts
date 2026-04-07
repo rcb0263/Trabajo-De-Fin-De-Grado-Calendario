@@ -39,7 +39,7 @@ export const crearAdminGrupo = async (req: any, res: any)=>{
             admin: "Admin"
         }
         const result = await db.collection(ColeccionPrivilegios).insertOne(datos)
-        return result
+        return res.status(200).json(result)
     }
 }
 
@@ -93,7 +93,7 @@ export const crearPrivilegiosUsuario = async (req: any, res: any)=>{
             {_id: new ObjectId(idUsuario)},
             { $addToSet: { privilegios: String(result.insertedId) } }
         )
-        return result
+        return res.status(200).json(result)
     }
 }
 export const crearPrivilegiosAula = async (req: any, res: any)=>{
@@ -130,7 +130,7 @@ export const crearPrivilegiosAula = async (req: any, res: any)=>{
             {_id: new ObjectId(idAula)},
             { $addToSet: { privilegios: String(result.insertedId) } }
         )
-        return result
+        return res.status(200).json(result)
     }
 }
 export const crearPrivilegiosAsignatura = async (req: any, res: any)=>{
@@ -168,7 +168,7 @@ export const crearPrivilegiosAsignatura = async (req: any, res: any)=>{
             {_id: new ObjectId(idAsignatura)},
             { $addToSet: { privilegios: String(result.insertedId) } }
         )
-        return result
+        return res.status(200).json(result)
     }
 }
 export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
@@ -220,7 +220,7 @@ export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
             {_id: new ObjectId(idGrupo)},
             { $addToSet: { privilegios: String(result.insertedId) } }
         )
-        return result
+        return res.status(200).json(result)
     }
 }
 
@@ -284,7 +284,7 @@ export const añadirMiembroPrivilegios = async (req: any, res: any)=>{
             { _id: new ObjectId(idPrivilegio) },
             { $addToSet: { miembros: datos } }
         )
-        return result
+        return res.status(200).json(result)
     }
 }
 export const eliminarMiembroPrivilegios = async (req: any, res: any)=>{
@@ -346,7 +346,7 @@ export const eliminarMiembroPrivilegios = async (req: any, res: any)=>{
             {_id: new ObjectId(idPrivilegio)},
             { $addToSet: { miembros: datos } }
         )
-        return result
+        return res.status(200).json(result)
     }
 }
 
