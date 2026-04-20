@@ -26,7 +26,6 @@ export const crearAsignatura = async ( props: CrearAsignaturasProps ) => {
       },
     }
   );
-    console.log(response)
     return response;
 };
 export const crearGrupoAsignatura = async ( props: CrearGrupoAsignaturasProps ) => {
@@ -39,6 +38,5 @@ export const crearGrupoAsignatura = async ( props: CrearGrupoAsignaturasProps ) 
       },
     }
   );
-    console.log(response)
     return response;
 };

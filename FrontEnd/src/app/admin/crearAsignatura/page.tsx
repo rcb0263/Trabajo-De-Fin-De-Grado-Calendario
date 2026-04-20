@@ -1,12 +1,11 @@
 'use client'
 import { crearAsignatura } from "@/lib/spi/asignaturas";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import './stylres.css'
+import "../formularioStyle.css";
+
 const Page = () => {
   const añoActual = new Date().getFullYear();
 
-  const [resultado, setResultado] = useState<string>('')
   const [nombre, setNombre] = useState<string>('')
   const [curso, setCurso] = useState<number>(añoActual)
   const [año, setAño] = useState<number>(1)
@@ -15,7 +14,6 @@ const Page = () => {
 
   const [error, setError]= useState<string>('');
 
-  const router = useRouter()
 
   useEffect(() => {
   }, []);
@@ -72,6 +70,7 @@ const Page = () => {
 
             
               await crearAsignatura({ nombre, curso, año, grado, semestre });
+              setError('')
 
               alert("OK");
 
@@ -86,7 +85,6 @@ const Page = () => {
               }
             }
         }}>Crear</button>
-        {resultado!=''&& <p>{resultado}</p>}
       </div>
     </>
   );

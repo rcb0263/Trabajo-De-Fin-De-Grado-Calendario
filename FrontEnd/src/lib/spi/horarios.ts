@@ -10,6 +10,5 @@ export const horarioProfesor = async (mail: string) => {
       },
     }
   );
-    console.log(response)
     return response.data.asignaturasConHorario;
 };

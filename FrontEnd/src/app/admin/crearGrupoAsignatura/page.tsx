@@ -1,10 +1,10 @@
 'use client'
-import { crearAsignatura, crearGrupoAsignatura } from "@/lib/spi/asignaturas";
-import { useRouter } from "next/navigation";
+import {  crearGrupoAsignatura } from "@/lib/spi/asignaturas";
 import { useEffect, useState } from "react";
-import './stylres.css'
+import '../formularioStyle.css'
 const Page = () => {
   const cursoActual = new Date().getFullYear();
+  
   const [nombre, setNombre] = useState<string>('')
   const [curso, setCurso] = useState<number>(cursoActual)
   const [tipo, setTipo] = useState<string>('')

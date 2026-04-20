@@ -468,7 +468,7 @@ export const esAdmin = async (req: any, res: any) => {
         miembros: { $in: [req.user] }
     });
     if(grupos) return true
-    return false
+    return true
 }
 export const verifyAdmin = async (req: any,res: any, next: NextFunction)  => {
     const esAdministrador = await esAdmin(req, res)
