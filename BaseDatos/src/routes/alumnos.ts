@@ -30,7 +30,7 @@ router.get("/GetAsignaturas",  async (req, res)=>{
     res.status(401).json(error)
  }
 })
-router.get("/Login", async (req, res)=>{
+router.post("/Login", async (req, res)=>{
  try {
     const result = await logIn(req,res, 'Alumno')
  } catch (error) {

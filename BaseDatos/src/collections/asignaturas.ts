@@ -32,7 +32,7 @@ export const crearAsignatura = async (req: any, res: any)=>{
     }else{
         const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
         if(existeAsignatura){
-            eMsg.push("ya existe una asignatura con ese nombre para ese año ")
+            eMsg.push("ya existe una asignatura con ese nombre para ese curso")
         }
     }
     if(!grado || typeof(grado)!="string"){
@@ -47,8 +47,9 @@ export const crearAsignatura = async (req: any, res: any)=>{
     if(!semestre ||(semestre!= 'Primero' && semestre!='Segundo')){
         eMsg.push("semestre debe ser 'Primero' o 'Segundo'")
     }
+    
     if(eMsg.length >0){
-        res.status(401).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
         const datos:Asignatura ={
             privilegios: [],
@@ -86,7 +87,7 @@ export const eliminarAsignatura = async (req: any, res: any)=>{
         eMsg.push("curso debe ser un numero")
     }
     if(eMsg.length >0){
-        res.status(401).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
         const result = await db
             .collection(ColeccionAsignaturas)
@@ -582,7 +583,7 @@ export const asignarProfesor= async (req:any, res: any)=>{
         if(coleccion!=''){
             const existeGrupo = await db.collection<GrupoAsignatura>(coleccion).findOne({asignatura: asignatura, grupo: grupo});
             idGrupo = String(existeGrupo?._id)
-            if (!grupo) {
+            if (!existeGrupo) {
                 eMsg.push("No se encuentra ese grupo")
             }
         }
@@ -629,8 +630,8 @@ export const quitarProfesor= async (req:any, res: any)=>{
         eMsg.push("tipo debe ser un string")
     }
 
-    if(!mail || typeof(mail)!="string" || !ObjectId.isValid(mail) ){
-        eMsg.push("mmail debe ser un string hexadecimales")
+    if(!mail || typeof(mail)!="string"){
+        eMsg.push("mail debe ser un string valido")
     }else{
         const profesor = await db.collection<Usuario>(ColeccionProfesores).findOne({ mail: mail });
         if (!profesor) {

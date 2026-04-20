@@ -42,7 +42,10 @@ export type GrupoAsignatura ={ // {asignatura:asignatura, grupo:grupo}
     horarios: Sesion[],             //avanzado
     fechas: Excepcion[]             //profesores
 }
-
+export type FrontHorarioAsignatura = {
+  nombre: string;
+  horario: Sesion[];
+};
 export type Asignatura = {
     _id?: ObjectId
     privilegios: string[],
@@ -71,8 +74,6 @@ export type Usuario ={
     asignaturas: string[]   //asignaturas
     fechaDeCreacion: Date
 }
-
-
 
 
 

@@ -18,41 +18,81 @@ const ColeccionProfesores = "Profesores"
 
 export const crearAdminGrupo = async (req: any, res: any)=>{
     const nombre:string = req.body?.nombre
-    const idUsuario:string = req.body?.idUsuario
     const db = getDb()
     const eMsg:string[] = []
 
-    if(!idUsuario || typeof(idUsuario)!="string" || !ObjectId.isValid(idUsuario) ){
-        eMsg.push("idUsuario debe ser un string de 24 caracteres hexadecimales")
-    }else{
-        const grupo = await db.collection(ColeccionAula).findOne({ _id: new ObjectId(idUsuario) });
-        if(!grupo){
-            eMsg.push("No se encuentra ese usuario")
-        }
+    const nombreValido=await verifyNameValid(nombre)
+    if(nombreValido.length!==0){
+        eMsg.push(...nombreValido)
     }
     if(eMsg.length >0){
-        res.status(401).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
         const datos:PrivilegiosAdmin ={
             nombre: nombre,
-            miembros: [idUsuario],
+            miembros: [],
             admin: "Admin"
         }
         const result = await db.collection(ColeccionPrivilegios).insertOne(datos)
         return res.status(200).json(result)
     }
 }
+/*
+export const CrearAdmin = async (req: any, res: any)=>{
+    const nombre:string = req.body?.nombre //   grupo: string
+    const mail:string = req.body?.mail //   grupo: string
+    const password:string = req.body?.password
+    let coleccion = ''
+    const db = getDb()
+    const eMsg:string[] = []
+    if(!nombre || typeof(nombre)!="string"){
+        eMsg.push("nombre debe ser un string")
+    }
+    if(!password || typeof(password)!="string"){
+        eMsg.push("password debe ser un string")
+    }
+    if(!mail || typeof(mail)!="string"||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){
+        eMsg.push("mail debe ser un correo electronico valido")
+    }else{
+        const existeMail = await db
+        .collection(coleccion)
+        .countDocuments({ mail });
 
+        if (existeMail >0) {
+        eMsg.push("Ya existe un "+ tipoUsuario +" con ese correo electrónico");
+        }
+    }
+    if(eMsg.length >0){
+        return res.status(400).json({message: eMsg})
+    }else{
+        const passEncripta = await bcrypt.hash(password,10)
+        const datos:Usuario ={
+            nombre: nombre,
+            mail: mail,
+            passwordHash: passEncripta,
+            asignaturas: [],
+            fechaDeCreacion: new Date()
+        }
+        const result = await db.collection(coleccion).insertOne(datos)
+        return res.status(201).json(result)
+    }
+}*/
 export const crearPrivilegiosUsuario = async (req: any, res: any)=>{
     const nombre:string = req.body?.nombre 
+    
     const idUsuario:string = req.body?.idUsuario 
     const tipoUsuario:string = req.body?.tipoUsuario
+    
     const basicos:boolean = req.body?.basicos 
     const avanzados:boolean = req.body?.avanzados 
     const asignaturas:boolean = req.body?.asignaturas 
     let coleccion = '';
     const db = getDb()
     const eMsg:string[] = []
+    const nombreValido=await verifyNameValid(nombre)
+    if(nombreValido.length!==0){
+        eMsg.push(...nombreValido)
+    }
     if(tipoUsuario && typeof(tipoUsuario)=="string" ){
         if(tipoUsuario=='Alumno'){
             coleccion=ColeccionAlumnos
@@ -78,7 +118,7 @@ export const crearPrivilegiosUsuario = async (req: any, res: any)=>{
         eMsg.push("debes asignar algún permiso como verdadero debe ser un string")
     }
     if(eMsg.length >0){
-        res.status(401).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
         const datos:PrivilegiosUsuario ={
             nombre: nombre,
@@ -101,9 +141,15 @@ export const crearPrivilegiosAula = async (req: any, res: any)=>{
     const idAula:string = req.body?.idAula 
     const basicos:boolean = req.body?.basicos
     const avanzados:boolean = req.body?.avanzados
+    
     const db = getDb()
+    
     const eMsg:string[] = []
 
+    const nombreValido=await verifyNameValid(nombre)
+    if(nombreValido.length!==0){
+        eMsg.push(...nombreValido)
+    }
     if(!idAula || typeof(idAula)!="string" || !ObjectId.isValid(idAula) ){
         eMsg.push("idAula debe ser un string de 24 caracteres hexadecimales")
     }else{
@@ -116,7 +162,7 @@ export const crearPrivilegiosAula = async (req: any, res: any)=>{
         eMsg.push("debes asignar algún permiso como verdadero debe ser un string")
     }
     if(eMsg.length >0){
-        res.status(401).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
         const datos:PrivilegiosAula ={
             nombre: nombre,
@@ -142,6 +188,11 @@ export const crearPrivilegiosAsignatura = async (req: any, res: any)=>{
     const db = getDb()
     const eMsg:string[] = []
 
+    const nombreValido=await verifyNameValid(nombre)
+    if(nombreValido.length!==0){
+        eMsg.push(...nombreValido)
+    }
+
     if(!idAsignatura || typeof(idAsignatura)!="string" || !ObjectId.isValid(idAsignatura) ){
         eMsg.push("idAsignatura debe ser un string de 24 caracteres hexadecimales")
     }else{
@@ -154,7 +205,7 @@ export const crearPrivilegiosAsignatura = async (req: any, res: any)=>{
         eMsg.push("debes asignar algún permiso como verdadero debe ser un string")
     }
     if(eMsg.length >0){
-        res.status(401).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
         const datos:PrivilegiosAsignatura ={
             nombre: nombre,
@@ -182,6 +233,11 @@ export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
     let coleccion = '';
     const db = getDb()
     const eMsg:string[] = []
+
+    const nombreValido=await verifyNameValid(nombre)
+    if(nombreValido.length!==0){
+        eMsg.push(...nombreValido)
+    }
     if(tipo && typeof(tipo)=="string" ){
         if(tipo=='Teoria'){
             coleccion=ColeccionTeoria
@@ -205,7 +261,7 @@ export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
         eMsg.push("debes asignar algún permiso como verdadero debe ser un string")
     }
     if(eMsg.length >0){
-        res.status(401).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
         const datos:PrivilegiosGrupoAsignatura ={
             nombre: nombre,
@@ -227,8 +283,8 @@ export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
 
 //añadir y quitar
 export const añadirMiembroPrivilegios = async (req: any, res: any)=>{
-    const idUsuario:string = req.body?.idUsuario 
-    const idPrivilegio:string = req.body?.idPrivilegio 
+    const idUsuario:string = req.user.userId 
+    const objetivo:string = req.body?.objetivo 
     const tipoUsuario = req.body?.tipoUsuario
     const fechaFin:string = req.body?.fechaFin
 
@@ -265,23 +321,23 @@ export const añadirMiembroPrivilegios = async (req: any, res: any)=>{
             }
         }
     }
-    if(!idPrivilegio || typeof(idPrivilegio)!="string" || !ObjectId.isValid(idPrivilegio) ){
-        eMsg.push("idPrivilegio debe ser un string de 24 caracteres hexadecimales")
+    if(!objetivo || typeof(objetivo)!="string" || !ObjectId.isValid(objetivo) ){
+        eMsg.push("objetivo debe ser un string de 24 caracteres hexadecimales")
     }else{
-        const grupo = await db.collection(ColeccionPrivilegios).findOne({ _id: new ObjectId(idPrivilegio) });
-        if(!grupo){
+        const grupo = await db.collection(ColeccionPrivilegios).findOne({ objetivo });
+        if(!grupo||grupo.admin == 'Admin'){
             eMsg.push("No se encuentra ese grupo de privilegios")
         }
     }
     if(eMsg.length >0){
-        res.status(401).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
         const datos: MiembroGrupo ={
             miembro: idUsuario,
             fechaFin: fechaFin
         }
         const result = await db.collection<GrupoPrivilegio>(ColeccionPrivilegios).updateOne(
-            { _id: new ObjectId(idPrivilegio) },
+            { objetivo },
             { $addToSet: { miembros: datos } }
         )
         return res.status(200).json(result)
@@ -333,7 +389,7 @@ export const eliminarMiembroPrivilegios = async (req: any, res: any)=>{
         }
     }
     if(eMsg.length >0){
-        res.status(401).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
         const datos: MiembroGrupo ={
             miembro: idUsuario,
@@ -362,7 +418,6 @@ export const ObtenerGruposPrivilegios = async (req: any, res: any) => {
             },
             "miembros.miembro": req.user
         }).toArray()
-    console.log(grupos)
     return grupos;
 }
 
@@ -406,21 +461,33 @@ export const esPrivilegiadoGrupoAsignaturaProfesores  = async (req: any, res: an
 
 //Admin
 export const esAdmin = async (req: any, res: any) => {
-    const db = getDb()
-    const grupos = await db.collection<PrivilegiosAdmin>(ColeccionPrivilegios).findOne(
-        {
-            admin: 'Admin',
-            miembros: req.user
-        })
-    if(!grupos) return true
+    const db = getDb();
+
+    const grupos = await db.collection<PrivilegiosAdmin>(ColeccionPrivilegios).findOne({
+        admin: 'Admin',
+        miembros: { $in: [req.user] }
+    });
+    if(grupos) return true
     return false
 }
 export const verifyAdmin = async (req: any,res: any, next: NextFunction)  => {
-    const db = getDb()
     const esAdministrador = await esAdmin(req, res)
     if (!esAdministrador) {
         return res.status(403).json({ message: "No tienes permisos de administrador" })
     }
 
     next()
+}
+
+const verifyNameValid = async (nombre:string) => {
+    const db= getDb()
+    if(!nombre || typeof(nombre)!="string" || nombre== '' ){
+        return ["nombre debe ser un string"]
+    }else{
+        const grupo = await db.collection(ColeccionPrivilegios).findOne({nombre});
+        if(grupo){
+            return ["No se pueden repetir nombres"]
+        }
+        return []
+    }
 }

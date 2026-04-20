@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
-import { GrupoAsignatura, Usuario } from "../tipos"
+import { Asignatura, FrontHorarioAsignatura, GrupoAsignatura, Usuario } from "../tipos"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
@@ -9,7 +9,7 @@ const ColeccionAlumnos= "Alumnos"
 const ColeccionProfesores = "Profesores"
 const ColeccionTeoria = "Teoria"
 const ColeccionPractica = "Practica"
-
+const ColeccionAsignaturas = "Asignaturas"
 const SECRET = process.env.SECRET||""; 
 
 
@@ -264,7 +264,6 @@ export const getAsignaturas = async (req: any, res: any, tipoUsuario:string) => 
                 return res2 as GrupoAsignatura
             })
         )
-        console.log(Asignaturas)
         return res.status(201).json({Asignaturas})
     }
 }
@@ -302,7 +301,7 @@ export const logIn = async (req:any, res:any, tipoUsuario:string)=>{
         const token = jwt.sign({userId: user!._id?.toString(), mail: user!.mail}, SECRET,{
             expiresIn: "1h"
         })
-        return token
+        return res.status(200).json(token)
     }
 
 }
@@ -316,4 +315,57 @@ export const getProfesores= async ()=>{
     const alumnos = await  db.collection<Usuario>(ColeccionProfesores).find().toArray()
     return alumnos;
 }
+export const getHorarios = async (req: any, res: any, tipoUsuario:string) => {
+    const mail:string = req.body?.mail
+    let coleccion = ''
+    const db = getDb()
+    const eMsg:string[] = []
+    if(tipoUsuario=='Alumno'){
+        coleccion=ColeccionAlumnos
+    }else if(tipoUsuario=='Profesor'){
+        coleccion=ColeccionProfesores
+    }else{
+        return res.status(400).json({message: 'el tipo esta mal en el codigo'})
+    }
+    if(!mail || typeof(mail)!="string"||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){
+        eMsg.push("mail debe ser un correo electronico valido")
+    }
+    if(eMsg.length >0){
+        return res.status(400).json({message: eMsg})
+    }else{
+        
+        const existeMail = await db
+        .collection<Usuario>(coleccion)
+        .findOne({ mail });
+        if (!existeMail) {
+            return res.status(400).json({message: "No existe ese "+ tipoUsuario })
+        }
+        const asignaturasIds = existeMail.asignaturas;
+        
+        const asignaturasConHorario: FrontHorarioAsignatura[] = await Promise.all(
+            asignaturasIds.map(async (e) => {
+                const id = new ObjectId(e);
 
+                let grupo = await db.collection<GrupoAsignatura>(ColeccionTeoria).findOne({ _id: id });
+
+                if (!grupo) {
+                    grupo = await db.collection<GrupoAsignatura>(ColeccionPractica).findOne({ _id: id });
+                }
+
+                if (!grupo) {
+                    return {
+                        nombre: 'N/A',
+                        horario: [],
+                    };
+                }
+                const asignaturaDoc = await db
+                    .collection<Asignatura>(ColeccionAsignaturas).findOne({ _id: new ObjectId(grupo.asignatura)});
+                return {
+                    nombre: `${asignaturaDoc?.nombre} ${grupo.tipo} ${grupo.grupo}`,
+                    horario: grupo.horarios ?? [],
+                };
+            })
+            );
+        return res.status(201).json({asignaturasConHorario})
+    }
+}

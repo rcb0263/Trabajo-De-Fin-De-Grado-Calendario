@@ -1,0 +1,24 @@
+
+
+.semana{
+    border-width: 3px;
+    border-color: red;
+    border-style: solid;
+    display: flex;
+    flex-direction: row;
+}
+.dia{
+    border-width: 3px;
+    border-color: blue;
+    border-style: solid;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+}
+.sesion{
+    border-width: 3px;
+    border-color: rgb(255, 255, 3);
+    border-style: solid;
+    display: flex;
+    flex-direction: column;
+}

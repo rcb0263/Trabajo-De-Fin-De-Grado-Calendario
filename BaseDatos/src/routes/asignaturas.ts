@@ -7,7 +7,7 @@ const router = Router();
 router.get("/",(req, res)=>{
     res.send("Se ha conectado a la ruta Asignaturas correctamente")
 })
-router.get("/Get/Asignaturas",async (req, res)=>{
+router.get("/Get",async (req, res)=>{
  try {
    const result = await getAsignaturas()
    res.status(201).json(result)
@@ -16,7 +16,7 @@ router.get("/Get/Asignaturas",async (req, res)=>{
  }
 })
 
-router.post("/Crear",  verifyAdmin, async (req, res)=>{
+router.post("/Crear", async (req, res)=>{
  try {
    await crearAsignatura(req,res)
  } catch (error) {

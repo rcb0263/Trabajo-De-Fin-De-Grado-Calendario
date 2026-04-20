@@ -1,4 +1,5 @@
     import express from "express"
+    import cors from "cors";
     import { connectMongoDB } from "./mongo";
     import rutasAuth from "./routes/auth";
     import rutasAsignturas from "./routes/asignaturas";
@@ -10,6 +11,10 @@
     connectMongoDB();
 
     const app = express();
+
+    app.use(cors({
+        origin: "http://localhost:3001"
+    }));
     app.use(express.json())
     app.use('/asignaturas', rutasAsignturas)
     app.use('/alumnos', rutasAlumnos)

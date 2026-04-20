@@ -1,0 +1,44 @@
+.contenedor {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 25vw;
+  height: 80vh;
+  margin: auto auto;
+}
+.input {
+  border: 1px solid #ccc;
+  padding: 6px;
+  border-radius: 4px;
+}
+.error-text{
+    color: red;
+}
+.input-error {
+  border: 2px solid red;
+}
+.input-correct {
+  border: 2px solid #22c55e;
+}
+.boton {
+  align-self: center;
+  margin-top: 2em;
+  width: clamp(15px, 30%, 80px);
+  padding: 10px 16px;
+
+  background-color: #4f46e5; /* azul moderno */
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+
+  font-weight: 600;
+  cursor: pointer;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+
+  transition: all 0.2s ease;
+}
+p {
+  margin-bottom: 0;
+}

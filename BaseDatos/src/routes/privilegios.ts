@@ -9,7 +9,6 @@ router.get("/",(req, res)=>{
 router.post("/Admin/Crear", async (req, res)=>{
  try {
     await crearAdminGrupo(req,res)
-    
  } catch (error) {
     res.status(404).json(error)
  }

@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { crearUsuario, eliminarUsuario, getAsignaturas, getProfesores, logIn } from "../collections/usuarios";
+import { crearUsuario, eliminarUsuario, getHorarios, getProfesores, logIn } from "../collections/usuarios";
 import { AuthRequest, verifyToken } from "../middleware/verifytoken";
 import { esAdmin } from "../collections/privilegios";
 const router = Router();
@@ -22,18 +22,19 @@ router.delete("/Eliminar",esAdmin, async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.get("/GetAsignaturas",  async (req: AuthRequest, res)=>{
+router.get("/Get",async (req, res)=>{
  try {
-   await getAsignaturas(req,res, 'Profesor')
- } catch (error) {
-    res.status(401).json(error)
- }
-})
-router.get("/Login", async (req, res)=>{
- try {
-    const result = await logIn(req,res, 'Profesor')
+   const result = await getProfesores()
+   res.status(201).json(result)
  } catch (error) {
     res.status(404).json(error)
+ }
+})
+router.post("/Login", async (req, res)=>{
+ try {
+   await logIn(req,res, 'Profesor')
+ } catch (error) {
+   res.status(404).json(error)
  }
 })
 router.get("/GetUserIdFromToken", verifyToken, async (req: AuthRequest, res)=>{
@@ -42,6 +43,14 @@ router.get("/GetUserIdFromToken", verifyToken, async (req: AuthRequest, res)=>{
    res.status(201).json(result)
  } catch (error) {
     res.status(409).json(error)
+ }
+})
+
+router.post("/GetHorarios", verifyToken, async (req: AuthRequest, res)=>{
+ try {
+   await getHorarios(req,res, 'Profesor')
+ } catch (error) {
+   res.status(404).json(error)
  }
 })
 

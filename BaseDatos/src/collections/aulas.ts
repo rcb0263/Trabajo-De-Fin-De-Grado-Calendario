@@ -25,10 +25,9 @@ export const crearAula = async (req: any, res: any)=>{
         }
     }
     if(eMsg.length >0){
-        res.status(400).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
         const db = getDb()
-        console.log(db)
         const aula = await  db.collection<Aula>(ColeccionAula).findOne({aula: nombre})
         if(aula){
             res.status(400).json({message: 'El aula ya existe'})
@@ -57,10 +56,9 @@ export const eliminarAula = async (req: any, res: any)=>{
         }
     }
     if(eMsg.length >0){
-        res.status(400).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
         const db = getDb()
-        console.log(db)
         const aula = await  db.collection<Aula>(ColeccionAula).findOne({aula: nombre})
         if(aula){
             res.status(400).json({message: 'El aula ya existe'})
@@ -93,10 +91,9 @@ export const modificarAula = async (req: any, res: any)=>{
         }
     }
     if(eMsg.length >0){
-        res.status(400).json({message: eMsg})
+        return res.status(400).json({message: eMsg})
     }else{
         const db = getDb()
-        console.log(db)
         const aula = await  db.collection<Aula>(ColeccionAula).findOne({aula: nombre})
         if(aula){
             res.status(400).json({message: 'El aula ya existe'})

@@ -22,7 +22,6 @@ export const verifyToken = (req: AuthRequest,res: Response, next: NextFunction):
             return
         }
         req.user = decoded;
-        console.log(decoded)
         next();
     })
 }
