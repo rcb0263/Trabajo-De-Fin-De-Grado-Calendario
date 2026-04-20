@@ -20,69 +20,75 @@ const Page = () => {
   useEffect(() => {
   }, []);
   return (
-    <div className="contenedor">
+    <>
       <h1>Crear Asignatura</h1>
-      <p className={error.includes('nombre')? 'error-text':''}>Nombre: </p>
-      <input className={error.includes('nombre')? 'input-error':error===''?'':'input-correct'}
-        name="nombre"
-        value={nombre}
-        onChange={e=>setNombre(e.target.value)}
-        placeholder="nombre"/>
+      <div className="contenedor">
+        <p className={error.includes('nombre')? 'error-text':''}>Nombre: </p>
+        <input className={error.includes('nombre')? 'input-error':''}
+          name="nombre"
+          value={nombre}
+          onChange={e=>setNombre(e.target.value)}
+          placeholder="nombre"/>
 
-      <p className={error.includes('curso')? 'error-text':''}>Curso: </p>
-      <input className={error.includes('curso')? 'input-error':error===''?'':'input-correct'}
-        name="curso"
-        type="number"
-        min={añoActual}
-        value={curso}
-        onChange={e => setCurso(Number(e.target.value))}
-      />
-      <p className={error.includes('semestre')? 'error-text':''}>Semestre: </p>
-      <select className={error.includes('semestre')? 'input-error':error===''?'':'input-correct'}
-        name="semestre"
-        value={semestre}
-        onChange={e => setSemestre(e.target.value)}
-      >
-        <option value="">Selecciona semestre</option>
-        <option value="Primero">Primero</option>
-        <option value="Segundo">Segundo</option>
-      </select>
-      <p className={error.includes('año')? 'error-text':''}>Año: </p>
-      <input className={error.includes('año')? 'input-error':error===''?'':'input-correct'}
-        name="año"
-        type="number"
-        min={1}
-        max={6}
-        value={año}
-        onChange={e=>setAño(Number(e.target.value))}
-      />
+        <p className={curso<añoActual? 'error-text':''}>Curso: </p>
+        <input className={curso<añoActual? 'input-error':''}
+          name="curso"
+          type="number"
+          min={añoActual}
+          value={curso}
+          onChange={(e) => {
+            setCurso(Number(e.target.value))
+          }}
+        />
+        <p className={error.includes('semestre')? 'error-text':''}>Semestre: </p>
+        <select className={error.includes('semestre')? 'input-error':''}
+          name="semestre"
+          value={semestre}
+          onChange={e => setSemestre(e.target.value)}
+        >
+          <option value="">Selecciona semestre</option>
+          <option value="Primero">Primero</option>
+          <option value="Segundo">Segundo</option>
+        </select>
+        <p className={error.includes('año')? 'error-text':''}>Año: </p>
+        <input className={error.includes('año')? 'input-error':''}
+          name="año"
+          type="number"
+          min={1}
+          max={6}
+          value={año}
+          onChange={e=>setAño(Number(e.target.value))}
+        />
 
-      <p  className={error.includes('grado')? 'error-text':''}>Grado: </p>
-      <input className={error.includes('grado')? 'input-error':error===''?'':'input-correct'}
-        name="grado"
-        value={grado}
-        onChange={e=>setGrado(e.target.value)}
-        placeholder="grado"/>
+        <p  className={error.includes('grado')? 'error-text':''}>Grado: </p>
+        <input className={error.includes('grado')? 'input-error':''}
+          name="grado"
+          value={grado}
+          onChange={e=>setGrado(e.target.value)}
+          placeholder="grado"/>
 
-      <button className="boton" onClick={async () => {
-          try {
-            await crearAsignatura({ nombre, curso, año, grado, semestre });
+        <button className="boton" disabled={curso<añoActual} onClick={async () => {
+            try {
 
-            alert("OK");
+            
+              await crearAsignatura({ nombre, curso, año, grado, semestre });
 
-          } catch (err: any) {
-            const mensaje = err.response?.data?.message;
+              alert("OK");
 
-            if (Array.isArray(mensaje)) {
-              alert(mensaje.join("\n"));
-              setError(mensaje.join("\n"))
-            } else {
-              alert(mensaje || "Error desconocido");
+            } catch (err: any) {
+              const mensaje = err.response?.data?.message;
+
+              if (Array.isArray(mensaje)) {
+                alert(mensaje.join("\n"));
+                setError(mensaje.join("\n"))
+              } else {
+                alert(mensaje || "Error desconocido");
+              }
             }
-          }
-      }}>Crear</button>
-      {resultado!=''&& <p>{resultado}</p>}
-    </div>
+        }}>Crear</button>
+        {resultado!=''&& <p>{resultado}</p>}
+      </div>
+    </>
   );
 }
 

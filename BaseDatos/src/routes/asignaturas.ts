@@ -39,7 +39,7 @@ router.put("/Modificar/Basico", verifyAdmin, async (req, res)=>{
  }
 })
 
-router.post("/Grupo/Crear", verifyAdmin, async (req, res)=>{
+router.post("/Grupo/Crear",  async (req, res)=>{
  try {
    await crearGrupoAsignatura(req,res)
  } catch (error) {
