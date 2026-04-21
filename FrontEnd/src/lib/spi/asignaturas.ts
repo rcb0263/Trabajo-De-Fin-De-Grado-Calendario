@@ -15,11 +15,15 @@ interface CrearGrupoAsignaturasProps {
   tipo: string,
   horario: Sesion[],
 }
-
+interface SearchAsignaturasProps{
+  nombre: string,
+  curso: number,
+  grado: string
+}
 export const crearAsignatura = async ( props: CrearAsignaturasProps ) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/asignaturas/Crear', 
-            props,
+    props,
     {
       headers: {
         authorization: `${token}`,
@@ -31,7 +35,7 @@ export const crearAsignatura = async ( props: CrearAsignaturasProps ) => {
 export const crearGrupoAsignatura = async ( props: CrearGrupoAsignaturasProps ) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/asignaturas/Grupo/Crear', 
-            props,
+    props,
     {
       headers: {
         authorization: `${token}`,
@@ -39,4 +43,16 @@ export const crearGrupoAsignatura = async ( props: CrearGrupoAsignaturasProps ) 
     }
   );
     return response;
+};
+export const SearchAsignaturas = async ( props: SearchAsignaturasProps ) => {
+    const token = localStorage.getItem("token");
+    const response = await api.post('/asignaturas/SearchAsignaturas', 
+    props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+    return response.data;
 };

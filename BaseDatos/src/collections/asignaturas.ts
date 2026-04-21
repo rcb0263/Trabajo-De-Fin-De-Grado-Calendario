@@ -16,6 +16,35 @@ export const getAsignaturas = async ()=>{
     const asignaturas = await  db.collection<Asignatura>(ColeccionAsignaturas).find().toArray()
     return asignaturas
 }
+
+export const SearchAsignaturas = async (req: any, res: any)=>{
+    const nombre = req.body?.nombre //   grupo: string
+    const grado = req.body?.grado //   grupo: string
+    const curso = req.body?.curso //   curso: number,
+    const eMsg:string[] = []
+    const db = getDb()
+
+    //confirmar que es unico
+    if(!curso || typeof(curso)!="number"){
+        eMsg.push("curso debe ser un number")
+    }
+    if(!nombre || typeof(nombre)!="string"){
+        eMsg.push("nombre debe ser un string")
+    }
+    if(!grado || typeof(grado)!="number"){
+        eMsg.push("grado debe ser un string")
+    }
+    
+    if(!!grado && !!nombre && !!curso){
+        const existeAsignatura = await db.collection(ColeccionAsignaturas)
+        .find({
+        nombre: { $regex: nombre, $options: "i" },
+        curso: curso, 
+        grado: { $regex: grado, $options: "i" }}).toArray()
+        return res.status(201).json(existeAsignatura)
+    }
+    return res.status(400).json({mensaje: eMsg})
+}
 //Funciona
 export const crearAsignatura = async (req: any, res: any)=>{
     const nombre = req.body?.nombre //   grupo: string

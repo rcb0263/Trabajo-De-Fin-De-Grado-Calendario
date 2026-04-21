@@ -1,15 +1,21 @@
 'use client'
-import { useRouter } from "next/navigation";
 
+import LoginAdmin from "@/componentes/Login/LoginAdmin";
+import LoginAlumnos from "@/componentes/Login/LoginAlumnos";
+import LoginProfesores from "@/componentes/Login/LoginProfesores";
+import {  useState } from "react";
+import "./mainPage.css"
 const Page = () => {
-  const router = useRouter()
-  
+  const [token, setToken] = useState<string>('')
+
   return (
     <div>
-      <h1>Pagina pricipal, sugiero un login</h1>
-      <button onClick={()=>{
-        router.push(`/login/profesor`)
-      }}>Iniciar Sesion Como Proesor</button>
+      <h1>Pagina principal</h1>
+      <div className="logins">
+        <LoginProfesores setToken={setToken} token={token}  />
+        <LoginAlumnos setToken={setToken} token={token}  />
+        <LoginAdmin setToken={setToken} token={token} />
+      </div>
     </div>
   );
 }

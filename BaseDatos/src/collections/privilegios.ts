@@ -3,7 +3,7 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
 
-import { Asignatura, Aula, GrupoAsignatura, GrupoPrivilegio, GrupoPrivilegioTipo, MiembroGrupo, PrivilegiosAdmin, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Usuario } from "../tipos"
+import { Administrador, Asignatura, Aula, GrupoAsignatura, GrupoPrivilegio, GrupoPrivilegioTipo, MiembroGrupo, PrivilegiosAdmin, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Usuario } from "../tipos"
 import { NextFunction } from "express"
 
 
@@ -14,6 +14,8 @@ const ColeccionPractica = "Practica"
 const ColeccionAula = "Aulas"
 const ColeccionAlumnos= "Alumnos"
 const ColeccionProfesores = "Profesores"
+const ColeccionAdmin = "Admin"
+const ColeccionTrue = "UV"
 
 
 export const crearAdminGrupo = async (req: any, res: any)=>{
@@ -24,6 +26,10 @@ export const crearAdminGrupo = async (req: any, res: any)=>{
     const nombreValido=await verifyNameValid(nombre)
     if(nombreValido.length!==0){
         eMsg.push(...nombreValido)
+    }
+    const grupo = await db.collection(ColeccionAdmin).findOne({admin:'Admin'})
+    if(grupo){
+        eMsg.push('Ya existe un grupo de administradores')
     }
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
@@ -37,46 +43,38 @@ export const crearAdminGrupo = async (req: any, res: any)=>{
         return res.status(200).json(result)
     }
 }
-/*
-export const CrearAdmin = async (req: any, res: any)=>{
-    const nombre:string = req.body?.nombre //   grupo: string
-    const mail:string = req.body?.mail //   grupo: string
-    const password:string = req.body?.password
-    let coleccion = ''
+export const añadirAdminPrivilegios = async (req: any, res: any)=>{
+    const mail:string = req.body?.mail 
     const db = getDb()
     const eMsg:string[] = []
-    if(!nombre || typeof(nombre)!="string"){
-        eMsg.push("nombre debe ser un string")
-    }
-    if(!password || typeof(password)!="string"){
-        eMsg.push("password debe ser un string")
-    }
-    if(!mail || typeof(mail)!="string"||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){
-        eMsg.push("mail debe ser un correo electronico valido")
-    }else{
-        const existeMail = await db
-        .collection(coleccion)
-        .countDocuments({ mail });
 
-        if (existeMail >0) {
-        eMsg.push("Ya existe un "+ tipoUsuario +" con ese correo electrónico");
+    if(!mail || typeof(mail)!="string"){
+        eMsg.push("mail debe ser un string")
+    }else{
+        const admin = await db.collection<Administrador>(ColeccionAdmin).findOne({ mail: mail });
+        if(!admin){
+            eMsg.push("No se encuentra ese usuario")
         }
     }
+    const grupo = await db.collection(ColeccionPrivilegios).findOne({ admin:'Admin' });
+    if(!grupo||grupo.admin !== 'Admin'){
+        eMsg.push("No se encuentra ese grupo de privilegios")
+    }
+    
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
-        const passEncripta = await bcrypt.hash(password,10)
-        const datos:Usuario ={
-            nombre: nombre,
-            mail: mail,
-            passwordHash: passEncripta,
-            asignaturas: [],
-            fechaDeCreacion: new Date()
+        const datos: MiembroGrupo ={
+            miembro: mail
         }
-        const result = await db.collection(coleccion).insertOne(datos)
-        return res.status(201).json(result)
+        const result = await db.collection<GrupoPrivilegio>(ColeccionPrivilegios).updateOne(
+            { admin: 'Admin' },
+            { $addToSet: { miembros: datos } }
+        )
+        return res.status(200).json(result)
     }
-}*/
+}
+
 export const crearPrivilegiosUsuario = async (req: any, res: any)=>{
     const nombre:string = req.body?.nombre 
     
@@ -468,7 +466,7 @@ export const esAdmin = async (req: any, res: any) => {
         miembros: { $in: [req.user] }
     });
     if(grupos) return true
-    return true
+    return false
 }
 export const verifyAdmin = async (req: any,res: any, next: NextFunction)  => {
     const esAdministrador = await esAdmin(req, res)

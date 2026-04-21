@@ -1,10 +1,32 @@
 import { Router } from "express"
 import { getDb } from "../mongo"
-import { añadirMiembroPrivilegios, crearAdminGrupo, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, eliminarMiembroPrivilegios, esAdmin, ObtenerGruposPrivilegios } from "../collections/privilegios";
+import { añadirAdminPrivilegios, añadirMiembroPrivilegios, crearAdminGrupo, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, eliminarMiembroPrivilegios, esAdmin, ObtenerGruposPrivilegios } from "../collections/privilegios";
+import { CrearAdmin, CrearTrueUser, logIn } from "../collections/usuarios";
 const router = Router();
 
 router.get("/",(req, res)=>{
     res.send("Se ha conectado a la ruta profesores correctamente")
+})
+router.post("/Login", async (req, res)=>{
+ try {
+   await logIn(req,res, 'Administrador')
+ } catch (error) {
+   res.status(404).json(error)
+ }
+})
+router.post("/CrearAdministrador", async (req, res)=>{
+ try {
+    await CrearAdmin(req,res)
+ } catch (error) {
+    res.status(404).json(error)
+ }
+})
+router.post("/CrearTrueUser", ()=>{return false} , async (req, res)=>{
+ try {
+    await CrearTrueUser(req,res)
+ } catch (error) {
+    res.status(404).json(error)
+ }
 })
 router.post("/Admin/Crear", async (req, res)=>{
  try {
@@ -13,6 +35,13 @@ router.post("/Admin/Crear", async (req, res)=>{
     res.status(404).json(error)
  }
 })
+router.put("/addAdmin", async (req, res)=>{
+ try {
+   await añadirAdminPrivilegios(req,res)
+ } catch (error) {
+    res.status(404).json(error)
+ }
+}) 
 router.post("/Usuario/Crear", esAdmin, async (req, res)=>{
  try {
     await crearPrivilegiosUsuario(req,res)

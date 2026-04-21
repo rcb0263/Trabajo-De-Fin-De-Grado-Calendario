@@ -3,11 +3,22 @@
   flex-direction: column;
   justify-content: center;
   width: clamp(300px, 35vw, 500px);
-  height: auto;
   margin: auto;
   border: 3px solid #ccc;
   border-radius: 10px;
   padding: 10px;
+}
+.searchParams {
+  align-self:flex-start;
+  display: flex;
+  flex-direction: row;
+  width: auto;
+  height: auto;
+  margin: 3%;
+  padding: 10px;
+  input{
+    width: 80%
+  }
 }
 .input {
   border: 1px solid #ccc;

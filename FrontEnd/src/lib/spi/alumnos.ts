@@ -15,6 +15,5 @@ export const CrearAlumno = async ( props: CrearAlumnoProps ) => {
       },
     }
   );
-  console.log(response)
   return response;
 };

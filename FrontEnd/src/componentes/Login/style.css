@@ -1,0 +1,58 @@
+.contenedor {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  justify-content: space-around;
+  align-items: stretch;
+  width: clamp(100px, 20vw, 200px);
+  height: 20vh;
+  margin: 3%;
+  border: 3px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+}
+.searchParams {
+  align-self:flex-start;
+  display: flex;
+  flex-direction: row;
+  width: auto;
+  height: auto;
+  margin: 3%;
+  padding: 10px;
+  input{
+    width: 80%
+  }
+}
+.input {
+  border: 1px solid #ccc;
+  padding: 6px;
+  border-radius: 4px;
+}
+.error-text{
+    color: red;
+}
+.input-error {
+  border: 2px solid red;
+}
+.boton {
+  align-self: center;
+  margin-top: 2em;
+  width: clamp(15px, 30%, 80px);
+  padding: 10px 16px;
+
+  background-color: #4f46e5; /* azul moderno */
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+
+  font-weight: 600;
+  cursor: pointer;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+
+  transition: all 0.2s ease;
+}
+p {
+  margin-bottom: 0;
+}

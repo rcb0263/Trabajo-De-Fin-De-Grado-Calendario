@@ -19,7 +19,7 @@ export const loginAlumno = async (mail: string, password: string) => {
     return response.data;
 };
 export const loginAdmin = async (mail: string, password: string) => {
-    const response = await api.post('/admin/Login', {
+    const response = await api.post('/privilegios/Login', {
         mail,
         password
     });

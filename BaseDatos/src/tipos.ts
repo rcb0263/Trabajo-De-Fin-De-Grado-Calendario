@@ -60,10 +60,11 @@ export type Asignatura = {
 }
 //encima de esto he creado asignaturas
 export type Administrador ={
-   _id?: ObjectId,
-   nombre: string,
-   grupos: string[], //id de grupos de privilegio
-   fechaDeCreacion: Date
+    _id?: ObjectId,
+    nombre: string,
+    mail: string,
+    passwordHash: string,
+    fechaDeCreacion: Date
 }
 
 export type Usuario ={
@@ -117,7 +118,7 @@ export type PrivilegiosAdmin ={
 }
 export type MiembroGrupo ={
     miembro: string,
-    fechaFin: string //  dd/mm/yyyy
+    fechaFin?: string //  dd/mm/yyyy
 }
 
 

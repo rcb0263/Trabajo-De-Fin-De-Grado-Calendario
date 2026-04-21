@@ -5,10 +5,12 @@ import './styles.css'
 interface HorarioSemanaProps {
     mail: string,
 }
-
+interface SesionAsig extends Sesion {
+  asignatura: string;
+}
 export const HorarioSemana =(props: HorarioSemanaProps)=>{
   
-  const [sesiones, setSesiones] = useState<Sesion[][]|null>(null);
+  const [sesiones, setSesiones] = useState<SesionAsig[][]|null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
