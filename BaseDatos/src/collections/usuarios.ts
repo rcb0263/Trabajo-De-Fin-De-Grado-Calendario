@@ -351,13 +351,7 @@ export const logIn = async (req:any, res:any, tipoUsuario:string)=>{
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
-        if(coleccion == ColeccionAdmin){
-            const token = jwt.sign({userId: user!._id?.toString(), mail: user!.mail, admin: 'Admin'}, SECRET,{
-                expiresIn: "1h"
-                })
-            return res.status(200).json(token)
-        }
-        const token = jwt.sign({userId: user!._id?.toString(), mail: user!.mail}, SECRET,{
+        const token = jwt.sign({userId: user!._id?.toString(), mail: user!.mail, tipo: tipoUsuario}, SECRET,{
             expiresIn: "1h"
             })
         return res.status(200).json(token)

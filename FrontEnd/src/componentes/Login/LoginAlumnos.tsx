@@ -1,7 +1,7 @@
 import { loginAlumno } from "@/lib/spi/login";
 import { useEffect, useState } from "react";
 import "./style.css"
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 type Params = {
     setToken: React.Dispatch<React.SetStateAction<string>>

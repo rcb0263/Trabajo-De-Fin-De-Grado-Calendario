@@ -1,3 +1,9 @@
+.multiContenedores{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 15px; /* 👈 separación entre contenedores */
+}
 .contenedor {
   display: flex;
   flex-direction: column;
@@ -52,4 +58,11 @@
 }
 p {
   margin-bottom: 0;
+}
+.cajita {
+  margin-top: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
 }

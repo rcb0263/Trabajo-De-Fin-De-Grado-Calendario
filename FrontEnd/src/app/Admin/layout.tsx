@@ -14,9 +14,10 @@ export default function AdminLayout({
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
-        <div className="admin-cell" onClick={()=>{router.push(`/admin/crearAsignatura`)}}>Crear Asignatura</div>
-        <div className="admin-cell" onClick={()=>{router.push(`/admin/crearGrupoAsignatura`)}}>Crear Grupo Asignatura</div>
-        <div className="admin-cell" onClick={()=>{router.push(`/admin/crearUsuario`)}}>Crear Usuario</div>
+        <div className="admin-cell" onClick={()=>{router.push(`/Admin/crearAsignatura`)}}>Crear Asignatura</div>
+        <div className="admin-cell" onClick={()=>{router.push(`/Admin/crearGrupoAsignatura`)}}>Crear Grupo Asignatura</div>
+        <div className="admin-cell" onClick={()=>{router.push(`/Admin/crearUsuario`)}}>Crear Usuario</div>
+        <div className="admin-cell" onClick={()=>{router.push(`/Admin/crearAdministrador`)}}>Crear Admin</div>
         <div className="admin-cell">Asignaturas</div>
         <div className="admin-cell">Configuración</div>
       </aside>
