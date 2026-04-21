@@ -103,18 +103,18 @@ export const eliminarAsignatura = async (req: any, res: any)=>{
     const eMsg:string[] = []
     const db = getDb()
 
-    //confirmar que es unico
+    if(!curso ||typeof(curso)!= "number" ){
+        eMsg.push("curso debe ser un numero")
+    }
     if(!nombre || typeof(nombre)!="string"){
         eMsg.push("nombre debe ser un string")
-    }else{
+    }else if(eMsg.length>0){
         const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
         if(!existeAsignatura){
             eMsg.push("No existe una asignatura con ese nombre para ese año ")
         }
     }
-    if(!curso ||typeof(curso)!= "number" ){
-        eMsg.push("curso debe ser un numero")
-    }
+    
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{

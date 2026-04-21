@@ -78,13 +78,14 @@ export const añadirAdminPrivilegios = async (req: any, res: any)=>{
 export const crearPrivilegiosUsuario = async (req: any, res: any)=>{
     const nombre:string = req.body?.nombre 
     
-    const idUsuario:string = req.body?.idUsuario 
+    const mail:string = req.body?.mail 
     const tipoUsuario:string = req.body?.tipoUsuario
     
     const basicos:boolean = req.body?.basicos 
     const avanzados:boolean = req.body?.avanzados 
     const asignaturas:boolean = req.body?.asignaturas 
     let coleccion = '';
+    let idObjetivo='';
     const db = getDb()
     const eMsg:string[] = []
     const nombreValido=await verifyNameValid(nombre)
@@ -102,14 +103,15 @@ export const crearPrivilegiosUsuario = async (req: any, res: any)=>{
     }else{
         eMsg.push("tipoUsuario debe ser un string")
     }
-    if(!idUsuario || typeof(idUsuario)!="string" || !ObjectId.isValid(idUsuario) ){
-        eMsg.push("idUsuario debe ser un string de 24 caracteres hexadecimales")
+    if(!mail || typeof(mail)!="string"){
+        eMsg.push("mail debe ser un string")
     }else{
         if(coleccion!=''){
-            const grupo = await db.collection(coleccion).findOne({ _id: new ObjectId(idUsuario) });
-            if(!grupo){
+            const usuario = await db.collection<Usuario>(coleccion).findOne({ mail });
+            if(!usuario){
                 eMsg.push("No se encuentra ese usuario")
             }
+            idObjetivo=String(usuario?._id);
         }
     }
     if(basicos!=true && avanzados!=true && asignaturas!=true){
@@ -120,15 +122,15 @@ export const crearPrivilegiosUsuario = async (req: any, res: any)=>{
     }else{
         const datos:PrivilegiosUsuario ={
             nombre: nombre,
-            objetivo: idUsuario,
+            objetivo: idObjetivo,
             miembros: [],
             basicos: basicos,
             avanzados: avanzados,
             asignaturas: asignaturas,
         }
-        const result = await db.collection(ColeccionPrivilegios).insertOne(datos)
+        const result = await db.collection<PrivilegiosUsuario>(ColeccionPrivilegios).insertOne(datos)
         const result2 = await db.collection<Usuario>(coleccion).updateOne(
-            {_id: new ObjectId(idUsuario)},
+            {_id: new ObjectId(idObjetivo)},
             { $addToSet: { privilegios: String(result.insertedId) } }
         )
         return res.status(200).json(result)
@@ -136,10 +138,11 @@ export const crearPrivilegiosUsuario = async (req: any, res: any)=>{
 }
 export const crearPrivilegiosAula = async (req: any, res: any)=>{
     const nombre:string = req.body?.nombre 
-    const idAula:string = req.body?.idAula 
+    const aula:string = req.body?.aula 
     const basicos:boolean = req.body?.basicos
     const avanzados:boolean = req.body?.avanzados
     
+    let idObjetivo:string='';
     const db = getDb()
     
     const eMsg:string[] = []
@@ -148,13 +151,14 @@ export const crearPrivilegiosAula = async (req: any, res: any)=>{
     if(nombreValido.length!==0){
         eMsg.push(...nombreValido)
     }
-    if(!idAula || typeof(idAula)!="string" || !ObjectId.isValid(idAula) ){
-        eMsg.push("idAula debe ser un string de 24 caracteres hexadecimales")
+    if(!aula || typeof(aula)!="string"){
+        eMsg.push("aula debe ser un string ")
     }else{
-        const grupo = await db.collection(ColeccionAula).findOne({ _id: new ObjectId(idAula) });
+        const grupo = await db.collection<Aula>(ColeccionAula).findOne({ aula: aula});
         if(!grupo){
-            eMsg.push("No se encuentra ese usuario")
+            eMsg.push("No se encuentra ese aula")
         }
+        idObjetivo = String(grupo?._id)
     }
     if(basicos!=true && avanzados!=true){
         eMsg.push("debes asignar algún permiso como verdadero debe ser un string")
@@ -164,14 +168,14 @@ export const crearPrivilegiosAula = async (req: any, res: any)=>{
     }else{
         const datos:PrivilegiosAula ={
             nombre: nombre,
-            objetivo: idAula,
+            objetivo: idObjetivo,
             miembros: [],
             basicos: basicos,
             avanzados: avanzados,
         }
         const result = await db.collection(ColeccionPrivilegios).insertOne(datos)
         const result2 = await db.collection<Aula>(ColeccionAula).updateOne(
-            {_id: new ObjectId(idAula)},
+            {idObjetivo},
             { $addToSet: { privilegios: String(result.insertedId) } }
         )
         return res.status(200).json(result)
@@ -179,24 +183,32 @@ export const crearPrivilegiosAula = async (req: any, res: any)=>{
 }
 export const crearPrivilegiosAsignatura = async (req: any, res: any)=>{
     const nombre:string = req.body?.nombre 
-    const idAsignatura:string = req.body?.idAsignatura 
-    const basicos:boolean = req.body?.eliminarHorarios
-    const avanzados:boolean = req.body?.cambiarNombre
-    
+    const nombreAsignatura = req.body?.nombreAsignatura
+    const curso = req.body?.curso
+    const basicos:boolean = req.body?.basicos
+    const avanzados:boolean = req.body?.avanzados
+
+    let idObjetivo:string =''
+
     const db = getDb()
     const eMsg:string[] = []
-
+    console.log(req.body)
     const nombreValido=await verifyNameValid(nombre)
     if(nombreValido.length!==0){
         eMsg.push(...nombreValido)
     }
-
-    if(!idAsignatura || typeof(idAsignatura)!="string" || !ObjectId.isValid(idAsignatura) ){
-        eMsg.push("idAsignatura debe ser un string de 24 caracteres hexadecimales")
-    }else{
-        const grupo = await db.collection(ColeccionAsignaturas).findOne({ _id: new ObjectId(idAsignatura) });
-        if(!grupo){
-            eMsg.push("No se encuentra ese usuario")
+    if(!curso ||typeof(curso)!= "number" ){
+        eMsg.push("curso debe ser un numero")
+    }
+    if(!nombreAsignatura || typeof(nombreAsignatura)!="string"){
+        eMsg.push("nombreAsignatura debe ser un string")
+    }else if(eMsg.length==0){
+        const existeAsignatura = await db.collection<Asignatura>(ColeccionAsignaturas).findOne({nombre: nombreAsignatura, curso: curso})
+        if(!existeAsignatura){
+            eMsg.push("No existe esa asignatura")
+        }else{
+            console.log('existeAsignatura: '+existeAsignatura)
+            idObjetivo=String(existeAsignatura._id)
         }
     }
     if(basicos!=true && avanzados!=true){
@@ -207,14 +219,14 @@ export const crearPrivilegiosAsignatura = async (req: any, res: any)=>{
     }else{
         const datos:PrivilegiosAsignatura ={
             nombre: nombre,
-            objetivo: idAsignatura,
+            objetivo: idObjetivo,
             miembros: [],
             basicos: basicos,
             avanzados: avanzados
         }
         const result = await db.collection(ColeccionPrivilegios).insertOne(datos)
         const result2 = await db.collection<Asignatura>(ColeccionAsignaturas).updateOne(
-            {_id: new ObjectId(idAsignatura)},
+            {idObjetivo},
             { $addToSet: { privilegios: String(result.insertedId) } }
         )
         return res.status(200).json(result)
@@ -222,12 +234,16 @@ export const crearPrivilegiosAsignatura = async (req: any, res: any)=>{
 }
 export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
     const nombre:string = req.body?.nombre 
-    const idGrupo:string = req.body?.idGrupo 
+    const nombreAsignatura:string = req.body?.nombreAsignatura 
+    const curso = req.body?.curso 
+    const grupo:string = req.body?.grupo 
     const tipo:'Teoria'|'Practica'  = req.body?.tipo 
     const basicos:boolean = req.body?.basicos
     const avanzados:boolean = req.body?.avanzados
     const profesores:boolean = req.body?.profesores
     
+    let idObjetivo='';
+    let idAsignatura='';
     let coleccion = '';
     const db = getDb()
     const eMsg:string[] = []
@@ -247,12 +263,28 @@ export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
     }else{
         eMsg.push("tipo debe ser un string")
     }
-    if(!idGrupo || typeof(idGrupo)!="string" || !ObjectId.isValid(idGrupo) ){
-        eMsg.push("idGrupo debe ser un string de 24 caracteres hexadecimales")
+    if(!curso ||typeof(curso)!= "number" ){
+        eMsg.push("curso debe ser un numero")
+    }
+    if(!nombreAsignatura || typeof(nombreAsignatura)!="string"){
+        eMsg.push("nombreAsignatura debe ser un string")
+    }else if(eMsg.length==0){
+        const existeAsignatura = await db.collection<Asignatura>(ColeccionAsignaturas).findOne({nombre: nombreAsignatura, curso: curso})
+        if(!existeAsignatura){
+            eMsg.push("No existe esa asignatura")
+        }else{
+            idAsignatura=String(existeAsignatura._id)
+        }
+    }
+    
+    if(!grupo || typeof(grupo)!="string" ){
+        eMsg.push("idGrupo debe ser un string ")
     }else{
-        const grupo = await db.collection(coleccion).findOne({ _id: new ObjectId(idGrupo) });
-        if(!grupo){
+        const existe = await db.collection<GrupoAsignatura>(coleccion).findOne({grupo, asignatura: idAsignatura});
+        if(!existe){
             eMsg.push("No se encuentra ese usuario")
+        }else{
+            idObjetivo=String(existe._id)
         }
     }
     if(basicos!=true && avanzados!=true && profesores!=true ){
@@ -263,7 +295,7 @@ export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
     }else{
         const datos:PrivilegiosGrupoAsignatura ={
             nombre: nombre,
-            objetivo: idGrupo,
+            objetivo: idObjetivo,
             miembros: [],
             basicos: basicos,
             avanzados: avanzados,
@@ -271,7 +303,7 @@ export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
         }
         const result = await db.collection(ColeccionPrivilegios).insertOne(datos)
         const result2 = await db.collection<GrupoAsignatura>(coleccion).updateOne(
-            {_id: new ObjectId(idGrupo)},
+            {_id: new ObjectId(idObjetivo)},
             { $addToSet: { privilegios: String(result.insertedId) } }
         )
         return res.status(200).json(result)
@@ -460,15 +492,17 @@ export const esPrivilegiadoGrupoAsignaturaProfesores  = async (req: any, res: an
 //Admin
 export const esAdmin = async (req: any, res: any) => {
     const db = getDb();
-
+    console.log('re')
     const grupos = await db.collection<PrivilegiosAdmin>(ColeccionPrivilegios).findOne({
         admin: 'Admin',
-        miembros: { $in: [req.user] }
+        "miembros.miembro": req.user.mail
     });
+    console.log(grupos)
     if(grupos) return true
     return false
 }
 export const verifyAdmin = async (req: any,res: any, next: NextFunction)  => {
+    console.log('res:')
     const esAdministrador = await esAdmin(req, res)
     if (!esAdministrador) {
         return res.status(403).json({ message: "No tienes permisos de administrador" })

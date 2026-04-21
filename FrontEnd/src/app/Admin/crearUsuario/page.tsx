@@ -55,7 +55,6 @@ const Page = () => {
         
         <button disabled={tipo!=='Alumno' && tipo!=='Profesor'} className="boton" onClick={async () => {
             try {
-
               if(tipo == 'Alumno'){
                 await CrearAlumno({
                   nombre,

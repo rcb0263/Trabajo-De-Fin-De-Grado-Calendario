@@ -1,7 +1,8 @@
 import { Router } from "express"
 import { getDb } from "../mongo"
-import { añadirAdminPrivilegios, añadirMiembroPrivilegios, crearAdminGrupo, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, eliminarMiembroPrivilegios, esAdmin, ObtenerGruposPrivilegios } from "../collections/privilegios";
+import { añadirAdminPrivilegios, añadirMiembroPrivilegios, crearAdminGrupo, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, eliminarMiembroPrivilegios,esAdmin,ObtenerGruposPrivilegios, verifyAdmin } from "../collections/privilegios";
 import { CrearAdmin, CrearTrueUser, logIn } from "../collections/usuarios";
+import { verifyToken } from "../middleware/verifytoken";
 const router = Router();
 
 router.get("/",(req, res)=>{
@@ -14,7 +15,7 @@ router.post("/Login", async (req, res)=>{
    res.status(404).json(error)
  }
 })
-router.post("/CrearAdministrador", async (req, res)=>{
+router.post("/CrearAdministrador", verifyToken, verifyAdmin, async (req, res)=>{
  try {
     await CrearAdmin(req,res)
  } catch (error) {
@@ -28,21 +29,21 @@ router.post("/CrearTrueUser", ()=>{return false} , async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.post("/Admin/Crear", async (req, res)=>{
+router.post("/Admin/Crear", verifyToken, verifyAdmin, async (req, res)=>{
  try {
     await crearAdminGrupo(req,res)
  } catch (error) {
     res.status(404).json(error)
  }
 })
-router.put("/addAdmin", async (req, res)=>{
+router.put("/addAdmin", verifyToken, verifyAdmin, async (req, res)=>{
  try {
    await añadirAdminPrivilegios(req,res)
  } catch (error) {
     res.status(404).json(error)
  }
 }) 
-router.post("/Usuario/Crear", esAdmin, async (req, res)=>{
+router.post("/Usuario/Crear", verifyToken, verifyAdmin,  async (req, res)=>{
  try {
     await crearPrivilegiosUsuario(req,res)
     
@@ -50,7 +51,7 @@ router.post("/Usuario/Crear", esAdmin, async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.post("/Asignatura/Crear", esAdmin, async (req, res)=>{
+router.post("/Asignatura/Crear", verifyToken, verifyAdmin, async (req, res)=>{
  try {
     await crearPrivilegiosAsignatura(req,res)
     
@@ -58,7 +59,7 @@ router.post("/Asignatura/Crear", esAdmin, async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.post("/GrupoAsignatura/Crear", esAdmin, async (req, res)=>{
+router.post("/GrupoAsignatura/Crear", verifyToken, verifyAdmin, async (req, res)=>{
  try {
     await crearPrivilegiosGrupoAsignatura(req,res)
     
@@ -66,7 +67,7 @@ router.post("/GrupoAsignatura/Crear", esAdmin, async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.post("/Aula/Crear", esAdmin, async (req, res)=>{
+router.post("/Aula/Crear", verifyToken, verifyAdmin, async (req, res)=>{
  try {
     await crearPrivilegiosAula(req,res)
     
@@ -74,7 +75,7 @@ router.post("/Aula/Crear", esAdmin, async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.put("/addMiembro", esAdmin, async (req, res)=>{
+router.put("/addMiembro", verifyToken, verifyAdmin, async (req, res)=>{
  try {
     await añadirMiembroPrivilegios(req,res)
     
@@ -82,7 +83,7 @@ router.put("/addMiembro", esAdmin, async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.put("/eliminarMiembro", esAdmin, async (req, res)=>{
+router.put("/eliminarMiembro", verifyToken, verifyAdmin, async (req, res)=>{
  try {
     await eliminarMiembroPrivilegios(req,res)
     
@@ -91,7 +92,7 @@ router.put("/eliminarMiembro", esAdmin, async (req, res)=>{
  }
 })
 
-router.get("/Get/Gruposprivilegiados",  esAdmin, async (req, res)=>{
+router.get("/Get/Gruposprivilegiados", async (req, res)=>{
  try {
    const result = await ObtenerGruposPrivilegios(req, res)
    res.status(201).json(result)
