@@ -1,6 +1,6 @@
 import { api } from "./axios"
 
-interface crearPrivilegiosUsuario {
+interface crearPrivilegiosUsuarioProps {
   nombre: string, 
   mail: string, 
   tipo: string, 
@@ -9,14 +9,14 @@ interface crearPrivilegiosUsuario {
   asignaturas: boolean
 }
 
-interface crearPrivilegiosAula {
+interface crearPrivilegiosAulaProps {
   nombre: string, 
   aula: string,
   basicos: boolean, 
   avanzados: boolean
 }
 
-interface crearPrivilegiosAsignatura {
+interface crearPrivilegiosAsignaturaProps {
   nombre: string, 
   nombreAsignatura: string,
   curso: number,
@@ -25,7 +25,7 @@ interface crearPrivilegiosAsignatura {
 }
 
 
-interface crearPrivilegiosGrupoAsignatura {
+interface crearPrivilegiosGrupoAsignaturaProps {
     nombre:string,
     nombreAsignatura:string,
     curso:number, 
@@ -36,7 +36,20 @@ interface crearPrivilegiosGrupoAsignatura {
     profesores:boolean
 }
 
-export const crearPrivilegiosUsuario = async (props: crearPrivilegiosUsuario) => {
+
+interface darPrivilegiosProps {
+    mail:string,
+    nombreGrupo:string,
+    tipoUsuario:string, 
+    fechaFin:string
+}
+interface quitarPrivilegiosProps {
+    mail:string,
+    nombreGrupo:string,
+    tipoUsuario:string
+}
+
+export const crearPrivilegiosUsuario = async (props: crearPrivilegiosUsuarioProps) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/privilegios/Usuario/Crear', 
       props,
@@ -46,10 +59,9 @@ export const crearPrivilegiosUsuario = async (props: crearPrivilegiosUsuario) =>
       },
     }
   );
-  console.log(response)
   return response;
 };
-export const crearPrivilegiosAula = async (props: crearPrivilegiosAula) => {
+export const crearPrivilegiosAula = async (props: crearPrivilegiosAulaProps) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/privilegios/Aula/Crear', 
       props,
@@ -59,10 +71,9 @@ export const crearPrivilegiosAula = async (props: crearPrivilegiosAula) => {
       },
     }
   );
-  console.log(response)
   return response;
 };
-export const crearPrivilegiosAsignatura= async (props: crearPrivilegiosAsignatura) => {
+export const crearPrivilegiosAsignatura = async (props: crearPrivilegiosAsignaturaProps) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/privilegios/Asignatura/Crear', 
       props,
@@ -72,10 +83,9 @@ export const crearPrivilegiosAsignatura= async (props: crearPrivilegiosAsignatur
       },
     }
   );
-  console.log(response)
   return response;
 };
-export const crearPrivilegiosGrupoAsignatura= async (props: crearPrivilegiosGrupoAsignatura) => {
+export const crearPrivilegiosGrupoAsignatura = async (props: crearPrivilegiosGrupoAsignaturaProps) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/privilegios/GrupoAsignatura/Crear', 
       props,
@@ -85,6 +95,29 @@ export const crearPrivilegiosGrupoAsignatura= async (props: crearPrivilegiosGrup
       },
     }
   );
-  console.log(response)
+  return response;
+};
+export const darPrivilegios = async (props: darPrivilegiosProps) => {
+    const token = localStorage.getItem("token");
+    const response = await api.put('/privilegios/addMiembro', 
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+  return response;
+};
+export const quitarPrivilegios = async (props: quitarPrivilegiosProps) => {
+    const token = localStorage.getItem("token");
+    const response = await api.put('/privilegios/eliminarMiembro', 
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
   return response;
 };

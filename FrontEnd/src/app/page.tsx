@@ -6,15 +6,14 @@ import LoginProfesores from "@/componentes/Login/LoginProfesores";
 import {  useState } from "react";
 import "./mainPage.css"
 const Page = () => {
-  const [token, setToken] = useState<string>('')
 
   return (
     <div>
       <h1>Pagina principal</h1>
       <div className="logins">
-        <LoginProfesores setToken={setToken} token={token}  />
-        <LoginAlumnos setToken={setToken} token={token}  />
-        <LoginAdmin setToken={setToken} token={token} />
+        <LoginProfesores  />
+        <LoginAlumnos />
+        <LoginAdmin />
       </div>
     </div>
   );

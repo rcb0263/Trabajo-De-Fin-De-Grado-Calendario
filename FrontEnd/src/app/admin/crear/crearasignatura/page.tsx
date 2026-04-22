@@ -1,7 +1,6 @@
 'use client'
 import { crearAsignatura } from "@/lib/spi/asignaturas";
 import { useEffect, useState } from "react";
-import "../formularioStyle.css";
 
 const Page = () => {
   const añoActual = new Date().getFullYear();
@@ -14,9 +13,7 @@ const Page = () => {
 
   const [error, setError]= useState<string>('');
 
-
-  useEffect(() => {
-  }, []);
+  
   return (
     <>
       <h1>Crear Asignatura</h1>

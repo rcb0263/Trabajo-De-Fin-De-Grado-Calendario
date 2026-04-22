@@ -1,8 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
-import "../formularioStyle.css";
 import { AñadirAdmin, CrearAdmin, EliminarAdmin } from "@/lib/spi/administradores";
-
+import "./style.css"
 const Page = () => {
 
   const [nombre, setNombre] = useState<string>('')
@@ -13,9 +12,7 @@ const Page = () => {
 
   const [error, setError]= useState<string>('');
 
-
-  useEffect(() => {
-  }, []);
+  
   return (
     <>
       <h1>Crear Admin</h1>
@@ -70,7 +67,7 @@ const Page = () => {
               }
           }}>Crear</button>
         </div >
-        <div style={{ display: "flex",  flexDirection: "column", gap: "5px" }}>
+        <div className="contenedorAdminPrincipal">
           <div className="contenedor">        
             <p >mail: </p>
             <input className={error.includes('nombre')? 'input-error':''}

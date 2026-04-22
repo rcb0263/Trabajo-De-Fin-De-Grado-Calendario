@@ -1,7 +1,6 @@
 'use client'
 import {  crearGrupoAsignatura } from "@/lib/spi/asignaturas";
 import { useEffect, useState } from "react";
-import '../formularioStyle.css'
 const Page = () => {
   const cursoActual = new Date().getFullYear();
   
@@ -12,8 +11,8 @@ const Page = () => {
 
   const [error, setError]= useState<string>('');
 
-  useEffect(() => {
-  }, []);
+
+  
   return (
     <>
       <h1>Crear Grupo Asignatura</h1>

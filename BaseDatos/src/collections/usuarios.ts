@@ -88,11 +88,17 @@ export const crearUsuario = async (req: any, res: any, tipoUsuario:string)=>{
         eMsg.push("mail debe ser un correo electronico valido")
     }else{
         const existeMail = await db
-        .collection(coleccion)
+        .collection<Usuario>(ColeccionAlumnos)
+        .countDocuments({ mail });
+        const existeMail2 = await db
+        .collection<Usuario>(ColeccionProfesores)
+        .countDocuments({ mail });
+        const existeMail3 = await db
+        .collection<Administrador>(ColeccionAdmin)
         .countDocuments({ mail });
 
-        if (existeMail >0) {
-        eMsg.push("Ya existe un "+ tipoUsuario +" con ese correo electrónico");
+        if (existeMail >0||existeMail2 >0||existeMail3 >0) {
+        eMsg.push("Ya existe un usuario con ese correo electrónico");
         }
     }
     if(eMsg.length >0){

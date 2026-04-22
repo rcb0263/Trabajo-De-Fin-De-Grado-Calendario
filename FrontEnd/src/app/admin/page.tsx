@@ -2,7 +2,9 @@
 import { SearchAsignaturas } from "@/lib/spi/asignaturas";
 import { Asignatura } from "@/types";
 import { useState } from "react";
-import "./formularioStyle.css"
+//import "./formularioStyle.css"
+import "./style.css"
+import { useRouter } from "next/navigation";
 const Page = () => {
   const cursoActual = new Date().getFullYear();
 
@@ -10,6 +12,9 @@ const Page = () => {
   const [curso, setCurso] = useState<number>(cursoActual)
   const [grado, setGrado] = useState<string>('')
   const [result, setResult] = useState<Asignatura[]>([])
+
+  const router = useRouter()
+
   return (
     <div>
       <h1>Crear Grupo Asignatura</h1>
@@ -70,7 +75,15 @@ const Page = () => {
       <div>
         {result.length!==0 && result.map(e=>{
           return(
-            <p key={e._id}>{e.nombre}</p>
+            <div className="AsignaturaMainPage"
+              key={e._id}
+              onClick={() => {
+                router.push(`/admin/asignatura/${e.curso}/${e.nombre}`);
+              }}
+            >
+              <p>{e.nombre}</p>
+              <p>{e.curso}</p>
+            </div>
           )
         })}
       </div>

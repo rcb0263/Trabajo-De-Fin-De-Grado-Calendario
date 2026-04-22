@@ -15,7 +15,7 @@ router.post("/Login", async (req, res)=>{
    res.status(404).json(error)
  }
 })
-router.post("/CrearAdministrador", verifyToken, verifyAdmin, async (req, res)=>{
+router.post("/CrearAdministrador", /*verifyToken, verifyAdmin, */ async (req, res)=>{
  try {
     await CrearAdmin(req,res)
  } catch (error) {
@@ -77,6 +77,7 @@ router.post("/Aula/Crear", verifyToken, verifyAdmin, async (req, res)=>{
 })
 router.put("/addMiembro", verifyToken, verifyAdmin, async (req, res)=>{
  try {
+   console.log('111')
     await añadirMiembroPrivilegios(req,res)
     
  } catch (error) {

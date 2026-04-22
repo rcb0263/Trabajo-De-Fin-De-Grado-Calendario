@@ -3,11 +3,10 @@ import { useEffect, useState } from "react";
 import "./style.css"
 import { useRouter } from "next/navigation";
 
-type Params = {
-    setToken: React.Dispatch<React.SetStateAction<string>>
-    token: string
-}
-const LoginAlumnos = ({setToken, token}: Params)  =>{
+
+const LoginAlumnos = ()  =>{
+  const [token, setToken] = useState<string>('')
+
   const [mail, setMail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [error, setError]= useState<boolean>(false);
@@ -19,7 +18,7 @@ const LoginAlumnos = ({setToken, token}: Params)  =>{
     }
   },[token])
     return(
-        <div className="contenedor">
+        <div className="contenedorLogin">
         <input 
           value={mail}
           onChange={e=>setMail(e.target.value)}
@@ -35,6 +34,9 @@ const LoginAlumnos = ({setToken, token}: Params)  =>{
             setToken(token);
             localStorage.setItem("token", token);
             setError(false);
+            if(token!=''){
+              router.push(`/Alumnos`)
+            }
             } catch (err) {
             setError(true);
             }

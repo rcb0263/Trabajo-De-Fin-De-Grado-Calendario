@@ -15,8 +15,6 @@ export const PrivilegiosAsignatura = () =>{
 
   return(
       <div className="contenedor">
-        <p>Vlor de Basico: {basicos}</p>
-        <p>Vlor de Avanzado: {avanzados}</p>
       <p >Nombre: </p>
       <input className={error.includes('nombre')? 'input-error':''}
         name="nombre"

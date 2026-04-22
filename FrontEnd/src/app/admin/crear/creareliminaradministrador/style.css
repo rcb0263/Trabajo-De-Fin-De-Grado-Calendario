@@ -1,0 +1,9 @@
+.contenedorAdminPrincipal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: clamp(300px, 35vw, 500px);
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10px;
+}

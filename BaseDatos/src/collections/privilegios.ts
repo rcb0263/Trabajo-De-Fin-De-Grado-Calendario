@@ -313,16 +313,16 @@ export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
 
 //añadir y quitar
 export const añadirMiembroPrivilegios = async (req: any, res: any)=>{
-    const idUsuario:string = req.user.userId 
-    const objetivo:string = req.body?.objetivo 
-    const tipoUsuario = req.body?.tipoUsuario
+    const mail:string = req.body?.mail
+    const nombreGrupo: string = req.body?.nombreGrupo //no hay dos con el mismo
+    const tipoUsuario:string = req.body?.tipoUsuario
     const fechaFin:string = req.body?.fechaFin
-
+    console.log('111')
     let coleccion = '';
     const db = getDb()
     const eMsg:string[] = []
     if(fechaFin){
-        const [dd, mm, yyyy] = fechaFin.split('/').map(Number);
+        const [yyyy, mm, dd] = fechaFin.split('-').map(Number);
         const date = new Date(yyyy, mm-1, dd )
         if (isNaN(date.getTime())) {
             eMsg.push("fechaFin debe ser una fecha en el formato dd/mm/yyyy")
@@ -341,21 +341,21 @@ export const añadirMiembroPrivilegios = async (req: any, res: any)=>{
     }else{
         eMsg.push("tipoUsuario debe ser un string")
     }
-    if(!idUsuario || typeof(idUsuario)!="string" || !ObjectId.isValid(idUsuario) ){
-        eMsg.push("idUsuario debe ser un string de 24 caracteres hexadecimales")
+    if(!mail || typeof(mail)!="string" ){
+        eMsg.push("mail debe ser un string")
     }else{
         if(coleccion!=''){
-            const grupo = await db.collection(coleccion).findOne({ _id: new ObjectId(idUsuario) });
-            if(!grupo){
+            const usuario = await db.collection<Usuario>(coleccion).findOne({mail });
+            if(!usuario){
                 eMsg.push("No se encuentra ese usuario")
             }
         }
     }
-    if(!objetivo || typeof(objetivo)!="string" || !ObjectId.isValid(objetivo) ){
-        eMsg.push("objetivo debe ser un string de 24 caracteres hexadecimales")
+    if(!nombreGrupo || typeof(nombreGrupo)!="string" ){
+        eMsg.push("nombreGrupo debe ser un string")
     }else{
-        const grupo = await db.collection(ColeccionPrivilegios).findOne({ objetivo });
-        if(!grupo||grupo.admin == 'Admin'){
+        const grupo = await db.collection<GrupoPrivilegio>(ColeccionPrivilegios).findOne({ nombre: nombreGrupo, admin: { $ne: 'Admin' } });
+        if(!grupo){
             eMsg.push("No se encuentra ese grupo de privilegios")
         }
     }
@@ -363,32 +363,25 @@ export const añadirMiembroPrivilegios = async (req: any, res: any)=>{
         return res.status(400).json({message: eMsg})
     }else{
         const datos: MiembroGrupo ={
-            miembro: idUsuario,
+            miembro: mail   ,
             fechaFin: fechaFin
         }
         const result = await db.collection<GrupoPrivilegio>(ColeccionPrivilegios).updateOne(
-            { objetivo },
+            { nombre: nombreGrupo, admin: { $ne: 'Admin' } },
             { $addToSet: { miembros: datos } }
         )
         return res.status(200).json(result)
     }
 }
 export const eliminarMiembroPrivilegios = async (req: any, res: any)=>{
-    const idUsuario:string = req.body?.idUsuario 
-    const idPrivilegio:string = req.body?.idPrivilegio 
-    const tipoUsuario = req.body?.tipoUsuario
-    const fechaFin:string = req.body?.fechaFin
+    const mail:string = req.body?.mail
+    const nombreGrupo: string = req.body?.nombreGrupo //no hay dos con el mismo
+    const tipoUsuario:string = req.body?.tipoUsuario
 
     let coleccion = '';
     const db = getDb()
     const eMsg:string[] = []
-    if(fechaFin){
-        const [dd, mm, yyyy] = fechaFin.split('/').map(Number);
-        const date = new Date(yyyy, mm-1, dd )
-        if (isNaN(date.getTime())) {
-            eMsg.push("fechaFin debe ser una fecha en el formato dd/mm/yyyy")
-        }
-    }
+    
     if(tipoUsuario && typeof(tipoUsuario)=="string" ){
         if(tipoUsuario=='Alumno'){
             coleccion=ColeccionAlumnos
@@ -400,37 +393,31 @@ export const eliminarMiembroPrivilegios = async (req: any, res: any)=>{
     }else{
         eMsg.push("tipoUsuario debe ser un string")
     }
-    if(!idUsuario || typeof(idUsuario)!="string" || !ObjectId.isValid(idUsuario) ){
-        eMsg.push("idUsuario debe ser un string de 24 caracteres hexadecimales")
+    if(!mail || typeof(mail)!="string" ){
+        eMsg.push("mail debe ser un string")
     }else{
         if(coleccion!=''){
-            const grupo = await db.collection(coleccion).findOne({ _id: new ObjectId(idUsuario) });
+            const grupo = await db.collection(coleccion).findOne({mail });
             if(!grupo){
                 eMsg.push("No se encuentra ese usuario")
             }
         }
     }
-    if(!idPrivilegio || typeof(idPrivilegio)!="string" || !ObjectId.isValid(idPrivilegio) ){
-        eMsg.push("idPrivilegio debe ser un string de 24 caracteres hexadecimales")
+    if(!nombreGrupo || typeof(nombreGrupo)!="string" ){
+        eMsg.push("nombreGrupo debe ser un string")
     }else{
-        const grupo = await db.collection(ColeccionPrivilegios).findOne({ _id: new ObjectId(idPrivilegio) });
+        const grupo = await db.collection(ColeccionPrivilegios).findOne({ nombre: nombreGrupo, admin: { $ne: 'Admin' } });
         if(!grupo){
-            eMsg.push("No se encuentra ese usuario")
+            eMsg.push("No se encuentra ese grupo de privilegios")
         }
     }
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
-        const datos: MiembroGrupo ={
-            miembro: idUsuario,
-            fechaFin: ""
-        }
-        if(fechaFin){
-            datos.fechaFin = fechaFin
-        }
-        const result = await db.collection(ColeccionPrivilegios).updateOne(
-            {_id: new ObjectId(idPrivilegio)},
-            { $addToSet: { miembros: datos } }
+        
+        const result = await db.collection<GrupoPrivilegio>(ColeccionPrivilegios).updateOne(
+            { nombre: nombreGrupo, admin: { $ne: 'Admin' } },
+            { $pull: { miembros: { miembro: mail } } }
         )
         return res.status(200).json(result)
     }
@@ -446,7 +433,7 @@ export const ObtenerGruposPrivilegios = async (req: any, res: any) => {
             _id: { 
                 $in: IdsPrivilegios 
             },
-            "miembros.miembro": req.user
+            "miembros.miembro": req.user.mail
         }).toArray()
     return grupos;
 }

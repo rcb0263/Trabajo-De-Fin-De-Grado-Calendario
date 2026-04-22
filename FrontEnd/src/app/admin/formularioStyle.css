@@ -4,16 +4,18 @@
   justify-content: space-between;
   gap: 15px; /* 👈 separación entre contenedores */
 }
+
 .contenedor {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   width: clamp(300px, 35vw, 500px);
   margin: auto;
   border: 3px solid #ccc;
   border-radius: 10px;
   padding: 10px;
 }
+
 .searchParams {
   align-self:flex-start;
   display: flex;

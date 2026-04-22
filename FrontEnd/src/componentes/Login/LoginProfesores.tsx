@@ -1,18 +1,19 @@
 import { loginProfesor } from "@/lib/spi/login";
 import { useState } from "react";
 import "./style.css"
+import { useRouter } from "next/navigation";
 
-type Params = {
-    setToken: React.Dispatch<React.SetStateAction<string>>
-    token: string
-}
-const LoginProfesores = ({setToken, token}: Params) =>{
+
+const LoginProfesores = () =>{
+  const [token, setToken] = useState<string>('')
+
   const [mail, setMail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [error, setError]= useState<boolean>(false);
+  const router = useRouter()
 
     return(
-        <div className="contenedor">
+        <div className="contenedorLogin">
         <input 
           value={mail}
           onChange={e=>setMail(e.target.value)}
@@ -24,12 +25,15 @@ const LoginProfesores = ({setToken, token}: Params) =>{
         {error&&token=='' && <p>datos incorrectos</p>}
         <button onClick={async ()=>{
             try {
-            const token = await loginProfesor(mail, password);
-            setToken(token);
-            localStorage.setItem("token", token);
-            setError(false);
+              const token = await loginProfesor(mail, password);
+              setToken(token);
+              localStorage.setItem("token", token);
+              setError(false);
+              if(token!=''){
+                router.push(`/Profesores`)
+              }
             } catch (err) {
-            setError(true);
+              setError(true);
             }
         }}>Iniciar Sesion Como Profesor</button>
         </div>
