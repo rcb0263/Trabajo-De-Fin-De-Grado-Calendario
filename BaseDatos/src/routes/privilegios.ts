@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { getDb } from "../mongo"
-import { añadirAdminPrivilegios, añadirMiembroPrivilegios, crearAdminGrupo, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, eliminarMiembroPrivilegios,esAdmin,ObtenerGruposPrivilegios, verifyAdmin } from "../collections/privilegios";
+import { añadirAdminPrivilegios, añadirMiembroPrivilegios, crearAdminGrupo, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, eliminarMiembroPrivilegios,esAdmin,GetGrupoPrivilegios,ObtenerGruposPrivilegios, verifyAdmin } from "../collections/privilegios";
 import { CrearAdmin, CrearTrueUser, logIn } from "../collections/usuarios";
 import { verifyToken } from "../middleware/verifytoken";
 const router = Router();
@@ -77,7 +77,6 @@ router.post("/Aula/Crear", verifyToken, verifyAdmin, async (req, res)=>{
 })
 router.put("/addMiembro", verifyToken, verifyAdmin, async (req, res)=>{
  try {
-   console.log('111')
     await añadirMiembroPrivilegios(req,res)
     
  } catch (error) {
@@ -93,7 +92,7 @@ router.put("/eliminarMiembro", verifyToken, verifyAdmin, async (req, res)=>{
  }
 })
 
-router.get("/Get/Gruposprivilegiados", async (req, res)=>{
+router.post("/Get/Gruposprivilegiados", async (req, res)=>{
  try {
    const result = await ObtenerGruposPrivilegios(req, res)
    res.status(201).json(result)
@@ -101,4 +100,14 @@ router.get("/Get/Gruposprivilegiados", async (req, res)=>{
     res.status(404).json(error)
  }
 })
+
+router.post("/Get/GrupoPrivilegiado", async (req, res)=>{
+ try {
+   await GetGrupoPrivilegios(req, res)
+ } catch (error) {
+    res.status(404).json(error)
+ }
+})
+
+
 export default router;

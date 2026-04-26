@@ -1,0 +1,27 @@
+.asignatura-card {
+  width: 30%;
+  height: 40px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.asignatura-card:hover {
+  transform: scale(1.03);
+}
+
+.nombre {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.info {
+  font-size: 12px;
+  color: gray;
+}

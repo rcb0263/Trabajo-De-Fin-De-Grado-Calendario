@@ -20,6 +20,16 @@ interface SearchAsignaturasProps{
   curso: number,
   grado: string
 }
+interface GetAsignaturaProps{
+  nombre: string,
+  curso: number,
+}
+interface GetGrupoAsignaturaProps{
+  curso: number,
+  nombre: string,
+  tipo: string,
+  grupo: string
+}
 export const crearAsignatura = async ( props: CrearAsignaturasProps ) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/asignaturas/Crear', 
@@ -47,6 +57,30 @@ export const crearGrupoAsignatura = async ( props: CrearGrupoAsignaturasProps ) 
 export const SearchAsignaturas = async ( props: SearchAsignaturasProps ) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/asignaturas/SearchAsignaturas', 
+    props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+    return response.data;
+};
+export const GetAsignatura = async ( props: GetAsignaturaProps ) => {
+    const token = localStorage.getItem("token");
+    const response = await api.post('/asignaturas/getAsignatura', 
+    props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+    return response.data;
+};
+export const GetGrupoAsignatura = async ( props: GetGrupoAsignaturaProps ) => {
+    const token = localStorage.getItem("token");
+    const response = await api.post('/asignaturas/getGrupoAsignatura', 
     props,
     {
       headers: {

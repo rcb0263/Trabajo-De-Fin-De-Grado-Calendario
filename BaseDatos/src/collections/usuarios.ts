@@ -106,6 +106,7 @@ export const crearUsuario = async (req: any, res: any, tipoUsuario:string)=>{
     }else{
         const passEncripta = await bcrypt.hash(password,10)
         const datos:Usuario ={
+            privilegios: [],
             nombre: nombre,
             mail: mail,
             passwordHash: passEncripta,

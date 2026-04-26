@@ -70,7 +70,6 @@ const Page = () => {
 
             } catch (err: any) {
               const mensaje = err.response?.data?.message;
-                console.log('mensaje: '+mensaje)
               if (Array.isArray(mensaje)) {
                 alert(mensaje.join("\n"));
                 setError(mensaje.join("\n"))

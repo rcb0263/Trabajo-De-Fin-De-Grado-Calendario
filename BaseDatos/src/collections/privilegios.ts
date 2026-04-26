@@ -192,7 +192,6 @@ export const crearPrivilegiosAsignatura = async (req: any, res: any)=>{
 
     const db = getDb()
     const eMsg:string[] = []
-    console.log(req.body)
     const nombreValido=await verifyNameValid(nombre)
     if(nombreValido.length!==0){
         eMsg.push(...nombreValido)
@@ -207,7 +206,6 @@ export const crearPrivilegiosAsignatura = async (req: any, res: any)=>{
         if(!existeAsignatura){
             eMsg.push("No existe esa asignatura")
         }else{
-            console.log('existeAsignatura: '+existeAsignatura)
             idObjetivo=String(existeAsignatura._id)
         }
     }
@@ -317,7 +315,6 @@ export const añadirMiembroPrivilegios = async (req: any, res: any)=>{
     const nombreGrupo: string = req.body?.nombreGrupo //no hay dos con el mismo
     const tipoUsuario:string = req.body?.tipoUsuario
     const fechaFin:string = req.body?.fechaFin
-    console.log('111')
     let coleccion = '';
     const db = getDb()
     const eMsg:string[] = []
@@ -424,6 +421,23 @@ export const eliminarMiembroPrivilegios = async (req: any, res: any)=>{
 }
 
 //Expandir
+export const GetGrupoPrivilegios = async (req: any, res: any) => {
+    const id: string = req.body.id
+    const db = getDb()
+
+    if(!id ||  typeof(id)!="string"|| !ObjectId.isValid(id)){
+        return res.status(400).json({message: 'id debe ser un ObjectId valido'})
+    }
+    const grupo = await db.collection<GrupoPrivilegioTipo>(ColeccionPrivilegios).findOne(
+        {_id: new ObjectId(id)}
+    )
+    if(!grupo){
+        return res.status(400).json({message: 'No existe ese grupo'})
+    }
+    return res.status(200).json(grupo)
+}
+
+//Expandir
 export const ObtenerGruposPrivilegios = async (req: any, res: any) => {
     const privilegios: string[] = req.body.privilegios
     const db = getDb()
@@ -479,17 +493,14 @@ export const esPrivilegiadoGrupoAsignaturaProfesores  = async (req: any, res: an
 //Admin
 export const esAdmin = async (req: any, res: any) => {
     const db = getDb();
-    console.log('re')
     const grupos = await db.collection<PrivilegiosAdmin>(ColeccionPrivilegios).findOne({
         admin: 'Admin',
         "miembros.miembro": req.user.mail
     });
-    console.log(grupos)
     if(grupos) return true
     return false
 }
 export const verifyAdmin = async (req: any,res: any, next: NextFunction)  => {
-    console.log('res:')
     const esAdministrador = await esAdmin(req, res)
     if (!esAdministrador) {
         return res.status(403).json({ message: "No tienes permisos de administrador" })

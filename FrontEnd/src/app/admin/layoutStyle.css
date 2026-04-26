@@ -1,7 +1,6 @@
 .admin-layout {
-  margin-top: 0px;
   display: flex;
-  height: 93%;
+  min-height: 93%;
   margin-bottom: 0px;
 }
 
@@ -31,5 +30,6 @@
   flex: 1;
   padding: 20px;
   background-color: aliceblue;
+  height: auto;
 }
 

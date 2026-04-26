@@ -5,6 +5,7 @@ import { useState } from "react";
 //import "./formularioStyle.css"
 import "./style.css"
 import { useRouter } from "next/navigation";
+import { AsignaturaBox } from "@/componentes/AsignaturaBox";
 const Page = () => {
   const cursoActual = new Date().getFullYear();
 
@@ -56,12 +57,10 @@ const Page = () => {
               const respuesta = await SearchAsignaturas({
                 nombre, curso, grado
               });
-              console.log(respuesta)
               setResult(respuesta)
               alert("OK");
               
             } catch (err: any) {
-              console.log(err)
               const mensaje = err.response?.data?.mensaje;
 
               if (Array.isArray(mensaje)) {
@@ -72,20 +71,14 @@ const Page = () => {
             }
         }}>Buscar</button>
       </div>
-      <div>
-        {result.length!==0 && result.map(e=>{
-          return(
-            <div className="AsignaturaMainPage"
-              key={e._id}
-              onClick={() => {
-                router.push(`/admin/asignatura/${e.curso}/${e.nombre}`);
-              }}
-            >
-              <p>{e.nombre}</p>
-              <p>{e.curso}</p>
-            </div>
-          )
-        })}
+      <div className="listas">
+        {result.length!==0 && result.map(e=>
+        <AsignaturaBox
+          key={e._id}
+          nombre={e.nombre}
+          curso={e.curso}
+          grado={e.grado}
+    />)}
       </div>
     </div>
     

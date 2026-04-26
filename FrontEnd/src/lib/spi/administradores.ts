@@ -30,7 +30,6 @@ export const AñadirAdmin = async ( props: AñadirAdminProps ) => {
       },
     }
   );
-  console.log(response)
   return response;
 };
 export const EliminarAdmin = async ( props: AñadirAdminProps ) => {
@@ -43,6 +42,5 @@ export const EliminarAdmin = async ( props: AñadirAdminProps ) => {
       },
     }
   );
-  console.log(response)
   return response;
 };

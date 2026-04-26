@@ -9,7 +9,6 @@ export const DarPrivilegios = () =>{
   const [nombreGrupo, setGrupo] = useState<string>('')
   const [tipoUsuario, setTipoUsuario] = useState<string>('')
   const [fechaFin, setFechaFin] = useState<string>(fecha)
-    console.log(fechaFin)
   const [error, setError]= useState<string>('');
 
   return(

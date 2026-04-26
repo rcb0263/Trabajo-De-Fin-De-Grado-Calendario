@@ -1,3 +1,8 @@
 .AsignaturaMainPage{
     cursor: pointer;
 }
+.listas {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}

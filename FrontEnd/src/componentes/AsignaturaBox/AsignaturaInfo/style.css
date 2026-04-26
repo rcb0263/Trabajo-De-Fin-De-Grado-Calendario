@@ -1,0 +1,49 @@
+.seccion-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  
+  gap: 30px;
+}
+.seccion-grupos{
+    width: 27%;
+}
+.acciones {
+  display: flex;
+  gap: 6px;
+}
+
+.lista-grupos-row {
+  display: flex;
+  flex-direction: column;   /* 👈 si hay muchos, baja a otra línea */
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.grupo-chip {
+  padding: 4px 10px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+  h3, h4, h5{
+    margin-top: 3px;
+    margin-bottom: 4px;
+  }
+}
+
+.grupo-chip:hover {
+  background: #e5e5e5;
+}
+
+strong { 
+    margin-top: 4px;
+  }
+.grupo-card:last-child {
+  border-bottom: none;
+}
+
+.grupo-card:hover {
+  background: #f5f5f5;
+}

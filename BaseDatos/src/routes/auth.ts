@@ -41,8 +41,8 @@ router.post("/register", async (req,res)=>{
             mail,
             passwordHash: passEncripta,
             asignaturas: [],
-            fechaDeCreacion: new Date()
-            
+            fechaDeCreacion: new Date(),
+            privilegios: []
         }
         await users.insertOne({mail, password: passEncripta})
 

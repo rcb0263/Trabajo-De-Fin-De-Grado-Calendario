@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { asignarAlumno, asignarProfesor, crearAsignatura, crearExcepcion, crearGrupoAsignatura, crearSesion, eliminarAsignatura, eliminarExcepcion, EliminarGrupoAsignatura, eliminarSesion, getAsignaturas, ModificarAsignaturaBasico, ModificarGrupoAsignaturaBasico, quitarAlumno, quitarProfesor, SearchAsignaturas } from "../collections/asignaturas";
+import { asignarAlumno, asignarProfesor, crearAsignatura, crearExcepcion, crearGrupoAsignatura, crearSesion, eliminarAsignatura, eliminarExcepcion, EliminarGrupoAsignatura, eliminarSesion, GetAsignatura, getAsignaturas, GetGrupoAsignatura, ModificarAsignaturaBasico, ModificarGrupoAsignaturaBasico, quitarAlumno, quitarProfesor, SearchAsignaturas } from "../collections/asignaturas";
 import { esPrivilegiadoGrupoAsignaturaProfesores, verifyAdmin } from "../collections/privilegios";
 
 const router = Router();
@@ -18,6 +18,21 @@ router.get("/Get",async (req, res)=>{
 router.post("/SearchAsignaturas", async (req, res)=>{
  try {
    await SearchAsignaturas(req,res)
+ } catch (error) {
+    res.status(404).json(error)
+ }
+})
+
+router.post("/getAsignatura", async (req, res)=>{
+ try {
+   await GetAsignatura(req,res)
+ } catch (error) {
+    res.status(404).json(error)
+ }
+})
+router.post("/getGrupoAsignatura", async (req, res)=>{
+ try {
+   await GetGrupoAsignatura(req,res)
  } catch (error) {
     res.status(404).json(error)
  }

@@ -48,6 +48,9 @@ interface quitarPrivilegiosProps {
     nombreGrupo:string,
     tipoUsuario:string
 }
+interface GetGrupoPrivilegiosProps {
+    id:string
+}
 
 export const crearPrivilegiosUsuario = async (props: crearPrivilegiosUsuarioProps) => {
     const token = localStorage.getItem("token");
@@ -120,4 +123,17 @@ export const quitarPrivilegios = async (props: quitarPrivilegiosProps) => {
     }
   );
   return response;
+};
+
+export const GetGrupoPrivilegios = async (props: GetGrupoPrivilegiosProps) => {
+    const token = localStorage.getItem("token");
+    const response = await api.post('/privilegios/Get/GrupoPrivilegiado', 
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+  return response.data;
 };

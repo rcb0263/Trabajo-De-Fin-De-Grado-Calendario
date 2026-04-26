@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
 
-import { Asignatura, Aula, Excepcion, GrupoAsignatura, GrupoPrivilegioTipo, Hora, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Sesion, sesionAula, Usuario } from "../tipos"
+import { Asignatura, Aula, Excepcion, GrupoAsignatura, GrupoPrivilegio, GrupoPrivilegioTipo, Hora, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Sesion, sesionAula, Usuario } from "../tipos"
 
 
 const ColeccionAsignaturas = "Asignaturas"
@@ -10,6 +10,7 @@ const ColeccionPractica = "Practica"
 const ColeccionAula = "Aulas"
 const ColeccionAlumnos= "Alumnos"
 const ColeccionProfesores = "Profesores"
+const ColeccionPrivilegios = "Privilegios"
 
 export const getAsignaturas = async ()=>{
     const db = getDb()
@@ -45,6 +46,99 @@ export const SearchAsignaturas = async (req: any, res: any)=>{
     }
     return res.status(400).json({mensaje: eMsg})
 }
+
+export const GetAsignatura = async (req: any, res: any)=>{
+    const nombre = req.body?.nombre
+    const curso = req.body?.curso
+    const eMsg:string[] = []
+    const db = getDb()
+
+    if(!curso || typeof(curso)!="number"){
+        eMsg.push("curso debe ser un number")
+    }
+    if(!nombre || typeof(nombre)!="string"){
+        eMsg.push("nombre debe ser un string")
+    }
+    if(!!nombre && !!curso){
+        const asignatura = await db.collection<Asignatura>(ColeccionAsignaturas)
+        .findOne({
+        nombre,
+        curso})
+
+        const idsT = asignatura!.teoria.map((id: string) => new ObjectId(id));
+        const gruposT = await db
+        .collection<GrupoAsignatura>(ColeccionTeoria)
+        .find({ _id: { $in: idsT } })
+        .toArray();
+
+        const idsP = asignatura!.practicas.map((id: string) => new ObjectId(id));
+        const gruposP = await db
+        .collection<GrupoAsignatura>(ColeccionPractica)
+        .find({ _id: { $in: idsP } })
+        .toArray();
+
+        const idsPrivilegios = asignatura!.privilegios.map((id: string) => new ObjectId(id));
+        const gruposPrivilegios = await db
+        .collection<GrupoPrivilegio>(ColeccionPrivilegios)
+        .find({ _id: { $in: idsPrivilegios } })
+        .toArray();
+        /*
+        const teoria = gruposT.map(g => g.grupo);
+        const practicas = gruposP.map(g => g.grupo);
+        const privilegios = gruposPrivilegios.map(g => g.nombre);
+         */
+        const result = {
+        ...asignatura,
+        teoria: gruposT,
+        practicas: gruposP,
+        privilegios: gruposPrivilegios,
+        };
+        return res.status(201).json(result)
+    }
+    return res.status(400).json({mensaje: eMsg})
+}
+
+export const GetGrupoAsignatura = async (req: any, res: any)=>{
+    const nombre: string = req.body?.nombre;
+    const curso: number= req.body?.curso;
+    const tipo: 'Teoria'|'Practica' = req.body?.tipo
+    const grupo:string = req.body?.grupo
+    const eMsg:string[] = []
+    let coleccion = '';
+    let idAsignatura='';
+    const db = getDb()
+    
+    if ( tipo !== "Teoria" &&tipo !== "Practica") {
+        eMsg.push("tipo debe ser 'Teoria' o 'Practica'");
+    }
+    if(tipo == 'Teoria') coleccion = ColeccionTeoria
+    if(tipo == 'Practica') coleccion = ColeccionPractica
+
+    if(!nombre || typeof(nombre)!="string"){
+        eMsg.push("nombre debe ser un string")
+    }else if(!curso ||typeof(curso)!= "number" ){
+        eMsg.push("curso debe ser un numero")
+    }else{
+        const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
+        if (!existeAsignatura) {
+            eMsg.push("No se encuentra esa asignatura");
+        }else{
+            idAsignatura=String(existeAsignatura._id);
+        }
+    }
+    if(!grupo || typeof(grupo)!="string"){
+        eMsg.push("grupo debe ser un string")
+    }else if(coleccion!=''&&idAsignatura!=''){
+        const existeGrupo = await db.collection(coleccion).findOne({asignatura: idAsignatura, grupo: grupo})
+        if(!existeGrupo){
+            eMsg.push("No se ha encontrado ese grupo")
+        }else{
+            return res.status(201).json(existeGrupo)
+        }
+    }
+    return res.status(400).json({mensaje: eMsg})
+}
+
 //Funciona
 export const crearAsignatura = async (req: any, res: any)=>{
     const nombre = req.body?.nombre //   grupo: string
