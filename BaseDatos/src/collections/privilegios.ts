@@ -312,7 +312,7 @@ export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
 //añadir y quitar
 export const añadirMiembroPrivilegios = async (req: any, res: any)=>{
     const mail:string = req.body?.mail
-    const nombreGrupo: string = req.body?.nombreGrupo //no hay dos con el mismo
+    const nombreGrupo: string = req.body?.nombreGrupo
     const tipoUsuario:string = req.body?.tipoUsuario
     const fechaFin:string = req.body?.fechaFin
     let coleccion = '';

@@ -1,7 +1,7 @@
 'use client'
 
 
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { Excepcion, GrupoAsignatura, GrupoPrivilegioTipo, Hora, Sesion } from "@/types";
 import { GetGrupoPrivilegios } from "@/lib/spi/privilegios";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,10 @@ import "./style.css"
 import { ListaPrivilegios } from "@/componentes/ListaPrivilegiosNombres";
 import { AñadirAlumno, DeleteAlumno } from "@/lib/spi/alumnos";
 import { AñadirProfesor, DeleteProfesor, QuitarProfesor } from "@/lib/spi/profesor";
+import { PrivilegiosAsignatura } from "@/componentes/FormularioCrearPrivilegios/Asignatura";
+import { DetallePrivilegios } from "@/componentes/DetallePrivilegios";
+import { PrivilegiosGrupoAsignatura } from "@/componentes/FormularioCrearPrivilegios/GrupoAsignatura";
+
 type Props = {
   grupoData: GrupoAsignatura;
   curso: number,
@@ -20,8 +24,11 @@ type Props = {
 };
 
 export const GrupoDetalle = (params: Props) => {
+
   const {grupoData, curso, nombre, tipo, grupo, cambio, setCambio} = params
   const [gruposPrivilegiados, setGruposPrivilegiados] = useState<GrupoPrivilegioTipo[]>([]);
+  const [privilegio, setPrivilegio] = useState<GrupoPrivilegioTipo | null>(null);
+  const [crearPrivilegio, setCrearPrivilegio] = useState<boolean>(false)
   const urlBase =window.location.pathname;
 
 
@@ -46,29 +53,48 @@ export const GrupoDetalle = (params: Props) => {
   }, [grupoData]);
 
   return (
-    <div className="grupo-detalle">
-      <p>cambio: {cambio}</p>
-      <h2>{nombre}</h2>
-      <h3>{grupoData.tipo} Grupo {grupoData.grupo}</h3>
-      <div className="seccion-grupos">
-        <ListaUsuarios usuarios={grupoData.profesores} curso={curso} nombre={nombre} tipo={tipo} grupo={grupo} tipoUsuario="Profesores" setCambio={setCambio}/>
-        <ListaUsuarios usuarios={grupoData.alumnos}  curso={curso} nombre={nombre} tipo={tipo} grupo={grupo} tipoUsuario="Alumnos" setCambio={setCambio}/>
+    <div className="ContenedorObjetoYPrivilegios">
+          
+      <div className="grupo-detalle">
+        <p>cambio: {cambio}</p>
+        <h2>{nombre}</h2>
+        <h3>{grupoData.tipo} Grupo {grupoData.grupo}</h3>
+        <div className="seccion-grupos">
+          <ListaUsuarios usuarios={grupoData.profesores} curso={curso} nombre={nombre} tipo={tipo} grupo={grupo} tipoUsuario="Profesores" setCambio={setCambio}/>
+          <ListaUsuarios usuarios={grupoData.alumnos}  curso={curso} nombre={nombre} tipo={tipo} grupo={grupo} tipoUsuario="Alumnos" setCambio={setCambio}/>
 
-        <ListaPrivilegios privilegios={gruposPrivilegiados} urlBase={urlBase}/>
-        <div>
-          {grupoData.horarios?.length>0 &&
-            <ListaHorarios horarios={grupoData.horarios}/>
-          }
+          <ListaPrivilegios 
+          privilegios={gruposPrivilegiados} 
+          urlBase={urlBase} 
+          setPrivilegios={setPrivilegio} 
+          setCrearPrivilegios={setCrearPrivilegio} 
+          crearPrivilegio={crearPrivilegio}/>
+          <div>
+              <ListaHorarios horarios={grupoData.horarios}/>
+          </div>
+          <div>
+              <ListaFechas fechas={grupoData.fechas}/>
+          </div>
         </div>
-        <div>
-          {grupoData.fechas?.length>0&&
-            <ListaFechas fechas={grupoData.fechas}/>
-          }
-        </div>
-
-      </div>
       
 
+      </div>
+      {nombre && crearPrivilegio && 
+        <PrivilegiosGrupoAsignatura 
+        data={{
+          grupo: grupo, 
+          nombreAsignatura: nombre, 
+          curso: curso, 
+          tipo: tipo
+        }}
+        />
+      }
+      {!crearPrivilegio && privilegio && 
+      <DetallePrivilegios 
+      privilegio={privilegio} 
+      tipo={'Asignatura'} 
+      nombreObjetivo={nombre}
+      />}
     </div>
   );
 };
@@ -88,6 +114,7 @@ const ListaUsuarios = ({usuarios, tipo, curso, nombre, grupo, tipoUsuario, setCa
     setAdd(false)
   },[usuarios])
   return(
+    
     <div className="lista">
       <div className="titulo-row">
         <h4>{tipoUsuario}</h4>

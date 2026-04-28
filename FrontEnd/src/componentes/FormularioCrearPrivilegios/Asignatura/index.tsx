@@ -1,13 +1,21 @@
-import { crearPrivilegiosAsignatura, crearPrivilegiosAula } from "@/lib/spi/privilegios"
+import { crearPrivilegiosAsignatura } from "@/lib/spi/privilegios"
 import { useState } from "react"
 
 
-export const PrivilegiosAsignatura = () =>{
+type Props = {
+  data?: {
+    nombreAsignatura: string
+    curso: number;
+    setCrearPrivilegios: React.Dispatch<React.SetStateAction<boolean>>;
+    crearPrivilegio: boolean;
+  }
+};
+export const PrivilegiosAsignatura = ({data}: Props) =>{
   const añoActual = new Date().getFullYear();
 
   const [nombre, setNombre] = useState<string>('')
-  const [nombreAsignatura, setNombreAsignatura] = useState<string>('')
-  const [curso, setCurso] = useState<number>(añoActual)
+  const [nombreAsignatura, setNombreAsignatura] = useState<string>(data?.nombreAsignatura||'')
+  const [curso, setCurso] = useState<number>(data?.curso||añoActual)
   const [basicos, setBasico] = useState<boolean>(false)
   const [avanzados, setAvanzado] = useState<boolean>(false)
 

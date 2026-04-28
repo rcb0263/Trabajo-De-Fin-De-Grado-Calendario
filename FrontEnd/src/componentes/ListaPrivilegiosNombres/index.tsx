@@ -4,11 +4,14 @@ import { useRouter } from "next/navigation";
 import { GrupoPrivilegioTipo } from "@/types";
 
 type Props = {
+  setPrivilegios: React.Dispatch<React.SetStateAction<GrupoPrivilegioTipo | null>>;
+  setCrearPrivilegios: React.Dispatch<React.SetStateAction<boolean>>;
+  crearPrivilegio: boolean;
   privilegios: string[] | GrupoPrivilegioTipo[];
   urlBase: string;
 };
 
-export const ListaPrivilegios = ({ privilegios, urlBase }: Props) => {
+export const ListaPrivilegios = ({ privilegios, urlBase, crearPrivilegio, setPrivilegios, setCrearPrivilegios }: Props) => {
   const router = useRouter();
 
   const isEmpty = !privilegios || privilegios.length === 0;
@@ -17,31 +20,39 @@ export const ListaPrivilegios = ({ privilegios, urlBase }: Props) => {
     <div className="lista-grupos-row lista">
 
       <div className="seccion-header">
-        <strong>Grupos Privilegiados</strong>
+        <div className="lista">
+          <div className="titulo-row">
+          <strong>Grupos Privilegiados</strong>
+          
+          <button
+            className="row-button"
+            onClick={()=>{
+              setCrearPrivilegios(!crearPrivilegio)
+            }}>
+            Crear
+          </button>
+        </div>
+        </div>
       </div>
 
       <div className="lista-grupos-row">
         {!isEmpty ? (
           privilegios.map((g: any) => {
-            const value = g.nombre;
-
-            return (
+            return ( 
               <div
-                key={`${value}`}
+                key={`${g.nombre}`}
                 className="grupo-chip"
-                onClick={() => router.push(`${urlBase}/privilegio/${value}`)}
+                onClick={() => {
+                  setPrivilegios(g)
+                  setCrearPrivilegios(false)
+                }}
               >
-                {value}
+                {g.nombre}
               </div>
             );
           })
         ) : (
-          <div
-            className="grupo-chip"
-            onClick={() => router.push(`/admin/crear/crearprivilegios`)}
-          >
-            <h3>Crear</h3>
-          </div>
+          <p></p>
         )}
       </div>
 

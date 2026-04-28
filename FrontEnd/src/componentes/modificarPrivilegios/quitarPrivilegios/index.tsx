@@ -1,4 +1,4 @@
-import { darPrivilegios, quitarPrivilegios } from "@/lib/spi/privilegios";
+import { quitarPrivilegios } from "@/lib/spi/privilegios";
 import { useState } from "react"
 
 

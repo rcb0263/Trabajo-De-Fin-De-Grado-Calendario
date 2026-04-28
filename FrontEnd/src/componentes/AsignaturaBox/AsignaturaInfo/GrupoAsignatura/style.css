@@ -1,9 +1,18 @@
+.ContenedorObjetoYPrivilegios{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  justify-content: flex-start;
+  gap: 30px;
+}
+
 .grupo-detalle{
+
+  width: 45%;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  margin-right: 10%;
 }
 
 .lista-grupos-row {
@@ -68,9 +77,9 @@
   background: #e5e5e5;
 }
 .seccion-grupos{
-    width: 50%;
     display: flex;
     flex-direction: column;
+    width: 100%;
     gap: 20px;
 }
 .horario-card {

@@ -1,15 +1,23 @@
 import { crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura } from "@/lib/spi/privilegios"
 import { useState } from "react"
 
+type Props = {
+  data?: {
+    grupo: string;
+    nombreAsignatura: string;
+    curso: number;
+    tipo: string;
 
-export const PrivilegiosGrupoAsignatura = () =>{
+  }
+};
+export const PrivilegiosGrupoAsignatura = ({data}:Props) =>{
   const añoActual = new Date().getFullYear();
 
   const [nombre, setNombre] = useState<string>('')
-  const [grupo, setGrupo] = useState<string>('')
-  const [tipo, setTipo] = useState<string>('')
-  const [nombreAsignatura, setNombreAsignatura] = useState<string>('')
-  const [curso, setCurso] = useState<number>(añoActual)
+  const [grupo, setGrupo] = useState<string>(data?.grupo||'')
+  const [tipo, setTipo] = useState<string>(data?.tipo||'')
+  const [nombreAsignatura, setNombreAsignatura] = useState<string>(data?.nombreAsignatura||'')
+  const [curso, setCurso] = useState<number>(data?.curso||añoActual)
   const [basicos, setBasico] = useState<boolean>(false)
   const [avanzados, setAvanzado] = useState<boolean>(false)
   const [profesores, setProfesores] = useState<boolean>(false)

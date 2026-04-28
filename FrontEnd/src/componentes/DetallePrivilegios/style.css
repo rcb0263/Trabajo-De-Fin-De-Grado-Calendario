@@ -1,0 +1,57 @@
+.detallePrivilegios{
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  min-width: 45%;
+}
+h4{
+  margin: 5px;
+}
+h5{
+  margin: 4px;
+}
+.usuario-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;           
+  padding: 6px 10px;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+.lista{
+  background-color: white;
+  border-radius: 10px;
+}
+.lista-grupos-row {
+  display: flex;
+  flex-direction: column;  
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.privilegio-row{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;           
+  padding: 6px 10px;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+.usuario-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;           
+  padding: 6px 10px;
+  margin-left: 8px;
+  margin-right: 8px;
+  border-bottom: 1px solid #ddd;
+  border-radius: 8px solid #ddd;
+}
+.titulo-row {
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    display: flex;
+    margin-bottom: 4px;
+}

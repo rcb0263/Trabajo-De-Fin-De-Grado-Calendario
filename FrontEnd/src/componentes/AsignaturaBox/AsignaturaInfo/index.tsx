@@ -1,9 +1,11 @@
 import { DeleteAsignatura, DeleteGrupoAsignatura, GetAsignatura } from "@/lib/spi/asignaturas";
-import { Asignatura, GrupoAsignatura, GrupoPrivilegio } from "@/types";
-import { useEffect, useState } from "react";
+import { Asignatura, GrupoAsignatura, GrupoPrivilegio, GrupoPrivilegioTipo } from "@/types";
+import { SetStateAction, useEffect, useState } from "react";
 import "./style.css"
 import { useRouter } from "next/navigation";
 import { ListaPrivilegios } from "@/componentes/ListaPrivilegiosNombres";
+import { DetallePrivilegios } from "@/componentes/DetallePrivilegios";
+import { PrivilegiosAsignatura } from "@/componentes/FormularioCrearPrivilegios/Asignatura";
 type AsignaturaProps = {
   curso: number;
   nombre: string
@@ -17,6 +19,8 @@ type AsignaturaDetalle = Asignatura & {
 };
 export const AsignaturaDetalleCard = (params: AsignaturaProps) => {
   const [asignatura, setAsignatura] = useState<AsignaturaDetalle|null>(null)
+  const [privilegio, setPrivilegio] = useState<GrupoPrivilegioTipo | null>(null);
+  const [crearPrivilegio, setCrearPrivilegio] = useState<boolean>(false)
   const [cambio, setCambio] = useState(false);
   const {curso, nombre} = params
   const urlBase = `/admin/asignatura/${curso}/${nombre}`
@@ -30,53 +34,73 @@ export const AsignaturaDetalleCard = (params: AsignaturaProps) => {
   },[curso, nombre, cambio])
 
   return (
+    <div className="ContenedorObjetoYPrivilegios">
     <div className="Asignatura">
-        {asignatura &&
-          <div className="asignatura-detalle">
-            <div className="Titulo_eliminar">
-              <h4>{asignatura.nombre}</h4>  
-              <button 
-              onClick={()=>{
-                DeleteAsignatura({
-                  nombre,
-                  curso
-                }),
-                router.push('/admin')
-              }
-              }
-              >Eliminar </button> 
-              </div> 
-            <p>Curso: {asignatura.curso}</p>
-            <p>Año: {asignatura.año}º</p>
-            <p>Grado: {asignatura.grado}</p>
-            <p>Semestre: {asignatura.semestre}</p>
-            <div>
+    {asignatura &&
+      <div className="asignatura-detalle">
+        <div className="Titulo_eliminar">
+          <h4>{asignatura.nombre}</h4>  
+          <button 
+          onClick={()=>{
+            DeleteAsignatura({
+              nombre,
+              curso
+            }),
+            router.push('/admin')
+          }
+          }
+          >Eliminar </button> 
+          </div> 
+        <p>Curso: {asignatura.curso}</p>
+        <p>Año: {asignatura.año}º</p>
+        <p>Grado: {asignatura.grado}</p>
+        <p>Semestre: {asignatura.semestre}</p>
+        <div>
 
-              <GrupoLista 
-                titulo={'Grupos de Teoría'} 
-                grupos={asignatura.teoria} 
-                urlBase={urlBase} 
-                tipo={'/teoria'} 
-                curso={curso} 
-                nombre={nombre}
-                setCambio={setCambio}
-                />
+          <GrupoLista 
+            titulo={'Grupos de Teoría'} 
+            grupos={asignatura.teoria} 
+            urlBase={urlBase} 
+            tipo={'/teoria'} 
+            curso={curso} 
+            nombre={nombre}
+            setCambio={setCambio}
+            />
 
-              <GrupoLista 
-              titulo={'Grupos de Prácticas'}
-              grupos={asignatura.practicas}
-              urlBase={urlBase}
-              tipo={'/practica'}
-              curso={curso}
-              nombre={nombre} 
-              setCambio={setCambio}                
-                />
-              
-
-               <ListaPrivilegios privilegios={asignatura.privilegios} urlBase={urlBase}/>
-            </div>
-          </div>
-        }
+          <GrupoLista 
+          titulo={'Grupos de Prácticas'}
+          grupos={asignatura.practicas}
+          urlBase={urlBase}
+          tipo={'/practica'}
+          curso={curso}
+          nombre={nombre} 
+          setCambio={setCambio}                
+            />
+          
+            <ListaPrivilegios  
+            privilegios={asignatura.privilegios} 
+            urlBase={urlBase} setPrivilegios={setPrivilegio} 
+            setCrearPrivilegios={setCrearPrivilegio} 
+            crearPrivilegio={crearPrivilegio}/>
+        </div>
+      </div>
+      }
+    </div>
+      {asignatura && crearPrivilegio && 
+        <PrivilegiosAsignatura 
+        data={{
+          nombreAsignatura:asignatura.nombre, 
+          curso,
+          setCrearPrivilegios: setCrearPrivilegio,
+          crearPrivilegio
+      }}/>
+      }
+      {!crearPrivilegio && privilegio && 
+      <DetallePrivilegios 
+      privilegio={privilegio} 
+      tipo={'Asignatura'} 
+      nombreObjetivo={nombre}
+      />}
     </div>
   );
 };

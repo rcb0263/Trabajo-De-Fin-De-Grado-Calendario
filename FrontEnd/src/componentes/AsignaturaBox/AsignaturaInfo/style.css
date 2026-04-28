@@ -1,3 +1,11 @@
+.ContenedorObjetoYPrivilegios{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  justify-content: flex-start;
+  gap: 30px;
+}
+
 .seccion-header {
   display: flex;
   justify-content: flex-start;
@@ -11,7 +19,8 @@
   justify-content: space-between;
 }
 .Asignatura{
-  width: 50%
+  max-width:  50%;
+  min-width: 45%;
 }
 .acciones {
   display: flex;
