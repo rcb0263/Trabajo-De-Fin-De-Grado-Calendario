@@ -8,14 +8,12 @@ interface crearPrivilegiosUsuarioProps {
   avanzados: boolean, 
   asignaturas: boolean
 }
-
 interface crearPrivilegiosAulaProps {
   nombre: string, 
   aula: string,
   basicos: boolean, 
   avanzados: boolean
 }
-
 interface crearPrivilegiosAsignaturaProps {
   nombre: string, 
   nombreAsignatura: string,
@@ -23,8 +21,6 @@ interface crearPrivilegiosAsignaturaProps {
   basicos: boolean, 
   avanzados: boolean
 }
-
-
 interface crearPrivilegiosGrupoAsignaturaProps {
     nombre:string,
     nombreAsignatura:string,
@@ -35,8 +31,6 @@ interface crearPrivilegiosGrupoAsignaturaProps {
     avanzados:boolean,
     profesores:boolean
 }
-
-
 interface darPrivilegiosProps {
     mail:string,
     nombreGrupo:string,
@@ -126,6 +120,19 @@ export const quitarPrivilegios = async (props: quitarPrivilegiosProps) => {
 };
 
 export const GetGrupoPrivilegios = async (props: GetGrupoPrivilegiosProps) => {
+    const token = localStorage.getItem("token");
+    const response = await api.post('/privilegios/Get/GrupoPrivilegiado', 
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const DeleteGrupoPrivilegios = async (props: GetGrupoPrivilegiosProps) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/privilegios/Get/GrupoPrivilegiado', 
       props,

@@ -30,6 +30,16 @@ interface GetGrupoAsignaturaProps{
   tipo: string,
   grupo: string
 }
+interface DeleteAsignaturaProps{
+  nombre: string,
+  curso: number  
+}
+interface DeleteGrupoAsignaturaProps{
+  nombre: string,
+  curso: number,
+  grupo:string,
+  tipo: string
+}
 export const crearAsignatura = async ( props: CrearAsignaturasProps ) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/asignaturas/Crear', 
@@ -89,4 +99,29 @@ export const GetGrupoAsignatura = async ( props: GetGrupoAsignaturaProps ) => {
     }
   );
     return response.data;
+};
+
+export const DeleteAsignatura = async (props: DeleteAsignaturaProps) => {
+    const token = localStorage.getItem("token");
+    console.log(token)
+    const response = await api.delete('/asignaturas/Eliminar', {
+      data: props,
+      headers: {
+        authorization: `${token}`,
+      },
+    });
+  console.log(response)
+  return response.data;
+};
+export const DeleteGrupoAsignatura = async (props: DeleteGrupoAsignaturaProps) => {
+    const token = localStorage.getItem("token");
+    const response = await api.put('/asignaturas/Grupo/Eliminar', 
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+  return response.data;
 };

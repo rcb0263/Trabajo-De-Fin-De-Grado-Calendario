@@ -16,6 +16,7 @@ const Page = () => {
   const nombre = decodeURIComponent(params.nombre as string);
   const tipo = (params.tipo as string).toLowerCase() === "teoria" ? "Teoria" : "Practica";
   const grupo = params.grupo as string;
+  const privilegio = params.privilegio as string;
 
   useEffect(() => {
     setLoading(true);

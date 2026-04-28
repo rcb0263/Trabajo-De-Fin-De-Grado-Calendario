@@ -15,7 +15,6 @@ export const verifyToken = (req: AuthRequest,res: Response, next: NextFunction):
         res.status(401).json({message: "Access token is missing"})
         return
     }
-
     jwt.verify(token, SECRET as string, (err, decoded)=>{
         if(err){
             res.status(401).json({message: "Access token is invalid"})

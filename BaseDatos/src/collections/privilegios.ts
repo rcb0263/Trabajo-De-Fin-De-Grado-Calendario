@@ -175,7 +175,7 @@ export const crearPrivilegiosAula = async (req: any, res: any)=>{
         }
         const result = await db.collection(ColeccionPrivilegios).insertOne(datos)
         const result2 = await db.collection<Aula>(ColeccionAula).updateOne(
-            {idObjetivo},
+            {_id: new ObjectId(idObjetivo)},
             { $addToSet: { privilegios: String(result.insertedId) } }
         )
         return res.status(200).json(result)
@@ -224,7 +224,7 @@ export const crearPrivilegiosAsignatura = async (req: any, res: any)=>{
         }
         const result = await db.collection(ColeccionPrivilegios).insertOne(datos)
         const result2 = await db.collection<Asignatura>(ColeccionAsignaturas).updateOne(
-            {idObjetivo},
+            {_id: new ObjectId(idObjetivo)},
             { $addToSet: { privilegios: String(result.insertedId) } }
         )
         return res.status(200).json(result)

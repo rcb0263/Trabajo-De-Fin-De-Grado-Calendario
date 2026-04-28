@@ -5,6 +5,16 @@ interface CrearProfesorProps {
   mail: string,
   password: string
 }
+interface DeleteProfesorProps {
+  mail: string
+}
+interface AñadirProfesorProps {
+  mail: string,
+  nombre: string,
+  curso: number,
+  tipo: string,
+  grupo: string
+}
 export const CrearProfesor = async ( props: CrearProfesorProps ) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/profesores/Crear', 
@@ -16,4 +26,40 @@ export const CrearProfesor = async ( props: CrearProfesorProps ) => {
     }
   );
     return response;
+};
+export const DeleteProfesor= async ( props: DeleteProfesorProps ) => {
+    const token = localStorage.getItem("token");
+    const response = await api.post('/profesores/Eliminar', 
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+  return response;
+};
+export const AñadirProfesor= async ( props: AñadirProfesorProps ) => {
+    const token = localStorage.getItem("token");
+    const response = await api.put('/asignaturas/Grupo/Profesor/Add', 
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+  return response;
+};
+export const QuitarProfesor= async ( props: AñadirProfesorProps ) => {
+    const token = localStorage.getItem("token");
+    const response = await api.put('/asignaturas/Grupo/Profesor/Remove', 
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+  return response;
 };

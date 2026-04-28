@@ -14,7 +14,7 @@ export const ListaPrivilegios = ({ privilegios, urlBase }: Props) => {
   const isEmpty = !privilegios || privilegios.length === 0;
 
   return (
-    <div>
+    <div className="lista-grupos-row lista">
 
       <div className="seccion-header">
         <strong>Grupos Privilegiados</strong>
@@ -22,14 +22,14 @@ export const ListaPrivilegios = ({ privilegios, urlBase }: Props) => {
 
       <div className="lista-grupos-row">
         {!isEmpty ? (
-          privilegios.map((g: any, i: number) => {
-            const value = typeof g === "string" ? g : g.nombre || g._id;
+          privilegios.map((g: any) => {
+            const value = g.nombre;
 
             return (
               <div
-                key={`${value}-${i}`}
+                key={`${value}`}
                 className="grupo-chip"
-                onClick={() => router.push(`${urlBase}/${value}`)}
+                onClick={() => router.push(`${urlBase}/privilegio/${value}`)}
               >
                 {value}
               </div>
