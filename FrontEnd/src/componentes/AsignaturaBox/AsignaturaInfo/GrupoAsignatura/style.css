@@ -49,14 +49,6 @@
   border-bottom: 1px solid #ddd;
   border-radius: 8px solid #ddd;
 }
-.titulo-row {
-    border-bottom: 2px solid #ddd;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 10px;
-    display: flex;
-    margin-bottom: 4px;
-}
 .usuario-row h4 {
   margin: 0;
   font-weight: 500;

@@ -597,18 +597,49 @@ export const eliminarExcepcion= async (req:any, res: any)=>{
 
 //Funciona
 export const crearSesion= async (req: any, res: any)=>{ //crea el grupo y luego en routes añade el string al campo de la asignatura
-    const idGrupo:string = req.body?.idGrupo
     const sesion:Sesion = req.body?.sesion
+    const nombre = req.body?.nombre
+    const curso = req.body?.curso 
+    const grupo:string = req.body?.grupo
+    const tipo: 'Teoria'|'Practica' = req.body?.tipo
+    let idGrupo = '';
+    let asignaturaId='';
+    let coleccion='';
     const eMsg:string[] = []
     const db = getDb()
-    if(!idGrupo || typeof(idGrupo)!="string" || !ObjectId.isValid(idGrupo) ){
-        eMsg.push("idGrupo debe ser un string de 24 caracteres hexadecimales")
+
+    if(!curso ||typeof(curso)!= "number" ){
+        eMsg.push("curso debe ser un numero")
+    }
+    if(!tipo || typeof(tipo)!="string" || (tipo!= 'Teoria' && tipo!='Practica') ){
+        eMsg.push("tipo debe ser un string")
+    }else if(tipo=='Teoria'){
+        coleccion=ColeccionTeoria
+    }else if(tipo=='Practica'){
+        coleccion=ColeccionPractica
     }else{
-        const grupo = await db.collection<GrupoAsignatura>(ColeccionTeoria).findOne({ _id: new ObjectId(idGrupo) });
-        if (!grupo) {
+        eMsg.push("tipo debe ser un 'Teoria' o 'Practica' ")
+    }
+    if(!grupo ||typeof(grupo)!= "string" ){
+        eMsg.push("grupo debe ser un string")
+    }
+    if(!nombre || typeof(nombre)!="string"){
+        eMsg.push("nombre debe ser un string")
+    }else if(eMsg.length==0){
+        const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
+        if(!existeAsignatura){
+            eMsg.push("No existe una asignatura con ese nombre para ese año ")
+        }else{
+            asignaturaId=String(existeAsignatura._id)
+        }
+    }
+    if(eMsg.length==0){
+        const existeGrupo = await db.collection<GrupoAsignatura>(coleccion).findOne({ asignatura: asignaturaId, grupo:grupo });
+        if (!existeGrupo) {
             eMsg.push("No se encuentra ese grupo")
         }else{
-            if(! noSolapeInterno([...grupo.horarios, sesion])){
+            idGrupo = String(existeGrupo._id)
+            if(! noSolapeInterno([...existeGrupo.horarios, sesion])){
                 eMsg.push("sesion no debe solapar con otros horarios del grupo")
             }
         }
@@ -620,9 +651,9 @@ export const crearSesion= async (req: any, res: any)=>{ //crea el grupo y luego 
         return res.status(400).json({message: eMsg})
     }else{
         const result = await db
-        .collection(ColeccionTeoria)
+        .collection<GrupoAsignatura>(coleccion)
         .updateOne(
-            {_id: new ObjectId(idGrupo)},
+            { asignatura: asignaturaId, grupo:grupo },
             { $addToSet: { horarios: sesion } }
         )
 
@@ -632,7 +663,7 @@ export const crearSesion= async (req: any, res: any)=>{ //crea el grupo y luego 
                 horaInicio: sesion.horaInicio,
                 horaFin: sesion.horaFin
         }
-        await db.collection(ColeccionAula).updateOne(
+        await db.collection<Aula>(ColeccionAula).updateOne(
             { aula: sesion.aula },
             { $addToSet: { horarios: horarioAula } }
         );
@@ -641,24 +672,54 @@ export const crearSesion= async (req: any, res: any)=>{ //crea el grupo y luego 
 }
 //Funciona
 export const eliminarSesion= async (req: any, res: any)=>{ //crea el grupo y luego en routes añade el string al campo de la asignatura
-    const idGrupo:string = req.body?.idGrupo
     const sesion:Sesion = req.body?.sesion
+    const nombre = req.body?.nombre
+    const curso = req.body?.curso 
+    const grupo:string = req.body?.grupo
+    const tipo: 'Teoria'|'Practica' = req.body?.tipo
+    let idGrupo = '';
+    let asignaturaId='';
+    let coleccion='';
     const eMsg:string[] = []
     const db = getDb()
-    if(!idGrupo || typeof(idGrupo)!="string" || !ObjectId.isValid(idGrupo) ){
-        eMsg.push("idGrupo debe ser un string de 24 caracteres hexadecimales")
+
+    if(!curso ||typeof(curso)!= "number" ){
+        eMsg.push("curso debe ser un numero")
+    }
+    if(!tipo || typeof(tipo)!="string" || (tipo!= 'Teoria' && tipo!='Practica') ){
+        eMsg.push("tipo debe ser un string")
+    }else if(tipo=='Teoria'){
+        coleccion=ColeccionTeoria
+    }else if(tipo=='Practica'){
+        coleccion=ColeccionPractica
     }else{
-        const grupo = await db.collection<GrupoAsignatura>(ColeccionTeoria).findOne({ _id: new ObjectId(idGrupo) });
-        if (!grupo) {
-            eMsg.push("No se encuentra ese grupo")
+        eMsg.push("tipo debe ser un 'Teoria' o 'Practica' ")
+    }
+    if(!grupo ||typeof(grupo)!= "string" ){
+        eMsg.push("grupo debe ser un string")
+    }
+    if(!nombre || typeof(nombre)!="string"){
+        eMsg.push("nombre debe ser un string")
+    }else if(eMsg.length==0){
+        const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
+        if(!existeAsignatura){
+            eMsg.push("No existe una asignatura con ese nombre para ese año ")
         }else{
-            if(noSolapeInterno([...grupo.horarios, sesion])){
-                eMsg.push("sesion debe solapar con otros horarios del grupo")
-            }
+            asignaturaId=String(existeAsignatura._id)
         }
     }
-    if(!sesion || await validarEliminarSesion(sesion) ){//es una sesión valida que solapa
-        eMsg.push("sesion debe ser una sola sesión")
+    if(eMsg.length==0){
+        const existeGrupo = await db.collection<GrupoAsignatura>(coleccion).findOne({ asignatura: asignaturaId, grupo:grupo });
+        if (!existeGrupo) {
+            eMsg.push("No se encuentra ese grupo")
+        }else{
+            idGrupo = String(existeGrupo._id)
+
+            
+        }
+    }
+    if(!sesion ){
+        eMsg.push("sesion debe tener los campos {aula, dia, horaInicio, horaFin}")
     }
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
@@ -669,6 +730,14 @@ export const eliminarSesion= async (req: any, res: any)=>{ //crea el grupo y lue
             horaInicio: sesion.horaInicio,
             horaFin: sesion.horaFin
         }
+        const result = await db
+        .collection<GrupoAsignatura>(coleccion)
+        .updateOne(
+            { asignatura: asignaturaId, grupo:grupo },
+            { $pull: { horarios: sesion } }
+        )
+
+
         const result2 = await db.collection<Aula>(ColeccionAula).updateOne(
             { aula: sesion.aula },
             { $pull: { horarios: horarioAula } }
@@ -676,12 +745,6 @@ export const eliminarSesion= async (req: any, res: any)=>{ //crea el grupo y lue
         if(result2.modifiedCount==0){
             return res.status(200).json({message: 'no se pudo eliminar el horario', result2})
         }
-        const result = await db
-        .collection<GrupoAsignatura>(ColeccionTeoria)
-        .updateOne(
-            {_id: new ObjectId(idGrupo)},
-            { $pull: { horarios: sesion } }
-        )
         return res.status(200).json(result)
     }
 }
@@ -898,7 +961,6 @@ export const asignarAlumno= async (req:any, res: any)=>{
             }
         }
     }
-    console.log(eMsg)
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
@@ -1047,19 +1109,20 @@ const validarEliminarSesion = async (sesion: Sesion): Promise<boolean> => {
 const validarSesion = async (sesion: Sesion): Promise<boolean> => {
     const diasValidos = new Set(['L','M','X','J','V']);
     const db = getDb()
-    
 
-    // Validar día
     if (!diasValidos.has(sesion.dia)) return false;
-    // Validar horas (formato + orden)
     if (!validarHorario(sesion.horaInicio, sesion.horaFin)) return false;
-    // Validar aula
     if (!sesion.aula ) return false;
+    console.log('aula')
+
     const aula = await db.collection<Aula>(ColeccionAula)
         .findOne({ aula: sesion.aula });
     if (!aula) return false;
+        console.log('aula')
+
     // Validar disponibilidad
     if (!AulaDisponibleSesiones(aula, sesion)){
+            console.log('no diponible')
         return false;
     }else{
         return true

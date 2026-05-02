@@ -77,7 +77,7 @@ export type Usuario ={
     fechaDeCreacion: Date
 }
 
-
+export type PrivTargets = Usuario | Aula | GrupoAsignatura | Asignatura
 
 export type GrupoPrivilegioTipo =
   | PrivilegiosAsignatura

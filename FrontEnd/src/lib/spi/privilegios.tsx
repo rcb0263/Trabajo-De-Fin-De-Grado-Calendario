@@ -3,7 +3,7 @@ import { api } from "./axios"
 interface crearPrivilegiosUsuarioProps {
   nombre: string, 
   mail: string, 
-  tipo: string, 
+  tipoUsuario: string, 
   basicos: boolean, 
   avanzados: boolean, 
   asignaturas: boolean
@@ -46,9 +46,10 @@ interface quitarPrivilegiosProps {
 interface GetGrupoPrivilegiosProps {
     id:string
 }
-interface AddMiembroPrivilegiosProps {
-  mail:string,
-  nombre: string
+interface eliminarGrupoPrivilegios {
+  objetivo: string,
+  nombre: string,
+  tipo: string
 }
 
 export const crearPrivilegiosUsuario = async (props: crearPrivilegiosUsuarioProps) => {
@@ -136,9 +137,10 @@ export const GetGrupoPrivilegios = async (props: GetGrupoPrivilegiosProps) => {
   );
   return response.data;
 };
-export const DeleteGrupoPrivilegios = async (props: GetGrupoPrivilegiosProps) => {
+export const DeleteGrupoPrivilegios = async (props: eliminarGrupoPrivilegios) => {
     const token = localStorage.getItem("token");
-    const response = await api.post('/privilegios/Get/GrupoPrivilegiado', 
+
+    const response = await api.put('/privilegios/Grupo/Eliminar', 
       props,
     {
       headers: {

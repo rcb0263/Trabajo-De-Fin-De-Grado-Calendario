@@ -3,7 +3,7 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
 
-import { Administrador, Asignatura, Aula, GrupoAsignatura, GrupoPrivilegio, GrupoPrivilegioTipo, MiembroGrupo, PrivilegiosAdmin, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Usuario } from "../tipos"
+import { Administrador, Asignatura, Aula, GrupoAsignatura, GrupoPrivilegio, GrupoPrivilegioTipo, MiembroGrupo, PrivilegiosAdmin, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, PrivTargets, Usuario } from "../tipos"
 import { NextFunction } from "express"
 
 
@@ -308,6 +308,57 @@ export const crearPrivilegiosGrupoAsignatura = async (req: any, res: any)=>{
     }
 }
 
+
+export const eliminarGrupoPrivilegios = async (req: any, res: any)=>{
+    const nombre:string = req.body?.nombre 
+    const objetivo:string = req.body?.objetivo 
+    const tipo:string = req.body?.tipo 
+    const db = getDb()
+    const eMsg:string[] = []
+    let coleccion = ''
+    if(tipo == 'Alumno'){
+        coleccion= ColeccionAlumnos
+    }else if(tipo == 'Profesor'){
+        coleccion= ColeccionProfesores
+    }else if(tipo == 'Asignatura'){
+        coleccion= ColeccionAsignaturas
+    }else if(tipo == 'Teoria'){
+        coleccion= ColeccionTeoria
+    }else if(tipo == 'Practica'){
+        coleccion= ColeccionPractica
+    }else if(tipo == 'Aula'){
+        coleccion= ColeccionAula
+    }
+    if(!nombre|| typeof(nombre)!="string" ){
+        const resultado =  await db.collection<GrupoPrivilegio>(ColeccionPrivilegios).findOne({ nombre: nombre })
+        if(!resultado){
+            eMsg.push('No existe ese grupo')
+        }
+    }
+    if(coleccion==''){
+        eMsg.push('indica el tipo de objetivo Alumno, Profesor, Asignatura, ...')
+    }
+    if(!objetivo|| !ObjectId.isValid(objetivo)){
+        eMsg.push('objetivo debe ser un string hexadecimal')
+    }
+    if(eMsg.length >0){
+        return res.status(400).json({message: eMsg})
+    }else{
+
+        const resultado =  await db.collection<GrupoPrivilegio>(ColeccionPrivilegios).findOne({ nombre: nombre })
+        const idObjetivo= new ObjectId(resultado?.objetivo)
+
+         const result = await db.collection<PrivTargets>(coleccion).updateOne(
+                {_id: idObjetivo},
+                {$pull: {privilegios: String(resultado?._id)}}
+            )
+        const result2 = await db.collection<GrupoPrivilegio>(ColeccionPrivilegios).deleteOne(
+            { nombre: nombre }
+        )
+        return res.status(200).json({result, result2})
+        
+    }
+}
 
 //añadir y quitar
 export const añadirMiembroPrivilegios = async (req: any, res: any)=>{

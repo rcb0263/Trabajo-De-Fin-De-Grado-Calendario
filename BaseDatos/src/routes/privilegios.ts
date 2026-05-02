@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { getDb } from "../mongo"
-import { añadirAdminPrivilegios, añadirMiembroPrivilegios, crearAdminGrupo, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, eliminarMiembroPrivilegios,esAdmin,GetGrupoPrivilegios,ObtenerGruposPrivilegios, verifyAdmin } from "../collections/privilegios";
+import { añadirAdminPrivilegios, añadirMiembroPrivilegios, crearAdminGrupo, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, eliminarGrupoPrivilegios, eliminarMiembroPrivilegios,esAdmin,GetGrupoPrivilegios,ObtenerGruposPrivilegios, verifyAdmin } from "../collections/privilegios";
 import { CrearAdmin, CrearTrueUser, logIn } from "../collections/usuarios";
 import { verifyToken } from "../middleware/verifytoken";
 const router = Router();
@@ -43,6 +43,15 @@ router.put("/addAdmin", verifyToken, verifyAdmin, async (req, res)=>{
     res.status(404).json(error)
  }
 }) 
+router.put("/Grupo/Eliminar", verifyToken, verifyAdmin, async (req, res)=>{
+ try {
+   await eliminarGrupoPrivilegios(req,res)
+ } catch (error) {
+    res.status(404).json(error)
+ }
+})
+
+
 router.post("/Usuario/Crear", verifyToken, verifyAdmin,  async (req, res)=>{
  try {
     await crearPrivilegiosUsuario(req,res)

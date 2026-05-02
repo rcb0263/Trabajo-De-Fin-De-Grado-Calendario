@@ -6,7 +6,7 @@ export const PrivilegiosUsuario = () =>{
 
     const [nombre, setNombre] = useState<string>('')
     const [mail, setMail] = useState<string>('')
-    const [tipo, setTipo] = useState<string>('')
+    const [tipoUsuario, setTipoUsuario] = useState<string>('')
     const [basicos, setBasico] = useState<boolean>(false)
     const [avanzados, setAvanzado] = useState<boolean>(false)
     const [asignaturas, setAsignatura] = useState<boolean>(false)
@@ -35,12 +35,12 @@ export const PrivilegiosUsuario = () =>{
           }}
           placeholder="mail"/>
 
-        <p className={error.includes('tipo')? 'error-text':''}>Tipo de usuario: </p>
+        <p className={error.includes('tipoUsuario')? 'error-text':''}>Tipo de usuario: </p>
         <select className={error.includes('tipoUsuario')? 'input-error':''}
           name="tipo"
-          value={tipo}
+          value={tipoUsuario}
           onChange={e => {
-            setTipo(e.target.value)
+            setTipoUsuario(e.target.value)
             setError(error.replaceAll('tipo', ''))
           }}
         >
@@ -76,7 +76,7 @@ export const PrivilegiosUsuario = () =>{
         <button className="boton" disabled={!basicos&&!avanzados&&!asignaturas} onClick={async () => {
             try {
               await crearPrivilegiosUsuario({
-                nombre, mail, tipo, basicos, avanzados, asignaturas
+                nombre, mail, tipoUsuario, basicos, avanzados, asignaturas
               });
               setError('')
               alert("OK");

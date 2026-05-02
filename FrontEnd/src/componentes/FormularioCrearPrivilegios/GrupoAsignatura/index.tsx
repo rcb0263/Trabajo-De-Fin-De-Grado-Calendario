@@ -7,7 +7,7 @@ type Props = {
     nombreAsignatura: string;
     curso: number;
     tipo: string;
-
+    setCambio: React.Dispatch<React.SetStateAction<boolean>>;
   }
 };
 export const PrivilegiosGrupoAsignatura = ({data}:Props) =>{
@@ -21,10 +21,7 @@ export const PrivilegiosGrupoAsignatura = ({data}:Props) =>{
   const [basicos, setBasico] = useState<boolean>(false)
   const [avanzados, setAvanzado] = useState<boolean>(false)
   const [profesores, setProfesores] = useState<boolean>(false)
-/*
 
-    tipo:string,
-*/
   const [error, setError]= useState<string>('');
 
   return(
@@ -116,7 +113,7 @@ export const PrivilegiosGrupoAsignatura = ({data}:Props) =>{
             });
             setError('')
             alert("OK");
-
+            data?.setCambio(true)
           } catch (err: any) {
             const mensaje = err.response?.data?.message;
 

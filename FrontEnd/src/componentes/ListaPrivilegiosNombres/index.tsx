@@ -1,38 +1,35 @@
 'use client'
 
 import { useRouter } from "next/navigation";
-import { GrupoPrivilegioTipo } from "@/types";
+import { GrupoPrivilegio, GrupoPrivilegioTipo } from "@/types";
+import { DeleteGrupoPrivilegios, quitarPrivilegios } from "@/lib/spi/privilegios";
 
 type Props = {
+  tipo: string
   setPrivilegios: React.Dispatch<React.SetStateAction<GrupoPrivilegioTipo | null>>;
-  setCrearPrivilegios: React.Dispatch<React.SetStateAction<boolean>>;
-  crearPrivilegio: boolean;
+  setCambio: React.Dispatch<React.SetStateAction<boolean>>;
+  setDerecha: React.Dispatch<React.SetStateAction<string>>;
   privilegios: string[] | GrupoPrivilegioTipo[];
   urlBase: string;
 };
 
-export const ListaPrivilegios = ({ privilegios, urlBase, crearPrivilegio, setPrivilegios, setCrearPrivilegios }: Props) => {
+export const ListaPrivilegios = ({ privilegios, setDerecha, setCambio, tipo }: Props) => {
   const router = useRouter();
 
   const isEmpty = !privilegios || privilegios.length === 0;
 
   return (
     <div className="lista-grupos-row lista">
-
-      <div className="seccion-header">
-        <div className="lista">
-          <div className="titulo-row">
-          <strong>Grupos Privilegiados</strong>
-          
-          <button
+      <div className="titulo-row">
+        <h4>Grupos Privilegiados:</h4>
+        <button
             className="row-button"
             onClick={()=>{
-              setCrearPrivilegios(!crearPrivilegio)
+              setDerecha('crearPrivilegio')
+              setCambio(true)
             }}>
             Crear
           </button>
-        </div>
-        </div>
       </div>
 
       <div className="lista-grupos-row">
@@ -43,11 +40,23 @@ export const ListaPrivilegios = ({ privilegios, urlBase, crearPrivilegio, setPri
                 key={`${g.nombre}`}
                 className="grupo-chip"
                 onClick={() => {
-                  setPrivilegios(g)
-                  setCrearPrivilegios(false)
+                  setDerecha('detallePrivilegios')
+                  setCambio(true)
                 }}
               >
-                {g.nombre}
+                <div >
+                  <h3>Grupo: {g.nombre}</h3>
+                  <h4>Mimebros: {g.miembros.length}</h4>
+                </div>
+                <button className="row-button"  onClick={() => {
+                  DeleteGrupoPrivilegios({
+                    objetivo: g.objetivo,
+                    nombre: g.nombre,
+                    tipo: tipo
+                  })
+                  setCambio(true)
+                }
+                }>Eliminar</button>
               </div>
             );
           })

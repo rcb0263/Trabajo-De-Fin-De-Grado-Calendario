@@ -8,6 +8,7 @@ type Props = {
     curso: number;
     setCrearPrivilegios: React.Dispatch<React.SetStateAction<boolean>>;
     crearPrivilegio: boolean;
+    setCambio: React.Dispatch<React.SetStateAction<boolean>>;
   }
 };
 export const PrivilegiosAsignatura = ({data}: Props) =>{
@@ -80,7 +81,7 @@ export const PrivilegiosAsignatura = ({data}: Props) =>{
             });
             setError('')
             alert("OK");
-
+            data?.setCambio(true)
           } catch (err: any) {
             const mensaje = err.response?.data?.message;
 

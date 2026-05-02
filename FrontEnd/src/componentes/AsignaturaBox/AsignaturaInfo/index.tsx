@@ -22,6 +22,7 @@ export const AsignaturaDetalleCard = (params: AsignaturaProps) => {
   const [privilegio, setPrivilegio] = useState<GrupoPrivilegioTipo | null>(null);
   const [crearPrivilegio, setCrearPrivilegio] = useState<boolean>(false)
   const [cambio, setCambio] = useState(false);
+  const [derecha, setDerecha] = useState<string>('')
   const {curso, nombre} = params
   const urlBase = `/admin/asignatura/${curso}/${nombre}`
   const router = useRouter();
@@ -77,25 +78,27 @@ export const AsignaturaDetalleCard = (params: AsignaturaProps) => {
           setCambio={setCambio}                
             />
           
-            <ListaPrivilegios  
-            privilegios={asignatura.privilegios} 
-            urlBase={urlBase} setPrivilegios={setPrivilegio} 
-            setCrearPrivilegios={setCrearPrivilegio} 
-            crearPrivilegio={crearPrivilegio}/>
+          <ListaPrivilegios  
+            privilegios={asignatura.privilegios}
+            urlBase={urlBase} setPrivilegios={setPrivilegio}
+            setDerecha={setDerecha} setCambio={setCambio} 
+            tipo={'Asignatura'}
+          />
         </div>
       </div>
       }
     </div>
-      {asignatura && crearPrivilegio && 
+      {asignatura && derecha=='crearPrivilegio' &&
         <PrivilegiosAsignatura 
         data={{
           nombreAsignatura:asignatura.nombre, 
           curso,
           setCrearPrivilegios: setCrearPrivilegio,
-          crearPrivilegio
+          crearPrivilegio,
+          setCambio: setCambio
       }}/>
       }
-      {!crearPrivilegio && privilegio && 
+      {derecha=='detallePrivilegios' && privilegio && 
       <DetallePrivilegios 
       privilegio={privilegio} 
       tipo={'Asignatura'} 

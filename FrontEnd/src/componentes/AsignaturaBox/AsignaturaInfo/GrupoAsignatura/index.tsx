@@ -8,10 +8,11 @@ import { useRouter } from "next/navigation";
 import "./style.css"
 import { ListaPrivilegios } from "@/componentes/ListaPrivilegiosNombres";
 import { AñadirAlumno, DeleteAlumno } from "@/lib/spi/alumnos";
-import { AñadirProfesor, DeleteProfesor, QuitarProfesor } from "@/lib/spi/profesor";
-import { PrivilegiosAsignatura } from "@/componentes/FormularioCrearPrivilegios/Asignatura";
+import { AñadirProfesor, QuitarProfesor } from "@/lib/spi/profesor";
 import { DetallePrivilegios } from "@/componentes/DetallePrivilegios";
 import { PrivilegiosGrupoAsignatura } from "@/componentes/FormularioCrearPrivilegios/GrupoAsignatura";
+import { EliminarSesion } from "@/lib/spi/asignaturas";
+import { CrearSesionComponente } from "./CrearSesion";
 
 type Props = {
   grupoData: GrupoAsignatura;
@@ -28,7 +29,7 @@ export const GrupoDetalle = (params: Props) => {
   const {grupoData, curso, nombre, tipo, grupo, cambio, setCambio} = params
   const [gruposPrivilegiados, setGruposPrivilegiados] = useState<GrupoPrivilegioTipo[]>([]);
   const [privilegio, setPrivilegio] = useState<GrupoPrivilegioTipo | null>(null);
-  const [crearPrivilegio, setCrearPrivilegio] = useState<boolean>(false)
+  const [derecha, setDerecha] = useState<string>('')
   const urlBase =window.location.pathname;
 
 
@@ -50,7 +51,8 @@ export const GrupoDetalle = (params: Props) => {
     } else {     
       setGruposPrivilegiados([]);
     }
-  }, [grupoData]);
+  }, [grupoData, cambio]);
+
 
   return (
     <div className="ContenedorObjetoYPrivilegios">
@@ -60,17 +62,42 @@ export const GrupoDetalle = (params: Props) => {
         <h2>{nombre}</h2>
         <h3>{grupoData.tipo} Grupo {grupoData.grupo}</h3>
         <div className="seccion-grupos">
-          <ListaUsuarios usuarios={grupoData.profesores} curso={curso} nombre={nombre} tipo={tipo} grupo={grupo} tipoUsuario="Profesores" setCambio={setCambio}/>
-          <ListaUsuarios usuarios={grupoData.alumnos}  curso={curso} nombre={nombre} tipo={tipo} grupo={grupo} tipoUsuario="Alumnos" setCambio={setCambio}/>
+          <ListaUsuarios 
+            usuarios={grupoData.profesores} 
+            curso={curso} 
+            nombre={nombre} 
+            tipo={tipo} 
+            grupo={grupo} 
+            tipoUsuario="Profesores" 
+            setCambio={setCambio}/>
+          
+          <ListaUsuarios
+            usuarios={grupoData.alumnos}
+            curso={curso}
+            nombre={nombre} 
+            tipo={tipo} 
+            grupo={grupo} 
+            tipoUsuario="Alumnos"
+            setCambio={setCambio}/>
 
           <ListaPrivilegios 
-          privilegios={gruposPrivilegiados} 
-          urlBase={urlBase} 
-          setPrivilegios={setPrivilegio} 
-          setCrearPrivilegios={setCrearPrivilegio} 
-          crearPrivilegio={crearPrivilegio}/>
+            privilegios={gruposPrivilegiados}
+            urlBase={urlBase}
+            setPrivilegios={setPrivilegio}
+            setDerecha={setDerecha}
+            setCambio={setCambio} 
+            tipo={grupoData.tipo}
+          />
           <div>
-              <ListaHorarios horarios={grupoData.horarios}/>
+              <ListaHorarios 
+              horarios={grupoData.horarios}
+              setDerecha={setDerecha}
+              curso={curso}
+              nombre={nombre} 
+              tipo={tipo} 
+              grupo={grupo}
+              setCambio={setCambio}
+              />
           </div>
           <div>
               <ListaFechas fechas={grupoData.fechas}/>
@@ -79,22 +106,30 @@ export const GrupoDetalle = (params: Props) => {
       
 
       </div>
-      {nombre && crearPrivilegio && 
+      {nombre && derecha=='crearPrivilegio' && 
         <PrivilegiosGrupoAsignatura 
         data={{
           grupo: grupo, 
           nombreAsignatura: nombre, 
           curso: curso, 
-          tipo: tipo
+          tipo: tipo,
+          setCambio: setCambio
         }}
         />
       }
-      {!crearPrivilegio && privilegio && 
+      {derecha=='detallePrivilegios' && privilegio && 
       <DetallePrivilegios 
       privilegio={privilegio} 
       tipo={'Asignatura'} 
       nombreObjetivo={nombre}
       />}
+      {derecha=='crearSesion' && 
+      <CrearSesionComponente data={{
+        curso,
+        tipo,
+        grupo,
+        nombre
+      }}/>}
     </div>
   );
 };
@@ -183,22 +218,31 @@ const ListaUsuarios = ({usuarios, tipo, curso, nombre, grupo, tipoUsuario, setCa
 }
 
 type ListaHorariosProps = {
-  horarios: Sesion[];
+  horarios: Sesion[],
+  tipo: string,
+  curso: number
+  nombre: string,
+  grupo: string,
+  setDerecha: React.Dispatch<React.SetStateAction<string>>;
+  setCambio: React.Dispatch<React.SetStateAction<boolean>>;
+
 };
 const formatearHora = (h:Hora) =>{
 
   return (h.hora+':'+h.minuto)
 };
-const ListaHorarios = ({ horarios }: ListaHorariosProps) => {
-
-
+const ListaHorarios = ({ horarios, tipo, curso, nombre, grupo, setDerecha, setCambio }: ListaHorariosProps) => {
   return (
     <div className="lista">
      <div className="titulo-row">
         <h4>Horarios</h4>
         <button 
-          className="row-button" 
-          >Añadir</button>
+        className="row-button" 
+        onClick={()=>{
+          setDerecha('crearSesion')
+          setCambio(true)
+        }}
+        >Añadir</button>
       </div>
 
       {horarios?.length ? (
@@ -213,7 +257,19 @@ const ListaHorarios = ({ horarios }: ListaHorariosProps) => {
                   {formatearHora(h.horaInicio)} - {formatearHora(h.horaFin)}
                 </p>
              </div>
-             <button>Eliminar</button>
+             <button onClick={()=>{
+              EliminarSesion({
+                curso,
+                tipo,
+                grupo,
+                nombre,
+                aula: h.aula,
+                dia: h.dia,
+                horaInicio: h.horaInicio,
+                horaFin: h.horaFin
+              })
+              setCambio(true)
+             }}>Eliminar</button>
             </div>
           ))}
         </div>
@@ -230,11 +286,16 @@ type ListaFechasProps = {
 
 export const ListaFechas = ({ fechas }: ListaFechasProps) => {
   return (
-    <div>
-      <strong>Fechas:</strong>
-
+    <div className="lista">
+      <div className="titulo-row">
+        <h4>Fechas</h4>
+        <button 
+          className="row-button" 
+          >Añadir</button>
+      </div>
       {fechas?.length ? (
-        <div className="lista">
+        <div>
+           
           {fechas.map((f, i) => (
             <div className="horario-card" key={i}>
               <div className="horario-info">
