@@ -6,6 +6,9 @@ export const AdminMenu =()=>{
 
     return(
       <aside className="admin-sidebar">
+        <div className="admin-cell" onClick={()=>{router.push(`/admin`)}}>Asignaturas</div>
+        <div className="admin-cell" onClick={()=>{router.push(`/admin`)}}>Usuario</div>
+        <div className="admin-cell" onClick={()=>{router.push(`/admin`)}}>Aula</div>
         <div className="admin-cell" onClick={()=>{router.push(`/admin/crear/crearasignatura`)}}>Crear Asignatura</div>
         <div className="admin-cell" onClick={()=>{router.push(`/admin/crear/creargrupoasignatura`)}}>Crear Grupo Asignatura</div>
         <div className="admin-cell" onClick={()=>{router.push(`/admin/crear/crearusuario`)}}>Crear Usuario</div>

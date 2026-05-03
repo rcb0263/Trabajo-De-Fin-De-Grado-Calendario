@@ -548,7 +548,12 @@ export const esAdmin = async (req: any, res: any) => {
         admin: 'Admin',
         "miembros.miembro": req.user.mail
     });
-    if(grupos) return true
+    console.log('admin grupos: ')
+    console.log(grupos)
+    if(grupos) {
+        return true
+
+    }
     return false
 }
 export const verifyAdmin = async (req: any,res: any, next: NextFunction)  => {

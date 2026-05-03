@@ -24,6 +24,9 @@ interface GetAsignaturaProps{
   nombre: string,
   curso: number,
 }
+interface GetAsignaturaByIdProps{
+  id: string,
+}
 interface GetGrupoAsignaturaProps{
   curso: number,
   nombre: string,
@@ -60,6 +63,29 @@ interface EliminarSesion{
   horaInicio: Hora,
   horaFin: Hora,  
 }
+
+interface CrearExcepcionProps{
+  curso: number,
+  tipo: string,
+  grupo: string,
+  nombre:string,
+  aula: string,
+  fecha: string,
+  horaInicio: string,
+  horaFin: string,  
+}
+
+interface EliminarExcepcionProps{
+  curso: number,
+  tipo: string,
+  grupo: string,
+  nombre:string,
+  aula: string,
+  fecha: string,
+  horaInicio: Hora,
+  horaFin: Hora,   
+}
+
 export const crearAsignatura = async ( props: CrearAsignaturasProps ) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/asignaturas/Crear', 
@@ -99,6 +125,18 @@ export const SearchAsignaturas = async ( props: SearchAsignaturasProps ) => {
 export const GetAsignatura = async ( props: GetAsignaturaProps ) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/asignaturas/getAsignatura', 
+    props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+    return response.data;
+};
+export const GetAsignaturaById = async ( props: GetAsignaturaByIdProps ) => {
+    const token = localStorage.getItem("token");
+    const response = await api.post('/asignaturas/GetAsignatura', 
     props,
     {
       headers: {
@@ -191,6 +229,66 @@ export const EliminarSesion = async (props: EliminarSesion) => {
   }
   const token = localStorage.getItem("token");
   const response = await api.put('/asignaturas/Grupo/Horario/Eliminar', 
+      data,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+
+
+export const CrearExcepcion = async (props: CrearExcepcionProps) => {
+  const data = {
+    curso: props.curso,
+    tipo: props.tipo,
+    grupo: props.grupo,
+    nombre: props.nombre,
+    excepcion: {
+      aula: props.aula,
+      fecha: props.fecha,
+      horaInicio:{
+        hora: Number(props.horaInicio.split(':')[0]),
+        minuto: Number(props.horaInicio.split(':')[1])
+      },
+      horaFin: {
+        hora: Number(props.horaFin.split(':')[0]),
+        minuto: Number(props.horaFin.split(':')[1])
+      }
+    }   
+  }
+  const token = localStorage.getItem("token");
+  const response = await api.put('/asignaturas/Grupo/Excepcion/Crear', 
+      data,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+
+export const EliminarExcepcion = async (props: EliminarExcepcionProps) => {
+  const data = {
+    curso: props.curso,
+    tipo: props.tipo,
+    grupo: props.grupo,
+    nombre: props.nombre,
+    excepcion: {
+      aula: props.aula,
+      fecha: props.fecha,
+      horaInicio: props.horaInicio,
+      horaFin: props.horaFin
+    }   
+  
+  }
+  const token = localStorage.getItem("token");
+  const response = await api.put('/asignaturas/Grupo/Excepcion/Eliminar', 
       data,
     {
       headers: {

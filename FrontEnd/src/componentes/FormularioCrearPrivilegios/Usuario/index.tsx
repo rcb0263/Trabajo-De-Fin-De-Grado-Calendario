@@ -2,11 +2,18 @@ import { crearPrivilegiosUsuario } from "@/lib/spi/privilegios"
 import { useState } from "react"
 
 
-export const PrivilegiosUsuario = () =>{
+type Props = {
+  data?: {
+    mail: string,
+    tipo: string
+    setCambio: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+};
+export const PrivilegiosUsuario = ({data}:Props) =>{
 
     const [nombre, setNombre] = useState<string>('')
-    const [mail, setMail] = useState<string>('')
-    const [tipoUsuario, setTipoUsuario] = useState<string>('')
+    const [mail, setMail] = useState<string>(data?.mail||'')
+    const [tipoUsuario, setTipoUsuario] = useState<string>(data?.tipo||'')
     const [basicos, setBasico] = useState<boolean>(false)
     const [avanzados, setAvanzado] = useState<boolean>(false)
     const [asignaturas, setAsignatura] = useState<boolean>(false)
@@ -80,7 +87,7 @@ export const PrivilegiosUsuario = () =>{
               });
               setError('')
               alert("OK");
-
+              data?.setCambio(true)
             } catch (err: any) {
               const mensaje = err.response?.data?.message;
 

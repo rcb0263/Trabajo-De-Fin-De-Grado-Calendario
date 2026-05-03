@@ -99,7 +99,6 @@ router.put("/Grupo/Horario/Eliminar", verifyToken, verifyAdmin, async (req, res)
  }
 })
 
-//esPrivilegiadoGrupoAsignaturaProfesores, 
 router.put("/Grupo/Excepcion/Crear", async (req, res)=>{
  try {
    await crearExcepcion(req,res)

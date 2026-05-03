@@ -11,7 +11,9 @@ export interface AuthRequest extends Request {
 export const verifyToken = (req: AuthRequest,res: Response, next: NextFunction):void=>{
     const authHeader = req.headers["authorization"]; 
     const token = authHeader && authHeader.split(" ")[0];
+
     if(!token){
+
         res.status(401).json({message: "Access token is missing"})
         return
     }
@@ -21,6 +23,8 @@ export const verifyToken = (req: AuthRequest,res: Response, next: NextFunction):
             return
         }
         req.user = decoded;
+
+        console.log('decoded: '+ decoded)
         next();
     })
 }

@@ -4,15 +4,15 @@
 import { SetStateAction, useEffect, useState } from "react";
 import { Excepcion, GrupoAsignatura, GrupoPrivilegioTipo, Hora, Sesion } from "@/types";
 import { GetGrupoPrivilegios } from "@/lib/spi/privilegios";
-import { useRouter } from "next/navigation";
 import "./style.css"
 import { ListaPrivilegios } from "@/componentes/ListaPrivilegiosNombres";
 import { AñadirAlumno, DeleteAlumno } from "@/lib/spi/alumnos";
 import { AñadirProfesor, QuitarProfesor } from "@/lib/spi/profesor";
 import { DetallePrivilegios } from "@/componentes/DetallePrivilegios";
 import { PrivilegiosGrupoAsignatura } from "@/componentes/FormularioCrearPrivilegios/GrupoAsignatura";
-import { EliminarSesion } from "@/lib/spi/asignaturas";
+import { CrearExcepcion, EliminarExcepcion, EliminarSesion } from "@/lib/spi/asignaturas";
 import { CrearSesionComponente } from "./CrearSesion";
+import { CrearHorarioComponente } from "./CrearHorario";
 
 type Props = {
   grupoData: GrupoAsignatura;
@@ -58,7 +58,6 @@ export const GrupoDetalle = (params: Props) => {
     <div className="ContenedorObjetoYPrivilegios">
           
       <div className="grupo-detalle">
-        <p>cambio: {cambio}</p>
         <h2>{nombre}</h2>
         <h3>{grupoData.tipo} Grupo {grupoData.grupo}</h3>
         <div className="seccion-grupos">
@@ -83,7 +82,6 @@ export const GrupoDetalle = (params: Props) => {
           <ListaPrivilegios 
             privilegios={gruposPrivilegiados}
             urlBase={urlBase}
-            setPrivilegios={setPrivilegio}
             setDerecha={setDerecha}
             setCambio={setCambio} 
             tipo={grupoData.tipo}
@@ -92,15 +90,23 @@ export const GrupoDetalle = (params: Props) => {
               <ListaHorarios 
               horarios={grupoData.horarios}
               setDerecha={setDerecha}
+              setCambio={setCambio}
               curso={curso}
               nombre={nombre} 
               tipo={tipo} 
               grupo={grupo}
-              setCambio={setCambio}
               />
           </div>
           <div>
-              <ListaFechas fechas={grupoData.fechas}/>
+              <ListaFechas 
+              fechas={grupoData.fechas} 
+              setDerecha={setDerecha}
+              setCambio={setCambio}
+              curso={curso}
+              nombre={nombre} 
+              tipo={tipo} 
+              grupo={grupo}
+              />
           </div>
         </div>
       
@@ -128,8 +134,19 @@ export const GrupoDetalle = (params: Props) => {
         curso,
         tipo,
         grupo,
-        nombre
+        nombre,
+        setCambio: setCambio
       }}/>}
+      {derecha=='crearExcepcion' &&
+      <>
+      <CrearHorarioComponente data={{
+        curso,
+        tipo,
+        grupo,
+        nombre,
+        setCambio: setCambio
+      }}/>
+      </>}
     </div>
   );
 };
@@ -281,33 +298,57 @@ const ListaHorarios = ({ horarios, tipo, curso, nombre, grupo, setDerecha, setCa
 };
 
 type ListaFechasProps = {
+  setDerecha: React.Dispatch<React.SetStateAction<string>>;
+  setCambio: React.Dispatch<React.SetStateAction<boolean>>;
   fechas: Excepcion[];
+  tipo: string,
+  curso: number
+  nombre: string,
+  grupo: string,
 };
 
-export const ListaFechas = ({ fechas }: ListaFechasProps) => {
+export const ListaFechas = ({ fechas, tipo, curso, nombre, grupo, setDerecha, setCambio }: ListaFechasProps) => {
   return (
     <div className="lista">
       <div className="titulo-row">
         <h4>Fechas</h4>
         <button 
           className="row-button" 
+          onClick={()=>{
+            setDerecha('crearExcepcion')
+            setCambio(true)
+          }}
           >Añadir</button>
       </div>
       {fechas?.length ? (
         <div>
            
-          {fechas.map((f, i) => (
+          {fechas.map((fecha, i) => (
             <div className="horario-card" key={i}>
               <div className="horario-info">
-                <p><strong>Fecha:</strong> {f.fecha}</p>
-                <p><strong>Aula:</strong> {f.aula}</p>
+                <p><strong>Fecha:</strong> {fecha.fecha}</p>
+                <p><strong>Aula:</strong> {fecha.aula}</p>
                 <p>
                   <strong>Duración:</strong>{" "}
-                  {formatearHora(f.horaInicio)} - {formatearHora(f.horaFin)}
+                  {formatearHora(fecha.horaInicio)} - {formatearHora(fecha.horaFin)}
                 </p>
               </div>
 
-              <button className="row-button eliminar-btn">
+              <button 
+              className="row-button eliminar-btn"
+              onClick={()=>{
+              EliminarExcepcion({
+                curso,
+                tipo,
+                grupo,
+                nombre,
+                aula: fecha.aula,
+                fecha: fecha.fecha,
+                horaInicio: fecha.horaInicio,
+                horaFin: fecha.horaFin
+              })
+              setCambio(true)
+             }}>
                 Eliminar
               </button>
             </div>

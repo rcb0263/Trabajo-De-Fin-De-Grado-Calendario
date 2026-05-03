@@ -119,6 +119,9 @@ export const crearUsuario = async (req: any, res: any, tipoUsuario:string)=>{
 }
 export const eliminarUsuario = async (req: any, res: any, tipoUsuario:string)=>{
     const mail:string = req.body?.mail //   grupo: string
+    const id:string = req.body?.id //   grupo: string
+    console.log('body')
+    console.log(req.body)
     let coleccion = ''
     const db = getDb()
     const eMsg:string[] = []
@@ -130,7 +133,17 @@ export const eliminarUsuario = async (req: any, res: any, tipoUsuario:string)=>{
         return res.status(400).json({message: 'el tipo esta mal en el codigo'})
     }
     if(!mail || typeof(mail)!="string"||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){
-        eMsg.push("mail debe ser un correo electronico valido")
+        if(!id){
+            eMsg.push("mail debe ser un correo electronico valido")
+        }else{
+            const existeMail = await db
+            .collection(coleccion)
+            .findOne({ _id: new ObjectId(id) });
+
+            if (!existeMail) {
+                eMsg.push("No existe un "+ tipoUsuario +" con ese correo electrónico");
+            }
+        }
     }else{
         const existeMail = await db
         .collection(coleccion)
@@ -140,12 +153,64 @@ export const eliminarUsuario = async (req: any, res: any, tipoUsuario:string)=>{
         eMsg.push("No existe un "+ tipoUsuario +" con ese correo electrónico");
         }
     }
+    console.log(eMsg)
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
-        const result = await db.collection(coleccion).deleteOne({mail: mail})
-        return res.status(201).json(result)
+        if(mail){
+            const result = await db.collection(coleccion).deleteOne({mail: mail})
+            return res.status(201).json(result)
+        }else{
+            const result = await db.collection(coleccion).deleteOne({ _id: new ObjectId(id) })
+            return res.status(201).json(result)
+        }
+        
+        
     }
+}
+
+
+export const SearchUsuario = async (req: any,res: any,  tipoUsuario:string)=>{
+    const mail = req.body?.mail //   grupo: string
+    const eMsg:string[] = []
+    const db = getDb()
+    let coleccion = ''
+    if(tipoUsuario=='Alumno'){
+        coleccion=ColeccionAlumnos
+    }else if(tipoUsuario=='Profesor'){
+        coleccion=ColeccionProfesores
+    }else{
+        return res.status(400).json({message: 'el tipo no es valido'})
+    }
+    if(!mail || typeof(mail)!="string"){
+        eMsg.push("mail debe ser un string")
+    }
+    if(eMsg.length >0){
+        return res.status(400).json({message: eMsg})
+    }else{
+       const usuarios = await db
+        .collection(coleccion)
+        .find({
+            mail : { $regex: mail, $options: "i" }
+        }).toArray();
+        return res.status(201).json(usuarios)
+    }
+}
+
+export const getUsuario= async  (req: any,res: any,  tipoUsuario:string)=>{
+    const id:string = req.body?.id
+    const db = getDb()
+    const eMsg:string[] = []
+
+    const coleccion = (tipoUsuario=='Alumno'? ColeccionAlumnos: tipoUsuario=='Profesor'? ColeccionProfesores:'')
+    if(!id|| !ObjectId){
+        eMsg.push('ese id no es valido')
+    }
+
+    if(eMsg.length>0) return (res.status(400).json({message: eMsg}))
+    const usuario = await  db.collection<Usuario>(coleccion).findOne({  _id: new ObjectId(id)})
+
+    return usuario?res.status(200).json({usuario}):res.status(400).json({message: 'no se ha encontrado ese usuario'});
 }
 
 

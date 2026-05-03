@@ -15,6 +15,10 @@ interface AñadirProfesorProps {
   tipo: string,
   grupo: string
 }
+interface BuscarProfesorProps {
+  mail: string,
+  tipoUsuario: string
+}
 export const CrearProfesor = async ( props: CrearProfesorProps ) => {
     const token = localStorage.getItem("token");
     const response = await api.post('/profesores/Crear', 
@@ -53,6 +57,7 @@ export const AñadirProfesor= async ( props: AñadirProfesorProps ) => {
 };
 export const QuitarProfesor= async ( props: AñadirProfesorProps ) => {
     const token = localStorage.getItem("token");
+    console.log(props)
     const response = await api.put('/asignaturas/Grupo/Profesor/Remove', 
       props,
     {
@@ -62,4 +67,18 @@ export const QuitarProfesor= async ( props: AñadirProfesorProps ) => {
     }
   );
   return response;
+};
+export const BuscarProfesor= async ( props: BuscarProfesorProps ) => {
+    const token = localStorage.getItem("token");
+    const response = await api.post('/profesores/SearchProfesor', 
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+
+  console.log(response)
+  return response.data;
 };

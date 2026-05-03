@@ -106,3 +106,21 @@ export const modificarAula = async (req: any, res: any)=>{
         return res.status(200).json(result)
     }
 }
+export const SearchAulas = async (req: any, res: any)=>{
+    const nombre:string = req.body?.nombre
+    const eMsg:string[] = []
+    const db = getDb()
+    if(!nombre || typeof(nombre)!="string"){
+        eMsg.push("nombre debe ser un string")
+    }else{
+        const aulas = await db.collection<Aula>(ColeccionAula).find(
+            {aula: { $regex: nombre, $options: "i" },}
+        ).toArray()
+        if(aulas.length==0){
+            eMsg.push("no existe ese aula")
+        }{
+            return res.status(200).json(aulas)
+        }
+    }
+    return res.status(400).json({message: eMsg})
+}

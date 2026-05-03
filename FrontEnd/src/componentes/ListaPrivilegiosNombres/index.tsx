@@ -6,7 +6,6 @@ import { DeleteGrupoPrivilegios, quitarPrivilegios } from "@/lib/spi/privilegios
 
 type Props = {
   tipo: string
-  setPrivilegios: React.Dispatch<React.SetStateAction<GrupoPrivilegioTipo | null>>;
   setCambio: React.Dispatch<React.SetStateAction<boolean>>;
   setDerecha: React.Dispatch<React.SetStateAction<string>>;
   privilegios: string[] | GrupoPrivilegioTipo[];

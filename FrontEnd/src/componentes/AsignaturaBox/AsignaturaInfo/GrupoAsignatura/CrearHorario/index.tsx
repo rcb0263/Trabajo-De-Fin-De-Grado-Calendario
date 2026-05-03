@@ -1,6 +1,6 @@
 
 
-import { CrearSesion } from "@/lib/spi/asignaturas";
+import { CrearExcepcion, CrearSesion } from "@/lib/spi/asignaturas";
 import { useState } from "react"
 
 type Props = {
@@ -20,7 +20,7 @@ const horasValidas = () => {
    }
   return horas;
 };
-export const CrearSesionComponente = ({data}:Props) =>{
+export const CrearHorarioComponente = ({data}:Props) =>{
   const añoActual = new Date().getFullYear();
   const [nombre, setNombre] = useState<string>(data?.nombre||'')
   const [grupo, setGrupo] = useState<string>(data?.grupo||'')
@@ -28,7 +28,7 @@ export const CrearSesionComponente = ({data}:Props) =>{
   const [tipo, setTipo] = useState<string>(data?.tipo||'')
 
   const [aula, setAula] = useState<string>('')
-  const [dia, setDia] = useState<string>('')
+  const [fecha, setFecha] = useState<string>('')
   const [horaInicio, setHoraInicio] = useState<string>('')
   const [horaFin, setHoraFin] = useState<string>('')
 
@@ -93,22 +93,18 @@ export const CrearSesionComponente = ({data}:Props) =>{
         }}
         placeholder="aula"/>  
 
-      <p >Dia: </p>
-        <select
-        className={error.includes('dia') ? 'input-error' : ''}
-        value={dia}
-        onChange={e => {
-            setDia(e.target.value);
-            setError(error.replaceAll('dia', ''));
+      <p>Fech Fin: </p>
+      <input className={error.includes('fecha')? 'input-error':''}
+        type="date"
+        name="fecha"
+        value={fecha}
+        onChange={(e) => {
+
+          setFecha(e.target.value)
+          setError(error.replaceAll('fecha', ''))
         }}
-        >
-        <option value="L">L</option>
-        <option value="M">M</option>
-        <option value="X">X</option>
-        <option value="J">J</option>
-        <option value="V">V</option>
-        </select>
-        <p>dia: {dia}</p>
+      />
+        
       <p>Inicio:</p>
         <select
         className={error.includes('horaInicio') ? 'input-error' : ''}
@@ -148,13 +144,13 @@ export const CrearSesionComponente = ({data}:Props) =>{
 
       <button className="boton" onClick={async () => {
           try {
-            await CrearSesion({
+            await CrearExcepcion({
                 nombre, 
                 curso, 
                 grupo, 
                 tipo,
                 aula, 
-                dia,
+                fecha,
                 horaInicio,
                 horaFin
             });

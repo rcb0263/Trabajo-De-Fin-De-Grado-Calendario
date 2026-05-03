@@ -20,7 +20,6 @@ type AsignaturaDetalle = Asignatura & {
 export const AsignaturaDetalleCard = (params: AsignaturaProps) => {
   const [asignatura, setAsignatura] = useState<AsignaturaDetalle|null>(null)
   const [privilegio, setPrivilegio] = useState<GrupoPrivilegioTipo | null>(null);
-  const [crearPrivilegio, setCrearPrivilegio] = useState<boolean>(false)
   const [cambio, setCambio] = useState(false);
   const [derecha, setDerecha] = useState<string>('')
   const {curso, nombre} = params
@@ -80,8 +79,9 @@ export const AsignaturaDetalleCard = (params: AsignaturaProps) => {
           
           <ListaPrivilegios  
             privilegios={asignatura.privilegios}
-            urlBase={urlBase} setPrivilegios={setPrivilegio}
-            setDerecha={setDerecha} setCambio={setCambio} 
+            urlBase={urlBase}
+            setDerecha={setDerecha} 
+            setCambio={setCambio} 
             tipo={'Asignatura'}
           />
         </div>
@@ -93,8 +93,6 @@ export const AsignaturaDetalleCard = (params: AsignaturaProps) => {
         data={{
           nombreAsignatura:asignatura.nombre, 
           curso,
-          setCrearPrivilegios: setCrearPrivilegio,
-          crearPrivilegio,
           setCambio: setCambio
       }}/>
       }

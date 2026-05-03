@@ -1,0 +1,90 @@
+.ContenedorObjetoYPrivilegios{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  justify-content: flex-start;
+  gap: 30px;
+}
+
+.seccion-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  
+  gap: 30px;
+}
+.Titulo_eliminar{
+  display: flex;
+  flex-direction: row; 
+  justify-content: space-between;
+}
+.Asignatura{
+  max-width:  50%;
+  min-width: 45%;
+}
+.acciones {
+  display: flex;
+  gap: 6px;
+}
+
+.usuario-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;           
+  padding: 6px 10px;
+  margin-left: 8px;
+  margin-right: 8px;
+  border-bottom: 1px solid #ddd;
+  border-radius: 8px solid #ddd;
+}
+.titulo-row {
+    border-bottom: 2px solid #ddd;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    display: flex;
+    margin-bottom: 4px;
+}
+.usuario-row h3, h4 {
+  margin: 0;
+
+}
+
+.lista{
+  background-color: white;
+  border-radius: 10px;
+}
+.lista-grupos-row {
+  display: flex;
+  flex-direction: column;  
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.grupo-chip {
+  padding: 4px 10px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+  h3, h4, h5{
+    margin-top: 3px;
+    margin-bottom: 4px;
+  }
+}
+
+.grupo-chip:hover {
+  background: #e5e5e5;
+}
+
+strong { 
+    margin-top: 4px;
+  }
+.grupo-card:last-child {
+  border-bottom: none;
+}
+
+.grupo-card:hover {
+  background: #f5f5f5;
+}

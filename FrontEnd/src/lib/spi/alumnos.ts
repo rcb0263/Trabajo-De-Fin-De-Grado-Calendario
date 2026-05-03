@@ -6,7 +6,7 @@ interface CrearAlumnoProps {
   password: string
 }
 interface DeleteAlumnoProps {
-  mail: string
+  id: string,
 }
 interface AsignarAlumnosProps {
   mail: string,
@@ -14,6 +14,10 @@ interface AsignarAlumnosProps {
   curso: number,
   tipo: string,
   grupo: string
+}
+interface BuscarAlumnoProps {
+  mail: string,
+  tipoUsuario: string
 }
 export const CrearAlumno = async ( props: CrearAlumnoProps ) => {
     const token = localStorage.getItem("token");
@@ -29,15 +33,13 @@ export const CrearAlumno = async ( props: CrearAlumnoProps ) => {
 };
 export const DeleteAlumno= async ( props: DeleteAlumnoProps ) => {
     const token = localStorage.getItem("token");
-    const response = await api.post('/alumnos/Eliminar', 
-            props,
-    {
+    const response = await api.delete('/alumnos/Eliminar', {
+      data: props,
       headers: {
         authorization: `${token}`,
       },
-    }
-  );
-  return response;
+    });
+  return response.data;
 };
 export const AñadirAlumno= async ( props: AsignarAlumnosProps ) => {
     const token = localStorage.getItem("token");
@@ -62,4 +64,28 @@ export const QuitarAlumno= async ( props: AsignarAlumnosProps ) => {
     }
   );
   return response;
+};
+export const BuscarAlumnoe= async ( props: BuscarAlumnoProps ) => {
+    const token = localStorage.getItem("token");
+    const response = await api.post('/alumnos/SearchAlumno', 
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+export const BuscarAlumno= async ( props: BuscarAlumnoProps ) => {
+    const token = localStorage.getItem("token");
+    const response = await api.post('/alumnos/SearchAlumno', 
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+  return response.data;
 };

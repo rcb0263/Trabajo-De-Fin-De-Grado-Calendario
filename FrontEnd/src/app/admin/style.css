@@ -1,8 +1,56 @@
 .AsignaturaMainPage{
-    cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 .listas {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  width: 90%;
+  padding-bottom: 5px;
+}
+
+.SearchConenedor{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 15px;
+  border-color: aliceblue;
+  width: 80%;
+}
+.menuSelector {
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 5px;
+    width: 50%;
+    display: flex;
+}
+.botonSelector{
+  align-self: center;
+  margin-top: 2em;
+  width: 40%;
+  padding: 10px 16px;
+  background-color: #4c6dc9; /* azul moderno */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+.botonSelector:hover:not(:disabled) {
+  background-color: #3b57a5;
+  transform: translateY(-2px);
+}
+.botonSelector:disabled {
+  background-color: #e5e7eb;
+  color: black;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none
 }

@@ -6,8 +6,6 @@ type Props = {
   data?: {
     nombreAsignatura: string
     curso: number;
-    setCrearPrivilegios: React.Dispatch<React.SetStateAction<boolean>>;
-    crearPrivilegio: boolean;
     setCambio: React.Dispatch<React.SetStateAction<boolean>>;
   }
 };

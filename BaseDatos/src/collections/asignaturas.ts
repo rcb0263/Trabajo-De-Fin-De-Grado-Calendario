@@ -51,16 +51,16 @@ export const SearchAsignaturas = async (req: any, res: any)=>{
 export const GetAsignatura = async (req: any, res: any)=>{
     const nombre = req.body?.nombre
     const curso = req.body?.curso
+    const id:string = req.body?.id
     const eMsg:string[] = []
     const db = getDb()
-
     if(!curso || typeof(curso)!="number"){
         eMsg.push("curso debe ser un number")
     }
     if(!nombre || typeof(nombre)!="string"){
         eMsg.push("nombre debe ser un string")
     }
-    if(!!nombre && !!curso){
+    if(nombre && curso){
         const asignatura = await db.collection<Asignatura>(ColeccionAsignaturas)
         .findOne({
         nombre,
@@ -95,6 +95,20 @@ export const GetAsignatura = async (req: any, res: any)=>{
         privilegios: gruposPrivilegios,
         };
         return res.status(201).json(result)
+    }
+    if(id){
+        let Grupo;
+        Grupo = await db.collection<GrupoAsignatura>(ColeccionTeoria)
+        .findOne({_id: new ObjectId(id)})
+        if(!Grupo){
+            Grupo = await db.collection<GrupoAsignatura>(ColeccionPractica)
+            .findOne({_id: new ObjectId(id)})
+        }
+        if(!Grupo)return res.status(400).json({mensaje: [...eMsg, 'No se ha encontrado ese grupo']})
+        const Asignatura = await db.collection<Asignatura>(ColeccionAsignaturas)
+        .findOne({_id: new ObjectId(Grupo.asignatura)})
+        if(!Asignatura)return res.status(400).json({mensaje: [...eMsg, 'No se ha encontrado esa asignatura']})
+        return res.status(201).json(Asignatura)
     }
     return res.status(400).json({mensaje: eMsg})
 }
@@ -479,40 +493,56 @@ export const ModificarGrupoAsignaturaBasico = async (req: any, res: any)=>{
 }
 //Funciona
 export const crearExcepcion= async (req:any, res: any)=>{
-    const idGrupo:string = req.body?.idGrupo
-    const tipo = req.body?.tipo
+    const nombre = req.body?.nombre
+    const curso = req.body?.curso 
+    const grupo:string = req.body?.grupo
+    const tipo: 'Teoria'|'Practica' = req.body?.tipo
     const excepcion:Excepcion = req.body?.excepcion
     const fecha:string = excepcion?.fecha
     const aula:string = excepcion?.aula
+    let idGrupo = '';//
+    let asignaturaId='';//
     let coleccion = '';
     const eMsg:string[] = []
     const db = getDb()
-    if(tipo && typeof(tipo)=="string" ){
-        if(tipo=='Teoria'){
-            coleccion=ColeccionTeoria
-        }else if(tipo=='Practica'){
-            coleccion=ColeccionPractica
-        }else{
-            eMsg.push("tipo debe ser un 'Teoria' o 'Practica' ")
-        }
-    }else{
-        eMsg.push("tipo debe ser un string")
+    if(!curso ||typeof(curso)!= "number" ){
+        eMsg.push("curso debe ser un numero")
     }
-
-    if(!idGrupo || typeof(idGrupo)!="string" || !ObjectId.isValid(idGrupo) ){
-        eMsg.push("idGrupo debe ser un string de 24 caracteres hexadecimales")
+    if(!tipo || typeof(tipo)!="string" || (tipo!= 'Teoria' && tipo!='Practica') ){
+        eMsg.push("tipo debe ser un string")
+    }else if(tipo=='Teoria'){
+        coleccion=ColeccionTeoria
+    }else if(tipo=='Practica'){
+        coleccion=ColeccionPractica
     }else{
-        if(coleccion!=''){
-            const grupo = await db.collection(coleccion).findOne({ _id: new ObjectId(idGrupo) });
-            if (!grupo) {
-                eMsg.push("No se encuentra ese grupo")
-            }
+        eMsg.push("tipo debe ser un 'Teoria' o 'Practica' ")
+    }
+    if(!grupo ||typeof(grupo)!= "string" ){
+        eMsg.push("grupo debe ser un string")
+    }
+    if(!nombre || typeof(nombre)!="string"){
+        eMsg.push("nombre debe ser un string")
+    }else if(eMsg.length==0){
+        const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
+        if(!existeAsignatura){
+            eMsg.push("No existe una asignatura con ese nombre para ese año ")
+        }else{
+            asignaturaId=String(existeAsignatura._id)
+        }
+    }
+    if(eMsg.length==0){
+        const existeGrupo = await db.collection<GrupoAsignatura>(coleccion).findOne({ asignatura: asignaturaId, grupo:grupo });
+        if (!existeGrupo) {
+            eMsg.push("No se encuentra ese grupo")
+        }else{
+            idGrupo = String(existeGrupo._id)
         }
     }
     if(!aula || typeof(aula)!="string"){
         eMsg.push("aula debe ser un string")
     }
     if(!excepcion || await ValidarEcepcion(excepcion)!=1){
+
         eMsg.push("excepcion debe ser valida (fecha, aula, horaInicio, horaFin)")
     }
     if (!fecha || typeof fecha !== "string" ) {
@@ -534,47 +564,63 @@ export const crearExcepcion= async (req:any, res: any)=>{
         { aula: excepcion.aula }
         );
 
-        return res.status(200).json(get)
+        return res.status(200).json(result, result2)
     }
 
 }
 //Funciona
 export const eliminarExcepcion= async (req:any, res: any)=>{
-    const idGrupo:string = req.body?.idGrupo
-    const tipo = req.body?.tipo
+    const nombre = req.body?.nombre
+    const curso = req.body?.curso 
+    const grupo:string = req.body?.grupo
+    const tipo: 'Teoria'|'Practica' = req.body?.tipo
     const excepcion:Excepcion = req.body?.excepcion
     const fecha:string = excepcion?.fecha
     const aula:string = excepcion?.aula
+    let idGrupo = '';//
+    let asignaturaId='';//
     let coleccion = '';
     const eMsg:string[] = []
     const db = getDb()
-    if(tipo && typeof(tipo)=="string" ){
-        if(tipo=='Teoria'){
-            coleccion=ColeccionTeoria
-        }else if(tipo=='Practica'){
-            coleccion=ColeccionPractica
-        }else{
-            eMsg.push("tipo debe ser un 'Teoria' o 'Practica' ")
-        }
-    }else{
+    if(!curso ||typeof(curso)!= "number" ){
+        eMsg.push("curso debe ser un numero")
+    }
+    if(!tipo || typeof(tipo)!="string" || (tipo!= 'Teoria' && tipo!='Practica') ){
         eMsg.push("tipo debe ser un string")
-    }
-    
-    if(!idGrupo || typeof(idGrupo)!="string" || !ObjectId.isValid(idGrupo) ){
-        eMsg.push("idGrupo debe ser un string de 24 caracteres hexadecimales")
+    }else if(tipo=='Teoria'){
+        coleccion=ColeccionTeoria
+    }else if(tipo=='Practica'){
+        coleccion=ColeccionPractica
     }else{
-        if(coleccion!=''){
-            const grupo = await db.collection(coleccion).findOne({ _id: new ObjectId(idGrupo) });
-            if (!grupo) {
-                eMsg.push("No se encuentra ese grupo")
-            }
+        eMsg.push("tipo debe ser un 'Teoria' o 'Practica' ")
+    }
+    if(!grupo ||typeof(grupo)!= "string" ){
+        eMsg.push("grupo debe ser un string")
+    }
+    if(!nombre || typeof(nombre)!="string"){
+        eMsg.push("nombre debe ser un string")
+    }else if(eMsg.length==0){
+        const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
+        if(!existeAsignatura){
+            eMsg.push("No existe una asignatura con ese nombre para ese año ")
+        }else{
+            asignaturaId=String(existeAsignatura._id)
         }
     }
-    if(!excepcion || await ValidarEcepcion(excepcion)!=2){
-        eMsg.push("excepcion debe ser una Excepción valida que no solape")
+    if(eMsg.length==0){
+        const existeGrupo = await db.collection<GrupoAsignatura>(coleccion).findOne({ asignatura: asignaturaId, grupo:grupo });
+        if (!existeGrupo) {
+            eMsg.push("No se encuentra ese grupo")
+        }else{
+            idGrupo = String(existeGrupo._id)
+        }
     }
     if(!aula || typeof(aula)!="string"){
         eMsg.push("aula debe ser un string")
+    }
+    if(!excepcion || await ValidarEcepcion(excepcion)!=2){
+
+        eMsg.push("excepcion debe ser valida (fecha, aula, horaInicio, horaFin)")
     }
     if (!fecha || typeof fecha !== "string" ) {
         eMsg.push("fecha debe ser un string con formato dd/mm/yy")
@@ -1113,16 +1159,13 @@ const validarSesion = async (sesion: Sesion): Promise<boolean> => {
     if (!diasValidos.has(sesion.dia)) return false;
     if (!validarHorario(sesion.horaInicio, sesion.horaFin)) return false;
     if (!sesion.aula ) return false;
-    console.log('aula')
 
     const aula = await db.collection<Aula>(ColeccionAula)
         .findOne({ aula: sesion.aula });
     if (!aula) return false;
-        console.log('aula')
 
     // Validar disponibilidad
     if (!AulaDisponibleSesiones(aula, sesion)){
-            console.log('no diponible')
         return false;
     }else{
         return true
@@ -1152,12 +1195,12 @@ const AulaDisponibleSesiones = (aula: Aula, sesionNueva: Sesion)=>{ // A[10:00, 
             || sesionNueva.horaFin.hora == h.horaInicio.hora &&sesionNueva.horaFin.minuto == h.horaInicio.minuto
             ||sesionNueva.horaInicio.hora == h.horaFin.hora && sesionNueva.horaInicio.minuto == h.horaFin.minuto
         ){
+
+        
             return true
         }
-
         return false
     });
-
     return disponible
 }
 const AulaDisponibleExcepciones = (aula: Aula, excepcionNueva: Excepcion)=>{ // A[10:00, 11:00] B[10:30, 11:30]
@@ -1179,7 +1222,8 @@ const AulaDisponibleExcepciones = (aula: Aula, excepcionNueva: Excepcion)=>{ // 
     return disponible
 }
 const ValidarEcepcion = async (excepcion: Excepcion): Promise<number> => {
-    const [dd, mm, yyyy] = excepcion.fecha.split('/').map(Number);
+
+    const [yyyy, mm, dd] = excepcion.fecha.split('-').map(Number);
     const date = new Date(yyyy, mm-1, dd )
     let dia :  'L' | 'M' | 'X' | 'J' | 'V';
     switch (date.getDay()){
@@ -1201,7 +1245,6 @@ const ValidarEcepcion = async (excepcion: Excepcion): Promise<number> => {
         default:
             return 0;
     }
-
     // Validar horas (formato + orden)
     if (!validarHorario(excepcion.horaInicio, excepcion.horaFin)) return 0;
     // Validar aula
@@ -1209,6 +1252,7 @@ const ValidarEcepcion = async (excepcion: Excepcion): Promise<number> => {
     const db = getDb()
     const aula = await db.collection<Aula>(ColeccionAula).findOne({ aula: excepcion.aula });
     if (!aula) return 0;
+
 
     const sesion: Sesion = {
         aula: excepcion.aula,

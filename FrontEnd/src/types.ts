@@ -69,6 +69,7 @@ export type Administrador ={
 
 export type Usuario ={
     _id?: any,
+    privilegios: string[]
     nombre: string,         //basico
     passwordHash: string,   //basico 
     mail: string,           //avanzado
