@@ -11,12 +11,11 @@ interface Props {
 
 export const DetallePrivilegios = (params: Props) => {
     const {privilegio, tipo, nombreObjetivo} = params
-       
 
     return (
     <div className="detallePrivilegios">
       <div className="titulo-row">
-        <h4>Privilegio {privilegio.nombre}</h4>
+        <h4>Nombre {privilegio.nombre}</h4>
       </div>
       <div className="privilegio-row">
         <h4><strong>{tipo} </strong>{nombreObjetivo}</h4>

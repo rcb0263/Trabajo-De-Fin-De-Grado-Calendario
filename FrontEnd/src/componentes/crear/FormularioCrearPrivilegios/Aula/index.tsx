@@ -1,11 +1,16 @@
 import { crearPrivilegiosAula } from "@/lib/spi/privilegios"
 import { useState } from "react"
 
-
-export const PrivilegiosAula = () =>{
+type Props = {
+  data?: {
+    aula: string
+    setCambio: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+};
+export const PrivilegiosAula = ({data}: Props) =>{
 
     const [nombre, setNombre] = useState<string>('')
-    const [aula, setAula] = useState<string>('')
+    const [aula, setAula] = useState<string>(data?.aula||'')
     const [basicos, setBasico] = useState<boolean>(false)
     const [avanzados, setAvanzado] = useState<boolean>(false)
 

@@ -16,7 +16,7 @@ router.post("/Crear", async (req, res)=>{
 })
 router.post("/Eliminar",verifyToken, esAdmin, async (req, res)=>{
  try {
-   console.log("ENTRA DELETE");
+  
    await eliminarUsuario(req,res, 'Alumno')
 
  } catch (error) {
@@ -38,7 +38,7 @@ router.post("/Login", async (req, res)=>{
    res.status(404).json(error)
  }
 })
-router.get("/GetUserIdFromToken", verifyToken, async (req: AuthRequest, res)=>{
+router.post("/GetUserIdFromToken", verifyToken, async (req: AuthRequest, res)=>{
  try {
    const result = req.user
    res.status(201).json(result)

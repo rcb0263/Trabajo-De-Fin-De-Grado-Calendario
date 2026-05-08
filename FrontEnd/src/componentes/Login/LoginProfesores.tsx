@@ -27,7 +27,7 @@ const LoginProfesores = () =>{
             try {
               const token = await loginProfesor(mail, password);
               setToken(token);
-              localStorage.setItem("token", token);
+              document.cookie = `token=${token}; max-age=3600; path=/; Secure; SameSite=Strict`;
               setError(false);
               if(token!=''){
                 router.push(`/Profesores`)

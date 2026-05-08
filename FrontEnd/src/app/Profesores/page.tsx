@@ -1,24 +1,41 @@
 'use client'
 import { CalendarioDia } from "@/componentes/CalendarioDia";
 import { HorarioSemana } from "@/componentes/HorarioSemana";
-import { useRouter } from "next/navigation";
+import "./style.css"
 import { useEffect, useState } from "react";
+import { Usuario } from "@/types";
+import { GetUsuario, userFromToken } from "@/lib/spi/usuarios";
+import { UsuarioDetalleCard } from "@/componentes/Buscadores/Usuario/UsuarioBox/UsuarioInfo";
 
 const Page = () => {
-  const [token, setToken] = useState<string>('')
-  const [error, setError]= useState<boolean>(false);
+  const tipo = 'Profesor';
   const [modo, setModo]= useState<string>('semana');
+  const [nombre, setNombre]= useState<string>('');
+  const [mail, setMail]= useState<string|null>(null);
+  const [id, setId]= useState<string|null>(null);
   
-  const router = useRouter()
-  useEffect(() => {
-    const savedToken = localStorage.getItem("token");
-    if (savedToken) {
-      setToken(savedToken);
-    }
-  }, []);
+useEffect(() => {
+  const fetchNombre = async () => {
+    const data:Usuario = await GetUsuario({tipo:'Profesor', mail: mail!});
+    console.log(data)
+    setNombre(data.nombre);
+    setId(String(data._id));
+    console.log(data)
+  };
+  const setmail = async () =>{
+    const res = await userFromToken({tipo: 'Profesor'})
+
+    setMail(res.mail)
+  }
+  setmail()
+  if (mail) {
+    fetchNombre();
+  }
+}, [mail]);
+
   return (
-    <div>
-      <h1>Sesion Profesor</h1>
+    <div className="paginaUsuario">
+      <h1>Usuario {nombre}</h1>
       <button onClick={()=>{
         setModo('dia')
       }}>DIA</button>
@@ -28,8 +45,16 @@ const Page = () => {
       <button onClick={()=>{
         setModo('mes')
       }}>MES</button>
-      {modo==='semana' &&<HorarioSemana mail={"redefrdes@nebrija.es"}/>}
-      {modo==='dia' &&<CalendarioDia mail={"redefrdes@nebrija.es"}/>}
+      <div className="row">
+          <div>
+          {modo==='semana' && mail &&<HorarioSemana mail={mail}/>}
+          {modo==='dia' && mail &&<CalendarioDia mail={mail}/>}
+          </div>
+          <div>
+          {id && <UsuarioDetalleCard notAdmin="user" id={id} tipo={"Profesor"}/>}
+          </div>
+        
+      </div>
     </div>
   );
 }

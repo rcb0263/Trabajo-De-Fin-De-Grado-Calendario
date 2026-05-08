@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { PrivilegiosUsuario } from "@/componentes/FormularioCrearPrivilegios/Usuario";
-import { PrivilegiosAula } from "@/componentes/FormularioCrearPrivilegios/Aula";
-import { PrivilegiosAsignatura } from "@/componentes/FormularioCrearPrivilegios/Asignatura";
-import { PrivilegiosGrupoAsignatura } from "@/componentes/FormularioCrearPrivilegios/GrupoAsignatura";
+import { PrivilegiosUsuario } from "@/componentes/crear/FormularioCrearPrivilegios/Usuario";
+import { PrivilegiosAula } from "@/componentes/crear/FormularioCrearPrivilegios/Aula";
+import { PrivilegiosAsignatura } from "@/componentes/crear/FormularioCrearPrivilegios/Asignatura";
+import { PrivilegiosGrupoAsignatura } from "@/componentes/crear/FormularioCrearPrivilegios/GrupoAsignatura";
 const Page = () => {
   
   const [nombreTipoDeGrupo, setNombreTipoDeGrupo] = useState<string>('Usuario')

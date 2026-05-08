@@ -83,11 +83,6 @@ export const GetAsignatura = async (req: any, res: any)=>{
         .collection<GrupoPrivilegio>(ColeccionPrivilegios)
         .find({ _id: { $in: idsPrivilegios } })
         .toArray();
-        /*
-        const teoria = gruposT.map(g => g.grupo);
-        const practicas = gruposP.map(g => g.grupo);
-        const privilegios = gruposPrivilegios.map(g => g.nombre);
-         */
         const result = {
         ...asignatura,
         teoria: gruposT,
@@ -98,17 +93,32 @@ export const GetAsignatura = async (req: any, res: any)=>{
     }
     if(id){
         let Grupo;
+        let tipo='';
         Grupo = await db.collection<GrupoAsignatura>(ColeccionTeoria)
         .findOne({_id: new ObjectId(id)})
         if(!Grupo){
             Grupo = await db.collection<GrupoAsignatura>(ColeccionPractica)
             .findOne({_id: new ObjectId(id)})
+            tipo='Practica'
+
+        }else{
+            tipo='Teoria'
         }
+        
         if(!Grupo)return res.status(400).json({mensaje: [...eMsg, 'No se ha encontrado ese grupo']})
         const Asignatura = await db.collection<Asignatura>(ColeccionAsignaturas)
         .findOne({_id: new ObjectId(Grupo.asignatura)})
         if(!Asignatura)return res.status(400).json({mensaje: [...eMsg, 'No se ha encontrado esa asignatura']})
-        return res.status(201).json(Asignatura)
+        const data = {
+        ...Grupo,
+        tipo,
+        nombre: Asignatura.nombre,
+        curso: Asignatura.curso,
+        año: Asignatura.año,
+        semestre: Asignatura.semestre,
+        grado: Asignatura.grado,
+        }
+        return res.status(201).json(data)
     }
     return res.status(400).json({mensaje: eMsg})
 }
@@ -144,11 +154,20 @@ export const GetGrupoAsignatura = async (req: any, res: any)=>{
     if(!grupo || typeof(grupo)!="string"){
         eMsg.push("grupo debe ser un string")
     }else if(coleccion!=''&&idAsignatura!=''){
-        const existeGrupo = await db.collection(coleccion).findOne({asignatura: idAsignatura, grupo: grupo})
-        if(!existeGrupo){
+        const Grupo = await db.collection(coleccion).findOne({asignatura: idAsignatura, grupo: grupo})
+        if(!Grupo){
             eMsg.push("No se ha encontrado ese grupo")
         }else{
-            return res.status(201).json(existeGrupo)
+            const idsPrivilegios = Grupo!.privilegios.map((id: string) => new ObjectId(id));
+            const gruposPrivilegios = await db
+            .collection<GrupoPrivilegio>(ColeccionPrivilegios)
+            .find({ _id: { $in: idsPrivilegios } })
+            .toArray();
+            const result = {
+            ...Grupo,
+            privilegios: gruposPrivilegios,
+            };
+            return res.status(201).json(result)
         }
     }
     return res.status(400).json({mensaje: eMsg})

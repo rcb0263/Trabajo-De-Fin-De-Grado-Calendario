@@ -1,10 +1,11 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
-import { Administrador, Asignatura, FrontHorarioAsignatura, GrupoAsignatura, Usuario } from "../tipos"
+import { Administrador, Asignatura, FrontHorarioAsignatura, GrupoAsignatura, GrupoPrivilegio, Usuario } from "../tipos"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
 
+const ColeccionPrivilegios = "Privilegios"
 const ColeccionAlumnos= "Alumnos"
 const ColeccionProfesores = "Profesores"
 const ColeccionTeoria = "Teoria"
@@ -120,8 +121,7 @@ export const crearUsuario = async (req: any, res: any, tipoUsuario:string)=>{
 export const eliminarUsuario = async (req: any, res: any, tipoUsuario:string)=>{
     const mail:string = req.body?.mail //   grupo: string
     const id:string = req.body?.id //   grupo: string
-    console.log('body')
-    console.log(req.body)
+    
     let coleccion = ''
     const db = getDb()
     const eMsg:string[] = []
@@ -153,7 +153,7 @@ export const eliminarUsuario = async (req: any, res: any, tipoUsuario:string)=>{
         eMsg.push("No existe un "+ tipoUsuario +" con ese correo electrónico");
         }
     }
-    console.log(eMsg)
+    
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
@@ -199,6 +199,7 @@ export const SearchUsuario = async (req: any,res: any,  tipoUsuario:string)=>{
 
 export const getUsuario= async  (req: any,res: any,  tipoUsuario:string)=>{
     const id:string = req.body?.id
+    const mail:string = req.body?.mail
     const db = getDb()
     const eMsg:string[] = []
 
@@ -207,10 +208,28 @@ export const getUsuario= async  (req: any,res: any,  tipoUsuario:string)=>{
         eMsg.push('ese id no es valido')
     }
 
-    if(eMsg.length>0) return (res.status(400).json({message: eMsg}))
+    if(eMsg.length>0) {
+        if(!mail|| !ObjectId){
+            eMsg.push('ese mail no es valido')
+        }
+        const usuario = await  db.collection<Usuario>(coleccion).findOne({  mail: mail})
+        if(!usuario){
+            return (res.status(400).json({message: eMsg}))
+        }else{
+            return res.status(200).json(usuario)
+        }
+    }
     const usuario = await  db.collection<Usuario>(coleccion).findOne({  _id: new ObjectId(id)})
-
-    return usuario?res.status(200).json({usuario}):res.status(400).json({message: 'no se ha encontrado ese usuario'});
+    const idsPrivilegios = usuario!.privilegios.map((id: string) => new ObjectId(id));
+    const gruposPrivilegios = await db
+    .collection<GrupoPrivilegio>(ColeccionPrivilegios)
+    .find({ _id: { $in: idsPrivilegios } })
+    .toArray();
+    const result = {
+    ...usuario,
+    privilegios: gruposPrivilegios,
+    };
+    return usuario?res.status(200).json(result):res.status(400).json({message: 'no se ha encontrado ese usuario'});
 }
 
 

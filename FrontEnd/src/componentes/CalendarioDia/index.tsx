@@ -1,4 +1,4 @@
-import { Sesion } from "@/types";
+import { Sesion, SesionAula } from "@/types";
 import { horarioProfesor } from "@/lib/spi/horarios";
 import { useEffect, useState } from "react";
 import './styles.css'
@@ -7,9 +7,13 @@ interface HorarioSemanaProps {
     mail: string,
 }
 
+interface SesionAsig extends Sesion {
+  asignatura: string;
+}
+type Sesiones = Sesion & {asignatura:string}
 export const CalendarioDia =(props: HorarioSemanaProps)=>{
   
-  const [sesiones, setSesiones] = useState<Sesion[]|null>(null);
+  const [sesiones, setSesiones] = useState<SesionAsig[]|null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

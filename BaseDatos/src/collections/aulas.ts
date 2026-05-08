@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
-import { Aula } from "../tipos"
+import { Aula, GrupoPrivilegio } from "../tipos"
 
 
 
@@ -10,6 +10,7 @@ const ColeccionPractica = "Practica"
 const ColeccionAula = "Aulas"
 const ColeccionAlumnos= "Alumnos"
 const ColeccionProfesores = "Profesores"
+const ColeccionPrivilegios = "Privilegios"
 
 //verifyIsAdmin
 export const crearAula = async (req: any, res: any)=>{
@@ -42,15 +43,16 @@ export const crearAula = async (req: any, res: any)=>{
         return res.status(200).json(result)
     }
 }
+
 //verifyIsAdmin
 export const eliminarAula = async (req: any, res: any)=>{
-    const nombre:string = req.body?.nombre //   PRBA202
+    const aula:string = req.body?.aula //   PRBA202
     const eMsg:string[] = []
     const db = getDb()
-    if(!nombre || typeof(nombre)!="string"){
+    if(!aula || typeof(aula)!="string"){
         eMsg.push("nombre debe ser un string")
     }else{
-        const existeAula = await db.collection(ColeccionAula).findOne({aula: nombre})
+        const existeAula = await db.collection(ColeccionAula).findOne({aula})
         if(!existeAula){
             eMsg.push("no existe ese aula")
         }
@@ -59,14 +61,51 @@ export const eliminarAula = async (req: any, res: any)=>{
         return res.status(400).json({message: eMsg})
     }else{
         const db = getDb()
-        const aula = await  db.collection<Aula>(ColeccionAula).findOne({aula: nombre})
-        if(aula){
-            res.status(400).json({message: 'El aula ya existe'})
-        }
-
-        const result = await db.collection(ColeccionAula).deleteOne({aula: nombre})
+        const result = await db.collection(ColeccionAula).deleteOne({aula})
         return res.status(200).json(result)
     }
+}
+//verifyIsAdmin
+export const getAula = async (req: any, res: any)=>{
+    const aula:string = req.body?.aula //   PRBA202
+    const id:string = req.body?.id //   PRBA202
+    const eMsg:string[] = []
+    const db = getDb()
+    if(!aula || typeof(aula)!="string"){
+        eMsg.push("aula debe ser un string")
+    }else{
+        const existeAula = await db.collection(ColeccionAula).findOne({aula})
+        if(!existeAula){
+            eMsg.push("no existe ese aula")
+        }else{
+            return res.status(200).json(existeAula)
+        }
+        
+    }
+    if(!id || typeof(id)!="string"){
+        eMsg.push("id debe ser un string")
+    }else{
+
+        const existeAula = await db.collection(ColeccionAula).findOne({_id: new ObjectId(id)})
+        if(!existeAula){
+            eMsg.push("no existe ese aula")
+        }else{
+            const existeAula = await  db.collection<Aula>(ColeccionAula).findOne({  _id: new ObjectId(id)})
+            if (!existeAula) res.status(400).json({message: 'no se existe ese aula'})
+            const idsPrivilegios = existeAula!.privilegios.map((id: string) => new ObjectId(id));
+            const gruposPrivilegios = await db
+            .collection<GrupoPrivilegio>(ColeccionPrivilegios)
+            .find({ _id: { $in: idsPrivilegios } })
+            .toArray();
+            const result = {
+            ...existeAula,
+            privilegios: gruposPrivilegios,
+            };
+            return res.status(200).json(result);
+        }
+        
+    }
+    return res.status(400).json({message: eMsg})
 }
 //verifyIsAdmin
 export const modificarAula = async (req: any, res: any)=>{

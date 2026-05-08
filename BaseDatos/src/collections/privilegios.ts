@@ -471,17 +471,35 @@ export const eliminarMiembroPrivilegios = async (req: any, res: any)=>{
     }
 }
 
-//Expandir
+//Obtiene segun el _id
 export const GetGrupoPrivilegios = async (req: any, res: any) => {
     const id: string = req.body.id
     const db = getDb()
-
     if(!id ||  typeof(id)!="string"|| !ObjectId.isValid(id)){
         return res.status(400).json({message: 'id debe ser un ObjectId valido'})
     }
     const grupo = await db.collection<GrupoPrivilegioTipo>(ColeccionPrivilegios).findOne(
         {_id: new ObjectId(id)}
     )
+    
+    if(!grupo){
+        return res.status(400).json({message: 'No existe ese grupo'})
+    }
+    return res.status(200).json(grupo)
+}
+
+//Obtiene segun el objetivo
+export const GetGrupoPrivilegiosObjetivo = async (req: any, res: any) => {
+    const id: string = req.body.id
+    const db = getDb()
+    
+    if(!id ||  typeof(id)!="string"|| !ObjectId.isValid(id)){
+        return res.status(400).json({message: 'id debe ser un ObjectId valido'})
+    }
+    const grupo = await db.collection<GrupoPrivilegioTipo>(ColeccionPrivilegios).find
+    (
+        {objetivo: id}
+    ).toArray()
     if(!grupo){
         return res.status(400).json({message: 'No existe ese grupo'})
     }
@@ -548,8 +566,7 @@ export const esAdmin = async (req: any, res: any) => {
         admin: 'Admin',
         "miembros.miembro": req.user.mail
     });
-    console.log('admin grupos: ')
-    console.log(grupos)
+    
     if(grupos) {
         return true
 

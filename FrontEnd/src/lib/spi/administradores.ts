@@ -9,7 +9,8 @@ interface AñadirAdminProps {
   mail: string,
 }
 export const CrearAdmin = async ( props: CrearAdminProps ) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.post('/privilegios/CrearAdministrador', 
             props,
     {
@@ -20,8 +21,9 @@ export const CrearAdmin = async ( props: CrearAdminProps ) => {
   );
   return response;
 };
+//const token = localStorage.getItem("token");
 export const AñadirAdmin = async ( props: AñadirAdminProps ) => {
-    const token = localStorage.getItem("token");
+  const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
     const response = await api.put('/privilegios/addAdmin', 
             props,
     {
@@ -33,7 +35,8 @@ export const AñadirAdmin = async ( props: AñadirAdminProps ) => {
   return response;
 };
 export const EliminarAdmin = async ( props: AñadirAdminProps ) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.put('/privilegios/ElimAdmin', 
             props,
     {

@@ -5,7 +5,8 @@ import "./style.css"
 import { useRouter } from "next/navigation";
 import { ListaPrivilegios } from "@/componentes/ListaPrivilegiosNombres";
 import { DetallePrivilegios } from "@/componentes/DetallePrivilegios";
-import { PrivilegiosAsignatura } from "@/componentes/FormularioCrearPrivilegios/Asignatura";
+import { PrivilegiosAsignatura } from "@/componentes/crear/FormularioCrearPrivilegios/Asignatura";
+import CrearGrupoAsignatura from "@/componentes/crear/GrupoAsignatura";
 type AsignaturaProps = {
   curso: number;
   nombre: string
@@ -65,6 +66,7 @@ export const AsignaturaDetalleCard = (params: AsignaturaProps) => {
             curso={curso} 
             nombre={nombre}
             setCambio={setCambio}
+            setDerecha={setDerecha} 
             />
 
           <GrupoLista 
@@ -74,14 +76,16 @@ export const AsignaturaDetalleCard = (params: AsignaturaProps) => {
           tipo={'/practica'}
           curso={curso}
           nombre={nombre} 
-          setCambio={setCambio}                
+          setCambio={setCambio}
+          setDerecha={setDerecha}                 
             />
           
           <ListaPrivilegios  
             privilegios={asignatura.privilegios}
             urlBase={urlBase}
             setDerecha={setDerecha} 
-            setCambio={setCambio} 
+            setCambio={setCambio}
+            setPrivilegio={setPrivilegio}
             tipo={'Asignatura'}
           />
         </div>
@@ -94,7 +98,17 @@ export const AsignaturaDetalleCard = (params: AsignaturaProps) => {
           nombreAsignatura:asignatura.nombre, 
           curso,
           setCambio: setCambio
-      }}/>
+      }}/>}
+      {asignatura &&( derecha=='crearAsignaturaT'|| derecha=='crearAsignaturaP') &&
+        <CrearGrupoAsignatura 
+        data={{
+          nombre,
+          curso,
+          tipo: derecha=='crearAsignaturaT'?'Teoria':'Practica',
+          setCambio: setCambio,
+          setDerecha: setDerecha
+        }}
+      />
       }
       {derecha=='detallePrivilegios' && privilegio && 
       <DetallePrivilegios 
@@ -115,9 +129,10 @@ type Props = {
   curso: number;
   nombre: string
   setCambio: React.Dispatch<React.SetStateAction<boolean>>;
+  setDerecha: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export const GrupoLista = ({ titulo, grupos, urlBase, tipo, curso, nombre, setCambio }: Props) => {
+export const GrupoLista = ({ titulo, grupos, urlBase, tipo, curso, nombre, setCambio, setDerecha }: Props) => {
   const router = useRouter();
   
 
@@ -125,7 +140,7 @@ export const GrupoLista = ({ titulo, grupos, urlBase, tipo, curso, nombre, setCa
     <div className="lista-grupos-row lista">
       <div className="titulo-row">
       <h4>{titulo}:</h4>
-        <button className="row-button" onClick={()=>router.push(`/admin/crear/creargrupoasignatura`)}>Añadir</button>
+        <button className="row-button" onClick={()=>setDerecha(tipo=='/Teoria' ?'crearAsignaturaT':'crearAsignaturaP')}>Añadir</button>
       </div>
       <div >
       {grupos.length > 0 ? (

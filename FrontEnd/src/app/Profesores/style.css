@@ -1,0 +1,15 @@
+.paginaUsuario{
+    gap: 5px;
+    margin-left: 1%;
+}
+
+.row{
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-right: 15px;
+}
+
+.row > div {
+  flex: 1;
+}

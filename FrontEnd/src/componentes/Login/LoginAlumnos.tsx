@@ -32,7 +32,7 @@ const LoginAlumnos = ()  =>{
             try {
             const token = await loginAlumno(mail, password);
             setToken(token);
-            localStorage.setItem("token", token);
+            document.cookie = `token=${token}; max-age=3600; path=/; Secure; SameSite=Strict`;
             setError(false);
             if(token!=''){
               router.push(`/Alumnos`)

@@ -1,7 +1,5 @@
 import { Router } from "express"
-import { getDb } from "../mongo"
-import { crearUsuario, getAlumnos } from "../collections/usuarios";
-import { crearAula, eliminarAula, SearchAulas } from "../collections/aulas";
+import { crearAula, eliminarAula, getAula, SearchAulas } from "../collections/aulas";
 import { verifyAdmin } from "../collections/privilegios";
 import { verifyToken } from "../middleware/verifytoken";
 const router = Router();
@@ -19,6 +17,13 @@ try {
 router.delete("/Eliminar", verifyToken, verifyAdmin, async (req, res)=>{
 try {
    await eliminarAula(req,res)
+} catch (error) {
+   res.status(404).json(error)
+ }
+})
+router.post("/GetAula", verifyToken, verifyAdmin, async (req, res)=>{
+try {
+   await getAula(req,res)
 } catch (error) {
    res.status(404).json(error)
  }

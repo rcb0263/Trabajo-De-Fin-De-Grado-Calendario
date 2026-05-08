@@ -27,7 +27,9 @@ const LoginAdmin = () => {
           try {
             const token = await loginAdmin(mail, password);
             setToken(token);
-            localStorage.setItem("token", token);
+            document.cookie = `token=${token}; max-age=3600; path=/; Secure; SameSite=Strict`;
+//            localStorage.setItem("token", token);
+
             setError(false);
             if(token!=''){
               router.push(`/admin`)

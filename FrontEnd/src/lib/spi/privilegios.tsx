@@ -53,7 +53,8 @@ interface eliminarGrupoPrivilegios {
 }
 
 export const crearPrivilegiosUsuario = async (props: crearPrivilegiosUsuarioProps) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.post('/privilegios/Usuario/Crear', 
       props,
     {
@@ -65,7 +66,8 @@ export const crearPrivilegiosUsuario = async (props: crearPrivilegiosUsuarioProp
   return response;
 };
 export const crearPrivilegiosAula = async (props: crearPrivilegiosAulaProps) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.post('/privilegios/Aula/Crear', 
       props,
     {
@@ -77,7 +79,8 @@ export const crearPrivilegiosAula = async (props: crearPrivilegiosAulaProps) => 
   return response;
 };
 export const crearPrivilegiosAsignatura = async (props: crearPrivilegiosAsignaturaProps) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.post('/privilegios/Asignatura/Crear', 
       props,
     {
@@ -89,7 +92,8 @@ export const crearPrivilegiosAsignatura = async (props: crearPrivilegiosAsignatu
   return response;
 };
 export const crearPrivilegiosGrupoAsignatura = async (props: crearPrivilegiosGrupoAsignaturaProps) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.post('/privilegios/GrupoAsignatura/Crear', 
       props,
     {
@@ -101,7 +105,8 @@ export const crearPrivilegiosGrupoAsignatura = async (props: crearPrivilegiosGru
   return response;
 };
 export const darPrivilegios = async (props: darPrivilegiosProps) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.put('/privilegios/addMiembro', 
       props,
     {
@@ -113,7 +118,8 @@ export const darPrivilegios = async (props: darPrivilegiosProps) => {
   return response;
 };
 export const quitarPrivilegios = async (props: quitarPrivilegiosProps) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.put('/privilegios/eliminarMiembro', 
       props,
     {
@@ -126,7 +132,8 @@ export const quitarPrivilegios = async (props: quitarPrivilegiosProps) => {
 };
 
 export const GetGrupoPrivilegios = async (props: GetGrupoPrivilegiosProps) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.post('/privilegios/Get/GrupoPrivilegiado', 
       props,
     {
@@ -137,8 +144,23 @@ export const GetGrupoPrivilegios = async (props: GetGrupoPrivilegiosProps) => {
   );
   return response.data;
 };
+
+export const GetGruposPrivilegios = async (props: GetGrupoPrivilegiosProps) => {
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
+    const response = await api.post('/privilegios/Get/GruposPrivilegiadoObjetivo', 
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+  return response.data;
+};
 export const DeleteGrupoPrivilegios = async (props: eliminarGrupoPrivilegios) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
 
     const response = await api.put('/privilegios/Grupo/Eliminar', 
       props,

@@ -1,34 +1,39 @@
 import { GetAsignaturaById } from "@/lib/spi/asignaturas";
-import { Asignatura, GrupoPrivilegioTipo, Usuario } from "@/types";
+import { GrupoAsignaturacomp, GrupoPrivilegioTipo, Usuario } from "@/types";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ListaPrivilegios } from "@/componentes/ListaPrivilegiosNombres";
 import { DetallePrivilegios } from "@/componentes/DetallePrivilegios";
-import { PrivilegiosUsuario } from "@/componentes/FormularioCrearPrivilegios/Usuario";
+import { PrivilegiosUsuario } from "@/componentes/crear/FormularioCrearPrivilegios/Usuario";
 import { EliminarUsuario, GetUsuario } from "@/lib/spi/usuarios";
-import { AsignaturaBox } from "@/componentes/AsignaturaBox";
 import "./style.css"
+import { GrupoAsignaturaBox } from "@/componentes/Buscadores/Asignatura/AsignaturaBox/AsignaturaInfo/GrupoAsignatura/GrupoAsignaturaBox";
 type UsuarioProps = {
   id: string,
-  tipo: string
+  tipo: string,
+  notAdmin?: string
 };
+
+
 
 export const UsuarioDetalleCard = (params: UsuarioProps) => {
   const {id, tipo} = params
   const [usuario, setUsuario] = useState<Usuario|null>(null)
-  const [cambio, setCambio] = useState(false);
+  const [cambio, setCambio] = useState(true);
   const [derecha, setDerecha] = useState<string>('')
   const [privilegio, setPrivilegio] = useState<GrupoPrivilegioTipo | null>(null);
-  const [asignaturas, setAsignaturas] = useState<Asignatura[]>([])
-  const [asignaturastTemp, setAsignaturastTemp] = useState<Asignatura[]>([])
-  const urlBase = `admin/usuario/${id}`
+  const [asignaturas, setAsignaturas] = useState<GrupoAsignaturacomp[]>([])
   const router = useRouter();
+
+  
   useEffect(()=>{
-    GetUsuario({ id, tipo }).then((e)=>{
-        setUsuario(e.usuario)
+    if(cambio==true){
+      GetUsuario({ id, tipo }).then((e)=>{
+        setUsuario(e)
     }).finally(() => {
         setCambio(false)
     });
+    }
   },[id, cambio])
 
 useEffect(() => {
@@ -41,10 +46,9 @@ useEffect(() => {
           GetAsignaturaById({ id })
         )
       );
-
       setAsignaturas(results);
     } catch (error) {
-      console.error(error);
+      
     }
   };
   getAsignaturas()
@@ -68,28 +72,29 @@ useEffect(() => {
           }
           >Eliminar </button> 
           </div> 
-        <p>Nombre: {usuario.nombre}</p>
+        <p>Usuario: {usuario.nombre}</p>
         <p>Correo: {usuario.mail}</p>
-        {asignaturas.map(e=>{
+        <div className="lista-grupos-row">
+          {asignaturas.map(e=>{
             return(
-            <AsignaturaBox
+            <GrupoAsignaturaBox
               key={e._id}
-              nombre={e.nombre}
-              curso={e.curso}
-              grado={e.grado}
+              asignatura={e}
             />
             )
         })}
-        <div>
+        </div>
+        
+        {(!params.notAdmin || params.notAdmin !=='user') && <div>
           
           <ListaPrivilegios  
             privilegios={usuario.privilegios}
-            urlBase={urlBase}
+            setPrivilegio={setPrivilegio}
             setDerecha={setDerecha} 
             setCambio={setCambio} 
             tipo={tipo}
           />
-        </div>
+        </div>}
       </div>
       }
     </div>
@@ -104,8 +109,8 @@ useEffect(() => {
       {derecha=='detallePrivilegios' && privilegio && 
       <DetallePrivilegios 
       privilegio={privilegio} 
-      tipo={'Asignatura'} 
-      nombreObjetivo={privilegio.objetivo}
+      tipo={'Usuario'} 
+      nombreObjetivo={usuario!.nombre}
       />}
     </div>
   );

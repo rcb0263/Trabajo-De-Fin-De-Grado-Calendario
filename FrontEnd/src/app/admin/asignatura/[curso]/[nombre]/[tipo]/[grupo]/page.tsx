@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { GrupoAsignatura } from "@/types";
+import { GrupoAsignatura, GrupoPrivilegioTipo } from "@/types";
 import { GetGrupoAsignatura } from "@/lib/spi/asignaturas";
-import { GrupoDetalle } from "@/componentes/AsignaturaBox/AsignaturaInfo/GrupoAsignatura";
+import { GrupoDetalle } from "@/componentes/Buscadores/Asignatura/AsignaturaBox/AsignaturaInfo/GrupoAsignatura";
 
+
+type Asignaturacomp = GrupoAsignatura & {
+  privilegios: GrupoPrivilegioTipo[]
+}
 const Page = () => {
   const params = useParams();
 
-  const [grupoData, setGrupoData] = useState<GrupoAsignatura | null>(null);
+  const [grupoData, setGrupoData] = useState<Asignaturacomp | null>(null);
   const [loading, setLoading] = useState(true);
   const [cambio, setCambio] = useState<boolean>(false)
   const curso = Number(params.curso);

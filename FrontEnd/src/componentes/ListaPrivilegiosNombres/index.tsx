@@ -8,15 +8,13 @@ type Props = {
   tipo: string
   setCambio: React.Dispatch<React.SetStateAction<boolean>>;
   setDerecha: React.Dispatch<React.SetStateAction<string>>;
+  setPrivilegio: React.Dispatch<React.SetStateAction<GrupoPrivilegioTipo | null>>;
   privilegios: string[] | GrupoPrivilegioTipo[];
-  urlBase: string;
 };
 
-export const ListaPrivilegios = ({ privilegios, setDerecha, setCambio, tipo }: Props) => {
-  const router = useRouter();
+export const ListaPrivilegios = ({ privilegios, setDerecha, setCambio, tipo, setPrivilegio }: Props) => {
 
   const isEmpty = !privilegios || privilegios.length === 0;
-
   return (
     <div className="lista-grupos-row lista">
       <div className="titulo-row">
@@ -39,6 +37,7 @@ export const ListaPrivilegios = ({ privilegios, setDerecha, setCambio, tipo }: P
                 key={`${g.nombre}`}
                 className="grupo-chip"
                 onClick={() => {
+                  setPrivilegio(g)
                   setDerecha('detallePrivilegios')
                   setCambio(true)
                 }}

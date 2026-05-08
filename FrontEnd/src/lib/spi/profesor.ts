@@ -20,7 +20,8 @@ interface BuscarProfesorProps {
   tipoUsuario: string
 }
 export const CrearProfesor = async ( props: CrearProfesorProps ) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.post('/profesores/Crear', 
             props,
     {
@@ -32,7 +33,8 @@ export const CrearProfesor = async ( props: CrearProfesorProps ) => {
     return response;
 };
 export const DeleteProfesor= async ( props: DeleteProfesorProps ) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.post('/profesores/Eliminar', 
       props,
     {
@@ -44,7 +46,8 @@ export const DeleteProfesor= async ( props: DeleteProfesorProps ) => {
   return response;
 };
 export const AñadirProfesor= async ( props: AñadirProfesorProps ) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.put('/asignaturas/Grupo/Profesor/Add', 
       props,
     {
@@ -56,8 +59,8 @@ export const AñadirProfesor= async ( props: AñadirProfesorProps ) => {
   return response;
 };
 export const QuitarProfesor= async ( props: AñadirProfesorProps ) => {
-    const token = localStorage.getItem("token");
-    console.log(props)
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.put('/asignaturas/Grupo/Profesor/Remove', 
       props,
     {
@@ -69,7 +72,8 @@ export const QuitarProfesor= async ( props: AñadirProfesorProps ) => {
   return response;
 };
 export const BuscarProfesor= async ( props: BuscarProfesorProps ) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.post('/profesores/SearchProfesor', 
       props,
     {
@@ -78,7 +82,5 @@ export const BuscarProfesor= async ( props: BuscarProfesorProps ) => {
       },
     }
   );
-
-  console.log(response)
   return response.data;
 };

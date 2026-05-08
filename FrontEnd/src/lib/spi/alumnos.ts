@@ -6,7 +6,8 @@ interface CrearAlumnoProps {
   password: string
 }
 interface DeleteAlumnoProps {
-  id: string,
+  id?: string,
+  mail?: string
 }
 interface AsignarAlumnosProps {
   mail: string,
@@ -20,7 +21,8 @@ interface BuscarAlumnoProps {
   tipoUsuario: string
 }
 export const CrearAlumno = async ( props: CrearAlumnoProps ) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.post('/alumnos/Crear', 
             props,
     {
@@ -32,7 +34,8 @@ export const CrearAlumno = async ( props: CrearAlumnoProps ) => {
   return response;
 };
 export const DeleteAlumno= async ( props: DeleteAlumnoProps ) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.delete('/alumnos/Eliminar', {
       data: props,
       headers: {
@@ -42,7 +45,8 @@ export const DeleteAlumno= async ( props: DeleteAlumnoProps ) => {
   return response.data;
 };
 export const AñadirAlumno= async ( props: AsignarAlumnosProps ) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.put('/asignaturas/Grupo/Alumno/Add', 
       props,
     {
@@ -54,7 +58,8 @@ export const AñadirAlumno= async ( props: AsignarAlumnosProps ) => {
   return response;
 };
 export const QuitarAlumno= async ( props: AsignarAlumnosProps ) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.put('/asignaturas/Grupo/Alumno/Remove', 
       props,
     {
@@ -66,7 +71,8 @@ export const QuitarAlumno= async ( props: AsignarAlumnosProps ) => {
   return response;
 };
 export const BuscarAlumnoe= async ( props: BuscarAlumnoProps ) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.post('/alumnos/SearchAlumno', 
       props,
     {
@@ -78,7 +84,8 @@ export const BuscarAlumnoe= async ( props: BuscarAlumnoProps ) => {
   return response.data;
 };
 export const BuscarAlumno= async ( props: BuscarAlumnoProps ) => {
-    const token = localStorage.getItem("token");
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
     const response = await api.post('/alumnos/SearchAlumno', 
       props,
     {

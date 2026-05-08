@@ -2,20 +2,20 @@
 
 
 import { SetStateAction, useEffect, useState } from "react";
-import { Excepcion, GrupoAsignatura, GrupoPrivilegioTipo, Hora, Sesion } from "@/types";
+import { Excepcion, GrupoAsignatura, GrupoPrivilegioTipo, Hora, Sesion, SesionAula } from "@/types";
 import { GetGrupoPrivilegios } from "@/lib/spi/privilegios";
 import "./style.css"
 import { ListaPrivilegios } from "@/componentes/ListaPrivilegiosNombres";
 import { AñadirAlumno, DeleteAlumno } from "@/lib/spi/alumnos";
 import { AñadirProfesor, QuitarProfesor } from "@/lib/spi/profesor";
 import { DetallePrivilegios } from "@/componentes/DetallePrivilegios";
-import { PrivilegiosGrupoAsignatura } from "@/componentes/FormularioCrearPrivilegios/GrupoAsignatura";
+import { PrivilegiosGrupoAsignatura } from "@/componentes/crear/FormularioCrearPrivilegios/GrupoAsignatura";
 import { CrearExcepcion, EliminarExcepcion, EliminarSesion } from "@/lib/spi/asignaturas";
 import { CrearSesionComponente } from "./CrearSesion";
 import { CrearHorarioComponente } from "./CrearHorario";
 
 type Props = {
-  grupoData: GrupoAsignatura;
+  grupoData: Asignaturacomp;
   curso: number,
   nombre: string,
   grupo: string,
@@ -23,7 +23,9 @@ type Props = {
   setCambio: React.Dispatch<React.SetStateAction<boolean>>;
   cambio: boolean
 };
-
+type Asignaturacomp = GrupoAsignatura & {
+  privilegios: GrupoPrivilegioTipo[]
+}
 export const GrupoDetalle = (params: Props) => {
 
   const {grupoData, curso, nombre, tipo, grupo, cambio, setCambio} = params
@@ -36,12 +38,7 @@ export const GrupoDetalle = (params: Props) => {
   useEffect(() => {
     const GetPrivilegios = async () => {
       try {
-        const results = await Promise.all(
-          grupoData.privilegios.map((idPriv) =>
-            GetGrupoPrivilegios({ id: idPriv })
-          )
-        );
-        setGruposPrivilegiados(results);
+        setGruposPrivilegiados(grupoData.privilegios);
       } catch (e) {
         
       }
@@ -81,31 +78,36 @@ export const GrupoDetalle = (params: Props) => {
 
           <ListaPrivilegios 
             privilegios={gruposPrivilegiados}
-            urlBase={urlBase}
             setDerecha={setDerecha}
-            setCambio={setCambio} 
+            setCambio={setCambio}
+            setPrivilegio={setPrivilegio}
             tipo={grupoData.tipo}
           />
           <div>
-              <ListaHorarios 
+              <ListaHorarios
+              tipo = {"aula"}  
               horarios={grupoData.horarios}
-              setDerecha={setDerecha}
-              setCambio={setCambio}
-              curso={curso}
-              nombre={nombre} 
-              tipo={tipo} 
-              grupo={grupo}
+              data={{
+                tipo,
+                curso,
+                nombre,
+                grupo,
+                setDerecha,
+                setCambio,
+              }}
               />
           </div>
           <div>
               <ListaFechas 
               fechas={grupoData.fechas} 
-              setDerecha={setDerecha}
-              setCambio={setCambio}
-              curso={curso}
-              nombre={nombre} 
-              tipo={tipo} 
-              grupo={grupo}
+              data={{
+                tipo,
+                curso,
+                nombre,
+                grupo,
+                setDerecha,
+                setCambio,
+              }}
               />
           </div>
         </div>
@@ -126,7 +128,7 @@ export const GrupoDetalle = (params: Props) => {
       {derecha=='detallePrivilegios' && privilegio && 
       <DetallePrivilegios 
       privilegio={privilegio} 
-      tipo={'Asignatura'} 
+      tipo={'Grupo'} 
       nombreObjetivo={nombre}
       />}
       {derecha=='crearSesion' && 
@@ -159,7 +161,7 @@ type ListaUsuariosProps = {
   tipoUsuario: string,
   setCambio: React.Dispatch<React.SetStateAction<boolean>>;
 };
-const ListaUsuarios = ({usuarios, tipo, curso, nombre, grupo, tipoUsuario, setCambio}: ListaUsuariosProps) =>{
+export const ListaUsuarios = ({usuarios, tipo, curso, nombre, grupo, tipoUsuario, setCambio}: ListaUsuariosProps) =>{
   const [add, setAdd]= useState<boolean>(false)
   const [mail, setMail]= useState<string>('')
   useEffect(()=>{
@@ -234,32 +236,36 @@ const ListaUsuarios = ({usuarios, tipo, curso, nombre, grupo, tipoUsuario, setCa
   )
 }
 
-type ListaHorariosProps = {
-  horarios: Sesion[],
+export type ListaHorariosProps = {
+  tipo: string
+  horarios: Sesion[]|SesionAula[],
+  data?:{
   tipo: string,
   curso: number
   nombre: string,
   grupo: string,
   setDerecha: React.Dispatch<React.SetStateAction<string>>;
   setCambio: React.Dispatch<React.SetStateAction<boolean>>;
+  }
 
 };
-const formatearHora = (h:Hora) =>{
+export const formatearHora = (h:Hora) =>{
 
   return (h.hora+':'+h.minuto)
 };
-const ListaHorarios = ({ horarios, tipo, curso, nombre, grupo, setDerecha, setCambio }: ListaHorariosProps) => {
-  return (
+export const ListaHorarios = ({horarios, data, tipo}: ListaHorariosProps) => {
+
+return (
     <div className="lista">
      <div className="titulo-row">
         <h4>Horarios</h4>
-        <button 
+        {tipo == "aula" &&  (<button 
         className="row-button" 
         onClick={()=>{
-          setDerecha('crearSesion')
-          setCambio(true)
+          data?.setDerecha('crearSesion')
+          data?.setCambio(true)
         }}
-        >Añadir</button>
+        >Añadir</button>)}
       </div>
 
       {horarios?.length ? (
@@ -268,25 +274,26 @@ const ListaHorarios = ({ horarios, tipo, curso, nombre, grupo, setDerecha, setCa
             <div className="horario-card" key={i}>
              <div>
                 <p><strong>Día:</strong> {h.dia}</p>
-                <p><strong>Aula:</strong> {h.aula}</p>
+                {"aula" in h && (<p><strong>Aula:</strong> {h.aula}</p>)}
                 <p>
                   <strong>Duración:</strong>{" "}
                   {formatearHora(h.horaInicio)} - {formatearHora(h.horaFin)}
                 </p>
              </div>
-             <button onClick={()=>{
+             {"aula" in h && 
+             (<button onClick={()=>{
               EliminarSesion({
-                curso,
-                tipo,
-                grupo,
-                nombre,
+                curso: data!.curso,
+                tipo: data!.tipo,
+                grupo: data!.grupo,
+                nombre: data!.nombre,
                 aula: h.aula,
                 dia: h.dia,
                 horaInicio: h.horaInicio,
                 horaFin: h.horaFin
               })
-              setCambio(true)
-             }}>Eliminar</button>
+              data?.setCambio(true)
+             }}>Eliminar</button>)}
             </div>
           ))}
         </div>
@@ -298,27 +305,29 @@ const ListaHorarios = ({ horarios, tipo, curso, nombre, grupo, setDerecha, setCa
 };
 
 type ListaFechasProps = {
-  setDerecha: React.Dispatch<React.SetStateAction<string>>;
-  setCambio: React.Dispatch<React.SetStateAction<boolean>>;
   fechas: Excepcion[];
+  data?:{
   tipo: string,
   curso: number
   nombre: string,
   grupo: string,
-};
+  setDerecha: React.Dispatch<React.SetStateAction<string>>;
+  setCambio: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+}
 
-export const ListaFechas = ({ fechas, tipo, curso, nombre, grupo, setDerecha, setCambio }: ListaFechasProps) => {
+export const ListaFechas = ({ fechas, data }: ListaFechasProps) => {
   return (
     <div className="lista">
       <div className="titulo-row">
         <h4>Fechas</h4>
-        <button 
-          className="row-button" 
-          onClick={()=>{
-            setDerecha('crearExcepcion')
-            setCambio(true)
-          }}
-          >Añadir</button>
+        {fechas.length>0 && "aula" in fechas.at(0)! &&  (<button 
+        className="row-button" 
+        onClick={()=>{
+          data?.setDerecha('crearExcepcion')
+          data?.setCambio(true)
+        }}
+        >Añadir</button>)}
       </div>
       {fechas?.length ? (
         <div>
@@ -338,16 +347,16 @@ export const ListaFechas = ({ fechas, tipo, curso, nombre, grupo, setDerecha, se
               className="row-button eliminar-btn"
               onClick={()=>{
               EliminarExcepcion({
-                curso,
-                tipo,
-                grupo,
-                nombre,
+                curso: data!.curso,
+                tipo: data!.tipo,
+                grupo: data!.grupo,
+                nombre: data!.nombre,
                 aula: fecha.aula,
                 fecha: fecha.fecha,
                 horaInicio: fecha.horaInicio,
                 horaFin: fecha.horaFin
               })
-              setCambio(true)
+              data?.setCambio(true)
              }}>
                 Eliminar
               </button>

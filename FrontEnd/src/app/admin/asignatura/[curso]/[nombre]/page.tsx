@@ -1,5 +1,5 @@
 'use client'
-import { AsignaturaDetalleCard } from "@/componentes/AsignaturaBox/AsignaturaInfo";
+import { AsignaturaDetalleCard } from "@/componentes/Buscadores/Asignatura/AsignaturaBox/AsignaturaInfo";
 import { useParams } from "next/navigation";
 
 

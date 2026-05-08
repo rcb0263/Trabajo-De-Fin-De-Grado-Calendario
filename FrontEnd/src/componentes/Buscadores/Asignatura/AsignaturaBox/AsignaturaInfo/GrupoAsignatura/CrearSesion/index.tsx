@@ -28,7 +28,7 @@ export const CrearSesionComponente = ({data}:Props) =>{
   const [tipo, setTipo] = useState<string>(data?.tipo||'')
 
   const [aula, setAula] = useState<string>('')
-  const [dia, setDia] = useState<string>('')
+  const [dia, setDia] = useState<string>('L')
   const [horaInicio, setHoraInicio] = useState<string>('')
   const [horaFin, setHoraFin] = useState<string>('')
 
@@ -108,7 +108,6 @@ export const CrearSesionComponente = ({data}:Props) =>{
         <option value="J">J</option>
         <option value="V">V</option>
         </select>
-        <p>dia: {dia}</p>
       <p>Inicio:</p>
         <select
         className={error.includes('horaInicio') ? 'input-error' : ''}

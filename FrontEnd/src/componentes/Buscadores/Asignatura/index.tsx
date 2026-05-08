@@ -1,7 +1,7 @@
 import { SearchAsignaturas } from "@/lib/spi/asignaturas";
 import { Asignatura } from "@/types";
 import { useState } from "react";
-import { AsignaturaBox } from "@/componentes/AsignaturaBox";
+import { AsignaturaBox } from "@/componentes/Buscadores/Asignatura/AsignaturaBox";
 
 export const BuscadorAsignaturas = () => {
   const cursoActual = new Date().getFullYear();

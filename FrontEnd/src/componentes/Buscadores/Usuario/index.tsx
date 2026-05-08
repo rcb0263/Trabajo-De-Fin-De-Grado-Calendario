@@ -1,7 +1,7 @@
 import { SearchAsignaturas } from "@/lib/spi/asignaturas";
 import { Asignatura, Usuario } from "@/types";
 import { useState } from "react";
-import { AsignaturaBox } from "@/componentes/AsignaturaBox";
+import { AsignaturaBox } from "@/componentes/Buscadores/Asignatura/AsignaturaBox";
 import { BuscarAlumno } from "@/lib/spi/alumnos";
 import { UsuarioBox } from "./UsuarioBox";
 import { BuscarProfesor } from "@/lib/spi/profesor";

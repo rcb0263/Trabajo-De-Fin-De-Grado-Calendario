@@ -7,11 +7,13 @@
 
 .contenedor {
   display: flex;
+  margin-top: 3%;
   flex-direction: column;
   justify-content: space-between;
   width: clamp(300px, 35vw, 500px);
   border: 3px solid #ccc;
   border-radius: 10px;
+  height: fit-content;
   padding: 10px;
 }
 
