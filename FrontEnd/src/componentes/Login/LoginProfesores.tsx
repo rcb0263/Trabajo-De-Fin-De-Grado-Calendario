@@ -30,7 +30,7 @@ const LoginProfesores = () =>{
               document.cookie = `token=${token}; max-age=3600; path=/; Secure; SameSite=Strict`;
               setError(false);
               if(token!=''){
-                router.push(`/Profesores`)
+                router.push(`/profesores`)
               }
             } catch (err) {
               setError(true);

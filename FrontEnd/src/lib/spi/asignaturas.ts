@@ -33,6 +33,11 @@ interface GetGrupoAsignaturaProps{
   tipo: string,
   grupo: string
 }
+interface GetGrupoAsignaturaSinTipoProps{
+  curso: number,
+  nombre: string,
+  grupo: string
+}
 interface DeleteAsignaturaProps{
   nombre: string,
   curso: number  
@@ -155,6 +160,19 @@ export const GetGrupoAsignatura = async ( props: GetGrupoAsignaturaProps ) => {
       const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
 
     const response = await api.post('/asignaturas/getGrupoAsignatura', 
+    props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
+    return response.data;
+};
+export const GetGrupoAsignaturaSinTipo = async ( props: GetGrupoAsignaturaSinTipoProps ) => {
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
+    const response = await api.post('/asignaturas/getGrupoAsignaturaSinTipo', 
     props,
     {
       headers: {

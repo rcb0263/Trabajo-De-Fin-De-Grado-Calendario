@@ -53,7 +53,7 @@ export const AulaDetalleCard = (params: AulaProps) => {
           <div>
             <ListaHorarios 
                 horarios={aula.horarios} 
-                tipo={"asignatura"}/>
+                tipo={"Aula"}/>
           </div>
           <div>
               <ListaFechas 

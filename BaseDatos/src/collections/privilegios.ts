@@ -582,6 +582,23 @@ export const verifyAdmin = async (req: any,res: any, next: NextFunction)  => {
     next()
 }
 
+export const verifyUsuario= async (req: any,res: any, next: NextFunction)  => {
+    const esAdministrador = await esAdmin(req, res)
+    if (!esAdministrador) {
+        return res.status(403).json({ message: "No tienes permisos de administrador" })
+    }
+
+    next()
+}
+
+export const usuarioCorrecto= async (req: any,res: any)  => {
+    if ( String(req.user.mail) == String(req.body.id)) {
+        return true
+    }
+    return false
+
+}
+
 const verifyNameValid = async (nombre:string) => {
     const db= getDb()
     if(!nombre || typeof(nombre)!="string" || nombre== '' ){

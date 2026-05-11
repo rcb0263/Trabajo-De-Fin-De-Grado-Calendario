@@ -10,7 +10,7 @@ import { AñadirAlumno, DeleteAlumno } from "@/lib/spi/alumnos";
 import { AñadirProfesor, QuitarProfesor } from "@/lib/spi/profesor";
 import { DetallePrivilegios } from "@/componentes/DetallePrivilegios";
 import { PrivilegiosGrupoAsignatura } from "@/componentes/crear/FormularioCrearPrivilegios/GrupoAsignatura";
-import { CrearExcepcion, EliminarExcepcion, EliminarSesion } from "@/lib/spi/asignaturas";
+import { CrearExcepcion, EliminarExcepcion, EliminarSesion, GetAsignaturaById } from "@/lib/spi/asignaturas";
 import { CrearSesionComponente } from "./CrearSesion";
 import { CrearHorarioComponente } from "./CrearHorario";
 
@@ -99,12 +99,14 @@ export const GrupoDetalle = (params: Props) => {
           </div>
           <div>
               <ListaFechas 
-              fechas={grupoData.fechas} 
+              fechas={grupoData.fechas}
+              tipoExcepcion='grupo'
               data={{
                 tipo,
                 curso,
                 nombre,
                 grupo,
+                cambio,
                 setDerecha,
                 setCambio,
               }}
@@ -159,9 +161,10 @@ type ListaUsuariosProps = {
   nombre: string,
   grupo: string,
   tipoUsuario: string,
+  tipoAcceso?:string 
   setCambio: React.Dispatch<React.SetStateAction<boolean>>;
 };
-export const ListaUsuarios = ({usuarios, tipo, curso, nombre, grupo, tipoUsuario, setCambio}: ListaUsuariosProps) =>{
+export const ListaUsuarios = ({usuarios, tipo, curso, nombre, grupo, tipoUsuario, tipoAcceso, setCambio}: ListaUsuariosProps) =>{
   const [add, setAdd]= useState<boolean>(false)
   const [mail, setMail]= useState<string>('')
   useEffect(()=>{
@@ -172,11 +175,13 @@ export const ListaUsuarios = ({usuarios, tipo, curso, nombre, grupo, tipoUsuario
     <div className="lista">
       <div className="titulo-row">
         <h4>{tipoUsuario}</h4>
-        <button className="row-button"
+        {
+        (!tipoAcceso ||tipoAcceso=='Admin')&&<button className="row-button"
           onClick={()=>{
             setAdd(!add)
           }}
         >Añadir</button>
+        }
       </div>
       <div>
         {add && 
@@ -186,7 +191,7 @@ export const ListaUsuarios = ({usuarios, tipo, curso, nombre, grupo, tipoUsuario
             placeholder="mail"
             onChange={e=>{setMail(e.target.value)}}
             />
-            <button className="row-button" 
+            { (!tipoAcceso ||tipoAcceso=='Admin')&&<button className="row-button" 
               onClick={async () => {
                 if(tipoUsuario=='Profesores'){
                   await AñadirProfesor({
@@ -206,11 +211,12 @@ export const ListaUsuarios = ({usuarios, tipo, curso, nombre, grupo, tipoUsuario
                   })
                 }
                 setCambio(true)
-              }}>Añadir {tipoUsuario}</button>
+              }}>Añadir {tipoUsuario}</button>}
         </div>}
         {usuarios.map((e) => (
           <div className="usuario-row" key={e}>
             <h4>{e}</h4>
+            { (!tipoAcceso ||tipoAcceso=='Admin')&&
             <button className="row-button" 
               onClick={() => {
               if(tipoUsuario==='Alumnos'){  
@@ -226,7 +232,7 @@ export const ListaUsuarios = ({usuarios, tipo, curso, nombre, grupo, tipoUsuario
                   grupo,
                 })
               }
-              }}>Eliminar</button>
+              }}>Eliminar</button>}
           </div>
         ))}
       </div>
@@ -239,6 +245,7 @@ export const ListaUsuarios = ({usuarios, tipo, curso, nombre, grupo, tipoUsuario
 export type ListaHorariosProps = {
   tipo: string
   horarios: Sesion[]|SesionAula[],
+  tipoAcceso?:string 
   data?:{
   tipo: string,
   curso: number
@@ -253,13 +260,13 @@ export const formatearHora = (h:Hora) =>{
 
   return (h.hora+':'+h.minuto)
 };
-export const ListaHorarios = ({horarios, data, tipo}: ListaHorariosProps) => {
+export const ListaHorarios = ({horarios, data, tipo, tipoAcceso}: ListaHorariosProps) => {
 
 return (
     <div className="lista">
      <div className="titulo-row">
         <h4>Horarios</h4>
-        {tipo == "aula" &&  (<button 
+        {(!tipoAcceso ||tipoAcceso=='Admin')&&tipo == "aula" &&  (<button 
         className="row-button" 
         onClick={()=>{
           data?.setDerecha('crearSesion')
@@ -270,17 +277,23 @@ return (
 
       {horarios?.length ? (
         <div >
-          {horarios.map((h, i) => (
+          {horarios.map((h, i) => {
+
+            return (
             <div className="horario-card" key={i}>
              <div>
+
                 <p><strong>Día:</strong> {h.dia}</p>
                 {"aula" in h && (<p><strong>Aula:</strong> {h.aula}</p>)}
+                {"asignatura" in h && (
+                  <p><strong>Asignatura:</strong> {h.asignatura}</p>
+                  )}
                 <p>
                   <strong>Duración:</strong>{" "}
                   {formatearHora(h.horaInicio)} - {formatearHora(h.horaFin)}
                 </p>
              </div>
-             {"aula" in h && 
+             {(!tipoAcceso ||tipoAcceso=='Admin')&& "aula" in h && 
              (<button onClick={()=>{
               EliminarSesion({
                 curso: data!.curso,
@@ -295,7 +308,8 @@ return (
               data?.setCambio(true)
              }}>Eliminar</button>)}
             </div>
-          ))}
+            
+          )})}
         </div>
       ) : (
         <p>—</p>
@@ -306,22 +320,26 @@ return (
 
 type ListaFechasProps = {
   fechas: Excepcion[];
+  tipoExcepcion: string,
   data?:{
   tipo: string,
   curso: number
   nombre: string,
   grupo: string,
+  cambio: boolean
   setDerecha: React.Dispatch<React.SetStateAction<string>>;
   setCambio: React.Dispatch<React.SetStateAction<boolean>>;
   }
 }
 
-export const ListaFechas = ({ fechas, data }: ListaFechasProps) => {
+export const ListaFechas = ({ fechas, data, tipoExcepcion}: ListaFechasProps) => {
+    useEffect(()=>{
+    },[data?.cambio])
   return (
     <div className="lista">
       <div className="titulo-row">
         <h4>Fechas</h4>
-        {fechas.length>0 && "aula" in fechas.at(0)! &&  (<button 
+        { tipoExcepcion == "grupo" &&  (<button 
         className="row-button" 
         onClick={()=>{
           data?.setDerecha('crearExcepcion')
@@ -355,8 +373,10 @@ export const ListaFechas = ({ fechas, data }: ListaFechasProps) => {
                 fecha: fecha.fecha,
                 horaInicio: fecha.horaInicio,
                 horaFin: fecha.horaFin
+              }).then(()=>{
+                data?.setCambio(true)
               })
-              data?.setCambio(true)
+              
              }}>
                 Eliminar
               </button>

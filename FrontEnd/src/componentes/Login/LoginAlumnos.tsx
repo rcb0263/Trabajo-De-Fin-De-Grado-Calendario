@@ -35,7 +35,7 @@ const LoginAlumnos = ()  =>{
             document.cookie = `token=${token}; max-age=3600; path=/; Secure; SameSite=Strict`;
             setError(false);
             if(token!=''){
-              router.push(`/Alumnos`)
+              router.push(`/alumnos`)
             }
             } catch (err) {
             setError(true);

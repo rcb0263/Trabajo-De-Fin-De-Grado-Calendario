@@ -4,6 +4,8 @@ import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { Usuario } from "../tipos";
+import { esAdmin, usuarioCorrecto, verifyAdmin, verifyUsuario } from "../collections/privilegios";
+import { verifyToken } from "../middleware/verifytoken";
 
 const router = Router();
 const colleccion = () => {return getDb().collection<User>('placeholder');}
@@ -72,4 +74,20 @@ router.post("/login", async (req,res)=>{
     }
 })
 
+router.post("/esAdmin", verifyToken, async (req, res)=>{
+    await esAdmin(req,res).then((e)=>{
+        if(e ==true){
+            res.status(200).json('OK')
+        }else{
+            res.status(401).json('NO')
+        }    })
+})
+router.post("/verificarUsuario", verifyToken, async (req, res)=>{
+    await usuarioCorrecto(req,res).then((e)=>{
+        if(e ==true){
+            res.status(200).json('OK')
+        }else{
+            res.status(401).json('NO')
+        }    })
+})
 export default router;

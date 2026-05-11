@@ -15,7 +15,7 @@ const Page = () => {
   
   return (
     <>
-      <h1>Crear Admin</h1>
+      <h1>Crear Administrador</h1>
       <div className="multiContenedores">
         <div className="contenedor">        
           <p >Nombre: </p>

@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
-import { Aula, GrupoPrivilegio } from "../tipos"
+import { Asignatura, Aula, GrupoAsignatura, GrupoPrivilegio, Sesion, sesionAula } from "../tipos"
 
 
 
@@ -93,12 +93,34 @@ export const getAula = async (req: any, res: any)=>{
             const existeAula = await  db.collection<Aula>(ColeccionAula).findOne({  _id: new ObjectId(id)})
             if (!existeAula) res.status(400).json({message: 'no se existe ese aula'})
             const idsPrivilegios = existeAula!.privilegios.map((id: string) => new ObjectId(id));
+            const horariosRes = await Promise.all(
+            existeAula!.horarios.map(async (sesion: sesionAula) => {
+
+                let grupoAsignatura = await db
+                .collection<GrupoAsignatura>(ColeccionTeoria)
+                .findOne({ _id: new ObjectId(sesion.asignatura) });
+
+                if (!grupoAsignatura) {
+                grupoAsignatura = await db
+                    .collection<GrupoAsignatura>(ColeccionPractica)
+                    .findOne({ _id: new ObjectId(sesion.asignatura) });
+                }
+                const Asignatura =  await db
+                    .collection<Asignatura>(ColeccionAsignaturas)
+                    .findOne({ _id: new ObjectId(grupoAsignatura?.asignatura) })
+                return {
+                ...sesion,
+                asignatura: (Asignatura?.nombre+' Grupo '+ grupoAsignatura?.grupo)
+                };
+            })
+            )
             const gruposPrivilegios = await db
             .collection<GrupoPrivilegio>(ColeccionPrivilegios)
             .find({ _id: { $in: idsPrivilegios } })
             .toArray();
             const result = {
             ...existeAula,
+            horarios: horariosRes,
             privilegios: gruposPrivilegios,
             };
             return res.status(200).json(result);

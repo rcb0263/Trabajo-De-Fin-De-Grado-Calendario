@@ -8,7 +8,7 @@ import { GetUsuario, userFromToken } from "@/lib/spi/usuarios";
 import { UsuarioDetalleCard } from "@/componentes/Buscadores/Usuario/UsuarioBox/UsuarioInfo";
 
 const Page = () => {
-  const tipo = 'Profesor';
+  const tipo = 'Alumno';
   const [modo, setModo]= useState<string>('semana');
   const [nombre, setNombre]= useState<string>('');
   const [mail, setMail]= useState<string|null>(null);
@@ -16,14 +16,12 @@ const Page = () => {
   
 useEffect(() => {
   const fetchNombre = async () => {
-    const data:Usuario = await GetUsuario({tipo:'Profesor', mail: mail!});
-    console.log(data)
+    const data:Usuario = await GetUsuario({tipo, mail: mail!});
     setNombre(data.nombre);
     setId(String(data._id));
-    console.log(data)
   };
   const setmail = async () =>{
-    const res = await userFromToken({tipo: 'Profesor'})
+    const res = await userFromToken({tipo,})
 
     setMail(res.mail)
   }
@@ -35,7 +33,7 @@ useEffect(() => {
 
   return (
     <div className="paginaUsuario">
-      <h1>Usuario {nombre}</h1>
+      <h1>Alumno {nombre}</h1>
       <button onClick={()=>{
         setModo('dia')
       }}>DIA</button>
@@ -51,7 +49,7 @@ useEffect(() => {
           {modo==='dia' && mail &&<CalendarioDia mail={mail}/>}
           </div>
           <div>
-          {id && <UsuarioDetalleCard notAdmin="user" id={id} tipo={"Profesor"}/>}
+          {id && <UsuarioDetalleCard notAdmin="user" id={id} tipo={tipo}/>}
           </div>
         
       </div>

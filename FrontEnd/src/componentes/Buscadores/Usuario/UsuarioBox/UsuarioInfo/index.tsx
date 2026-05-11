@@ -9,6 +9,12 @@ import { EliminarUsuario, GetUsuario } from "@/lib/spi/usuarios";
 import "./style.css"
 import { GrupoAsignaturaBox } from "@/componentes/Buscadores/Asignatura/AsignaturaBox/AsignaturaInfo/GrupoAsignatura/GrupoAsignaturaBox";
 type UsuarioProps = {
+  data?:{
+    setDerecha: React.Dispatch<React.SetStateAction<string>>;
+    setGrupo:  React.Dispatch<React.SetStateAction<GrupoAsignaturacomp|null>>;
+    usuario: string
+    derecha: string
+  }
   id: string,
   tipo: string,
   notAdmin?: string
@@ -24,8 +30,6 @@ export const UsuarioDetalleCard = (params: UsuarioProps) => {
   const [privilegio, setPrivilegio] = useState<GrupoPrivilegioTipo | null>(null);
   const [asignaturas, setAsignaturas] = useState<GrupoAsignaturacomp[]>([])
   const router = useRouter();
-
-  
   useEffect(()=>{
     if(cambio==true){
       GetUsuario({ id, tipo }).then((e)=>{
@@ -56,7 +60,7 @@ useEffect(() => {
 
   return (
     <div className="ContenedorObjetoYPrivilegios">
-    <div className="Asignatura">
+    <div className="Usuario">
     {usuario &&
       <div className="asignatura-detalle">
         <div className="Titulo_eliminar">
@@ -80,6 +84,12 @@ useEffect(() => {
             <GrupoAsignaturaBox
               key={e._id}
               asignatura={e}
+              data={{
+                setGrupo: params.data!.setGrupo,
+                setDerecha: params.data!.setDerecha,
+                usuario: params.data!.usuario,
+                derecha: derecha
+              }}
             />
             )
         })}

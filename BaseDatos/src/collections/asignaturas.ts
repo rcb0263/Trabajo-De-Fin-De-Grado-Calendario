@@ -173,6 +173,51 @@ export const GetGrupoAsignatura = async (req: any, res: any)=>{
     return res.status(400).json({mensaje: eMsg})
 }
 
+export const GetGrupoAsignaturaSinTipo = async (req: any, res: any)=>{
+    const nombre: string = req.body?.nombre;
+    const curso: number= req.body?.curso;
+    const grupo:string = req.body?.grupo
+    const eMsg:string[] = []
+    let idAsignatura='';
+    const db = getDb()
+
+    if(!nombre || typeof(nombre)!="string"){
+        eMsg.push("nombre debe ser un string")
+    }else if(!curso ||typeof(curso)!= "number" ){
+        eMsg.push("curso debe ser un numero")
+    }else{
+        const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
+        if (!existeAsignatura) {
+            eMsg.push("No se encuentra esa asignatura");
+        }else{
+            idAsignatura=String(existeAsignatura._id);
+        }
+    }
+    if(!grupo || typeof(grupo)!="string"){
+        eMsg.push("grupo debe ser un string")
+    }else if(idAsignatura!=''){
+        let Grupo = await db.collection(ColeccionTeoria).findOne({asignatura: idAsignatura, grupo: grupo})
+        if(!Grupo){
+            Grupo = await db.collection(ColeccionPractica).findOne({asignatura: idAsignatura, grupo: grupo})
+        }
+        if(!Grupo){
+            eMsg.push("No se ha encontrado ese grupo")
+        }else{
+            const idsPrivilegios = Grupo!.privilegios.map((id: string) => new ObjectId(id));
+            const gruposPrivilegios = await db
+            .collection<GrupoPrivilegio>(ColeccionPrivilegios)
+            .find({ _id: { $in: idsPrivilegios } })
+            .toArray();
+            const result = {
+            ...Grupo,
+            privilegios: gruposPrivilegios,
+            };
+            return res.status(201).json(result)
+        }
+    }
+    return res.status(400).json({mensaje: eMsg})
+}
+
 //Funciona
 export const crearAsignatura = async (req: any, res: any)=>{
     const nombre = req.body?.nombre //   grupo: string

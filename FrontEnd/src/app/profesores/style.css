@@ -1,0 +1,30 @@
+.paginaUsuario{
+    gap: 5px;
+    margin-left: 1%;
+}
+
+.row{
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-right: 15px;
+  justify-content: space-between;
+}
+
+.row > div {
+  flex: 1;
+}
+.izquierda {
+  flex: 0 0 30%;
+  max-width: 30%;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.derecha {
+  flex: 0 0 70%;
+  max-width: 70%;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}

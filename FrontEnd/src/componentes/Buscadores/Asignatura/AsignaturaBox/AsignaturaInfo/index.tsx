@@ -82,7 +82,6 @@ export const AsignaturaDetalleCard = (params: AsignaturaProps) => {
           
           <ListaPrivilegios  
             privilegios={asignatura.privilegios}
-            urlBase={urlBase}
             setDerecha={setDerecha} 
             setCambio={setCambio}
             setPrivilegio={setPrivilegio}

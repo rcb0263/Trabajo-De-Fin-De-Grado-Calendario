@@ -15,7 +15,7 @@ const Page = () => {
 
   return (
     <>
-      <h1>Crear Asignatura</h1>
+      <h1>Crear Usuario</h1>
       <div className="contenedor">
         <p className={error.includes('tipo')? 'error-text':''}>Tipo de usuario: </p>
         <select className={error.includes('tipo')? 'input-error':''}

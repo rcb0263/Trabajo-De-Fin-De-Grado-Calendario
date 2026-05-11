@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { asignarAlumno, asignarProfesor, crearAsignatura, crearExcepcion, crearGrupoAsignatura, crearSesion, eliminarAsignatura, eliminarExcepcion, EliminarGrupoAsignatura, eliminarSesion, GetAsignatura, getAsignaturas, GetGrupoAsignatura, ModificarAsignaturaBasico, ModificarGrupoAsignaturaBasico, quitarAlumno, quitarProfesor, SearchAsignaturas } from "../collections/asignaturas";
+import { asignarAlumno, asignarProfesor, crearAsignatura, crearExcepcion, crearGrupoAsignatura, crearSesion, eliminarAsignatura, eliminarExcepcion, EliminarGrupoAsignatura, eliminarSesion, GetAsignatura, getAsignaturas, GetGrupoAsignatura, GetGrupoAsignaturaSinTipo, ModificarAsignaturaBasico, ModificarGrupoAsignaturaBasico, quitarAlumno, quitarProfesor, SearchAsignaturas } from "../collections/asignaturas";
 import { verifyAdmin } from "../collections/privilegios";
 import { verifyToken } from "../middleware/verifytoken";
 
@@ -34,6 +34,13 @@ router.post("/getAsignatura", async (req, res)=>{
 router.post("/getGrupoAsignatura", async (req, res)=>{
  try {
    await GetGrupoAsignatura(req,res)
+ } catch (error) {
+    res.status(404).json(error)
+ }
+})
+router.post("/getGrupoAsignaturaSinTipo", async (req, res)=>{
+ try {
+   await GetGrupoAsignaturaSinTipo(req,res)
  } catch (error) {
     res.status(404).json(error)
  }
