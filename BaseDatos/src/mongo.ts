@@ -7,8 +7,8 @@ let dB: Db;
 const dbName= "TFG"
 export const connectMongoDB = async (): Promise<void> =>{
     try {
-        //const client = new MongoClient(`${process.env.MONGO_URI_ONLINE}`);
-        const client = new MongoClient(`${process.env.MONGO_URI_LOCAL}`);
+        const client = new MongoClient(`${process.env.MONGO_URI_ONLINE}`);
+        //const client = new MongoClient(`${process.env.MONGO_URI_LOCAL}`);
         await client.connect();
         dB= client.db(dbName)
         console.log("Connected to mongodb at db "+ dbName)

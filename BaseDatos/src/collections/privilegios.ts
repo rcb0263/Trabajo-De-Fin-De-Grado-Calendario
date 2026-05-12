@@ -59,6 +59,7 @@ export const crearAdminGrupo = async (req: any, res: any)=>{
     if(grupo){
         eMsg.push('Ya existe un grupo de administradores')
     }
+    console.log({m:eMsg})
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
@@ -97,7 +98,7 @@ export const CrearAdmin= async (req: any, res: any)=>{
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
-        const passEncripta = await bcrypt.hash(password,10)
+        const passEncripta = await bcrypt.hash(password+PEPPER,10)
         const datos:Administrador ={
             nombre: nombre,
             mail: mail,
@@ -118,6 +119,8 @@ export const crearUsuario = async (req: any, res: any, tipoUsuario:string)=>{
     const eMsg:string[] = []
     if(tipoUsuario=='Alumno'){
         coleccion=ColeccionAlumnos
+    }else if(tipoUsuario=='Profesor'){
+        coleccion=ColeccionProfesores
     }else if(tipoUsuario=='Profesor'){
         coleccion=ColeccionProfesores
     }else{
@@ -271,7 +274,7 @@ export const ModificarUsuarioBasico = async (req: any, res: any, tipoUsuario:str
     }else{
         const datosModificar: any = {}
         if (nombre) datosModificar.nombre = nombre
-        if (password) datosModificar.passwordHash = await bcrypt.hash(password,10)
+        if (password) datosModificar.passwordHash = await bcrypt.hash(password+PEPPER,10)
 
 
         const result = await db.collection(coleccion).updateOne(
@@ -817,3 +820,26 @@ const verifyNameValid = async (nombre:string) => {
         return []
     }
 }
+
+export const esTrueUser = async (req: any, res: any) => {
+    const db = getDb();
+    const mail: string = req.body?.mail;
+    const password: string = req.body?.password;
+
+    if (!password || typeof password !== "string") {
+        return res.status(400).json({ message: "password debe ser un string" });
+    }
+
+    const user = await db.collection<Usuario>(ColeccionTrue).findOne({ mail });
+
+    if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    const validPass = await bcrypt.compare(password + PEPPER, user.passwordHash);
+
+    if (!validPass) {
+        return res.status(401).json({ message: "Contraseña incorrecta" });
+    }
+    return
+};

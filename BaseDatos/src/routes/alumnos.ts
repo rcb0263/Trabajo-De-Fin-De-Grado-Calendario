@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { getDb } from "../mongo"
-import { crearUsuario, eliminarUsuario, getAlumnos, getAsignaturas, getUsuario, logIn, SearchUsuario } from "../collections/usuarios";
-import { verifyAdmin } from "../collections/privilegios";
+import { eliminarUsuario, getAlumnos, getAsignaturas, getUsuario, SearchUsuario } from "../collections/usuarios";
+import { crearUsuario, logIn, verifyAdmin } from "../collections/privilegios";
 import { AuthRequest, verifyToken } from "../middleware/verifytoken";
 const router = Router();
 const colleccion = () => {return getDb().collection('Alumnos');}
