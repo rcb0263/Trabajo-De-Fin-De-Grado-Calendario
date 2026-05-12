@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"49d588b22e5f42c8925f554a3d9a2eb1","collectionName":"Asignaturas","type":"collection"}
