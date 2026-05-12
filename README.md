@@ -6,6 +6,7 @@ TFG/
  ├── backup/
  ├── Ejecutar aquí
 
+ 
 .env:
 SECRET=llave de encriptación
 PEPPER_SECRET=encriptación secundaria
