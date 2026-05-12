@@ -10,7 +10,10 @@ export const Layout =()=>{
             <div className="logo"onClick={()=>{router.push(`/admin`)}}>Logo</div>
             <div className="usuario">
                 <h2>Usuario</h2>
-                <button onClick={()=>{router.push(`/`)}}>Log Off</button>
+                <button onClick={()=>{
+                    router.push(`/`)
+                    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+                    }}>Log Off</button>
             </div>
         </div>
     )

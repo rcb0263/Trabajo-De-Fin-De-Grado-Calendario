@@ -8,9 +8,10 @@ import { esAdmin, usuarioCorrecto, verifyAdmin, verifyUsuario } from "../collect
 import { verifyToken } from "../middleware/verifytoken";
 
 const router = Router();
-const colleccion = () => {return getDb().collection<User>('placeholder');}
+const colleccion = () => {return getDb().collection<Usuario>('placeholder');}
 
 const SECRET = process.env.SECRET||""; 
+const PEPPER = process.env.PEPPER_SECRET||"";
 
 type User = {
     mail: string,
@@ -36,8 +37,7 @@ router.post("/register", async (req,res)=>{
         if(exists){
             return res.status(400).json({message:" Ya existe"})
         }
-
-        const passEncripta = await bcrypt.hash(password,10)
+        const passEncripta = await bcrypt.hash(password+PEPPER,10)
         const datos: Usuario = {
             nombre: "",
             mail,
@@ -46,7 +46,8 @@ router.post("/register", async (req,res)=>{
             fechaDeCreacion: new Date(),
             privilegios: []
         }
-        await users.insertOne({mail, password: passEncripta})
+        
+        await users.insertOne(datos)
 
         res.status(201).json({message: "Usuario creado correctamente"})
     }catch (error) {
@@ -61,7 +62,7 @@ router.post("/login", async (req,res)=>{
         const user = await users.findOne({mail: mail})
         if(!user) return res.status(400).json({message:" mail incorrecto"})
         
-        const validPass = await bcrypt.compare(password, user.password)
+        const validPass = await bcrypt.compare(password+PEPPER, user.passwordHash)
         if(!validPass) return res.status(201).json({message: " contraseña incorrecta"})
         
         const token = jwt.sign({id: user._id?.toString(), mail: user.mail}, SECRET,{

@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
-import { Asignatura, Aula, GrupoAsignatura, GrupoPrivilegio, Sesion, sesionAula } from "../tipos"
+import { Asignatura, Aula, GrupoAsignatura, GrupoPrivilegio, Sesion, SesionAula } from "../tipos"
 
 
 
@@ -94,7 +94,7 @@ export const getAula = async (req: any, res: any)=>{
             if (!existeAula) res.status(400).json({message: 'no se existe ese aula'})
             const idsPrivilegios = existeAula!.privilegios.map((id: string) => new ObjectId(id));
             const horariosRes = await Promise.all(
-            existeAula!.horarios.map(async (sesion: sesionAula) => {
+            existeAula!.horarios.map(async (sesion: SesionAula) => {
 
                 let grupoAsignatura = await db
                 .collection<GrupoAsignatura>(ColeccionTeoria)

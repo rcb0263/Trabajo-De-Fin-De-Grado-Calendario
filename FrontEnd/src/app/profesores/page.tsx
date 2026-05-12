@@ -59,7 +59,6 @@ useEffect(() => {
   return (
     <div className="paginaUsuario">
       <h1>Usuario {nombre}</h1>
-      <p>derecha: {derecha}</p>
       <div className="row">
         <div className="izquierda">
           {id && 

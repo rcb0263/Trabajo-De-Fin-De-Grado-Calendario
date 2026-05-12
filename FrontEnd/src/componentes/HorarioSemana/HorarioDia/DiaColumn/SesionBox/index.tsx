@@ -14,6 +14,10 @@ export const SesionBox=(props: Props)=>{
         (horaFin.hora*2 + (horaFin.minuto ==0? 0:1 )) -
         (horaInicio.hora*2 + (horaInicio.minuto ==0? 0:1) )
     )
+    const nombre = props.sesion.asignatura.split('Teoria')
+    const nom = props.sesion.asignatura.split('Practica')
+    sesion.aula!=='Libre'?console.log(props.sesion.asignatura):''
+    const grupo = 'Teoria'.search(props.sesion.asignatura)?'Teoria':'Practica'
   useEffect(() => {
 
   }, [props]);
@@ -24,11 +28,15 @@ export const SesionBox=(props: Props)=>{
     }}
      className={`sesion ${sesion.aula === 'Libre' && sesion.asignatura === 'Libre' ? 'libre' : 'ocupado'}`} 
         style={{"--intervalos": intervalos} as React.CSSProperties} >
-
-        {sesion.asignatura !== 'Libre' &&<p>{sesion.asignatura}</p>}
+            
+        {sesion.asignatura !== 'Libre' &&
+            <>
+            <p>{nombre.length>1?nombre[0]:nom[0]}</p>
+            <p>{(nombre.length>1?('Teoria'+nombre[1]):('Practica'+nom[1]))}</p>
+            </>    
+        }
         {sesion.aula!='Libre' &&<p>{sesion.aula}</p>}
-        {  sesion.aula!='Libre' &&
-            <p>{
+        { sesion.aula!='Libre'&&<p>{
         (horaInicio.hora<10?'0':'')+horaInicio.hora+':'+
         (horaInicio.minuto==0 ? '00':'30')} - 
         {

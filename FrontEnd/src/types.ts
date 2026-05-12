@@ -1,6 +1,6 @@
 export type Sesion ={
     aula: string,
-    dia: 'L'|'M'|'X'|'J'|'V' , 
+    dia: string , 
     horaInicio: Hora,
     horaFin: Hora,
 }
@@ -18,7 +18,7 @@ export type Excepcion ={
 }
 export type SesionAula ={
     asignatura: string, 
-    dia: 'L'|'M'|'X'|'J'|'V' , 
+    dia: string , 
     horaInicio: Hora,
     horaFin: Hora,
 }

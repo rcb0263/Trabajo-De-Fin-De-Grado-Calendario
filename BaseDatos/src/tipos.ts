@@ -6,6 +6,12 @@ export type Excepcion ={
     horaInicio: Hora,
     horaFin: Hora,
 }
+export type ExcepcionAula ={
+    asignatura: string, 
+    fecha: string,
+    horaInicio: Hora,
+    horaFin: Hora,
+}
 export type Hora = {
     hora: number,
     minuto: number
@@ -16,7 +22,7 @@ export type Sesion ={
     horaInicio: Hora,
     horaFin: Hora,
 }
-export type sesionAula ={
+export type SesionAula ={
     asignatura: string, 
     dia: 'L'|'M'|'X'|'J'|'V' , 
     horaInicio: Hora,
@@ -27,8 +33,8 @@ export type Aula = {
     _id?: ObjectId,
     privilegios: string[], 
     aula: string,           //basico
-    horarios: sesionAula[], //desde la asignatura
-    exepciones: Excepcion[] //desde la asignatura
+    horarios: SesionAula[], //desde la asignatura
+    exepciones: ExcepcionAula[] //desde la asignatura
 }
 
 export type GrupoAsignatura ={ // {asignatura:asignatura, grupo:grupo}

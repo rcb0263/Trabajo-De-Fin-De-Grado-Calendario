@@ -20,7 +20,8 @@ export const DiaBox=(props: Props)=>{
                 :props.sesiones.at(0)?.dia=='M'?'Martes'
                 :props.sesiones.at(0)?.dia=='X'?'Miercoles'
                 :props.sesiones.at(0)?.dia=='J'?'Jueves'
-                :props.sesiones.at(0)?.dia=='V'?'Viernes':''}</p>
+                :props.sesiones.at(0)?.dia=='V'?'Viernes'
+                :props.sesiones.at(0)?.dia}</p>
             {
             props.sesiones.map(e=>{
               return (

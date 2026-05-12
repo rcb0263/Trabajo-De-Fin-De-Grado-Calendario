@@ -1,7 +1,7 @@
 import { Router } from "express"
-import { crearUsuario, eliminarUsuario, getHorarios, getProfesores, getUsuario, logIn, SearchUsuario } from "../collections/usuarios";
+import { eliminarUsuario, getHorarios, getProfesores, getUsuario, SearchUsuario } from "../collections/usuarios";
 import { AuthRequest, verifyToken } from "../middleware/verifytoken";
-import { esAdmin } from "../collections/privilegios";
+import { crearUsuario, esAdmin, logIn } from "../collections/privilegios";
 const router = Router();
 
 router.get("/",(req, res)=>{

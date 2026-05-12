@@ -1,4 +1,4 @@
-import { Sesion } from "@/types";
+import { Excepcion, Sesion } from "@/types";
 import { horarioProfesor } from "@/lib/spi/horarios";
 import { useEffect, useState } from "react";
 import './styles.css'
@@ -15,7 +15,7 @@ export const HorarioSemana =(props: HorarioSemanaProps)=>{
   const [horas, setHoras] = useState<SesionAsig[]|null>(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    const rellenarDia =  (sesionesDia: SesionAsig[], dia: ('L'|'X'|'M'|'J'|'V')): SesionAsig[] => {
+    const rellenarDia =  (sesionesDia: SesionAsig[], dia: string): SesionAsig[] => {
       const resultado: SesionAsig[] = sesionesDia;
 
       for (let h = 8; h <= 22; h++) {//rellenar un dia de 08:00 a 22:00
@@ -52,6 +52,34 @@ export const HorarioSemana =(props: HorarioSemanaProps)=>{
       });
       return resultado;
     };
+    const FechaToDia = (dia:string, lunes: string, martes: string, miercoles: string, jueves: string, viernes: string) =>{
+    let fecha;
+    switch (dia){
+        case 'L':
+            return lunes
+        case 'M':
+            return martes
+        case 'X':
+            return miercoles
+        case 'J':
+            return jueves
+        default:
+            return viernes
+    }
+}
+    const SesionToExcepcionAsig = (sesiones: SesionAsig[], lunes: string, martes: string, miercoles: string, jueves: string, viernes: string): SesionAsig[] => {
+      return sesiones.map((sesion)=>{
+          const fecha = FechaToDia(sesion.dia, lunes, martes, miercoles, jueves,viernes)
+          const excepcion:SesionAsig = {
+            aula: sesion.aula,
+            dia: fecha,
+            horaInicio: sesion.horaInicio,
+            horaFin: sesion.horaFin,
+            asignatura: sesion.asignatura
+          }
+          return excepcion;
+        })
+    }
     const fetchData = async () => {
       setLoading(true)
       try {
@@ -65,11 +93,22 @@ export const HorarioSemana =(props: HorarioSemanaProps)=>{
             horaFin: sesion.horaFin,
           }))
         ).flat();
-        const lunes = rellenarDia(sesionesFront.filter((s: Sesion) => s.dia === 'L'), 'L');
-        const martes = rellenarDia(sesionesFront.filter((s: Sesion) => s.dia === 'M'), 'M'); 
-        const miercoles = rellenarDia(sesionesFront.filter((s: Sesion) => s.dia === 'X'), 'X');
-        const jueves = rellenarDia(sesionesFront.filter((s: Sesion) => s.dia === 'J'), 'J');
-        const viernes = rellenarDia(sesionesFront.filter((s: Sesion) => s.dia === 'V'), 'V');
+        const hoy = new Date();
+        const lunesSemana = new Date(hoy);
+        lunesSemana.setDate(hoy.getDate() - (hoy.getDay() === 0 ? 6 : hoy.getDay() - 1));
+        const e = hoy.getDay() 
+        const format = (d: Date) => d.toISOString().split('T')[0];
+        const fechaLunes = format(lunesSemana);
+        const fechaMartes = format(new Date(lunesSemana.setDate(lunesSemana.getDate() + 1)));
+        const fechaMiercoles = format(new Date(lunesSemana.setDate(lunesSemana.getDate() + 1)));
+        const fechaJueves = format(new Date(lunesSemana.setDate(lunesSemana.getDate() + 1)));
+        const fechaViernes = format(new Date(lunesSemana.setDate(lunesSemana.getDate() + 1)));
+        const semanaActual = SesionToExcepcionAsig(sesionesFront, fechaLunes, fechaMartes, fechaMiercoles, fechaJueves, fechaViernes)
+        const lunes = rellenarDia(semanaActual.filter((s: Sesion) => s.dia === fechaLunes), fechaLunes);
+        const martes = rellenarDia(semanaActual.filter((s: Sesion) => s.dia === fechaMartes), fechaMartes); 
+        const miercoles = rellenarDia(semanaActual.filter((s: Sesion) => s.dia === fechaMiercoles), fechaMiercoles);
+        const jueves = rellenarDia(semanaActual.filter((s: Sesion) => s.dia === fechaJueves), fechaJueves);
+        const viernes = rellenarDia(semanaActual.filter((s: Sesion) => s.dia === fechaViernes), fechaViernes);
 
         setSesiones([lunes, martes, miercoles, jueves, viernes]);
       }finally {

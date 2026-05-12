@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
 
-import { Asignatura, Aula, Excepcion, GrupoAsignatura, GrupoPrivilegio, GrupoPrivilegioTipo, Hora, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Sesion, sesionAula, Usuario } from "../tipos"
+import { Asignatura, Aula, Excepcion, ExcepcionAula, GrupoAsignatura, GrupoPrivilegio, GrupoPrivilegioTipo, Hora, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Sesion, SesionAula, Usuario } from "../tipos"
 import { response } from "express"
 
 
@@ -432,7 +432,7 @@ export const crearGrupoAsignatura= async (req: any, res: any)=>{ //crea el grupo
             );
 
             await Promise.all(horario.map(async (sesion)=>{
-                const horarioAula: sesionAula = {
+                const horarioAula: SesionAula = {
                     asignatura: Gid,
                     dia: sesion.dia,
                     horaInicio: sesion.horaInicio,
@@ -767,7 +767,7 @@ export const crearSesion= async (req: any, res: any)=>{ //crea el grupo y luego 
             { $addToSet: { horarios: sesion } }
         )
 
-        const horarioAula: sesionAula = {
+        const horarioAula: SesionAula = {
                 asignatura: idGrupo,
                 dia: sesion.dia,
                 horaInicio: sesion.horaInicio,
@@ -834,7 +834,7 @@ export const eliminarSesion= async (req: any, res: any)=>{ //crea el grupo y lue
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
-        const horarioAula: sesionAula = {
+        const horarioAula: SesionAula = {
             asignatura: idGrupo,
             dia: sesion.dia,
             horaInicio: sesion.horaInicio,
@@ -1259,8 +1259,24 @@ const AulaDisponibleSesiones = (aula: Aula, sesionNueva: Sesion)=>{ // A[10:00, 
             || sesionNueva.horaFin.hora == h.horaInicio.hora &&sesionNueva.horaFin.minuto == h.horaInicio.minuto
             ||sesionNueva.horaInicio.hora == h.horaFin.hora && sesionNueva.horaInicio.minuto == h.horaFin.minuto
         ){
+            return true
+        }
+        return false
+    });
+    if(disponible == false) return false
+    return AulaDisponibleSesionesExcepciones(aula.exepciones, sesionNueva)
+}
+const AulaDisponibleSesionesExcepciones = (exepciones: ExcepcionAula[], sesionNueva: Sesion)=>{ // A[10:00, 11:00] B[10:30, 11:30]
+    const fechasAula= ExcepcionesToSesionesAula(exepciones)
+    console.log({excepciones:exepciones})
 
-        
+    const disponible = fechasAula.every(h => {
+        if (h.dia !== sesionNueva.dia) return true;
+        if(validarHorario(sesionNueva.horaFin, h.horaInicio) 
+            || validarHorario(h.horaFin, sesionNueva.horaInicio) 
+            || sesionNueva.horaFin.hora == h.horaInicio.hora &&sesionNueva.horaFin.minuto == h.horaInicio.minuto
+            ||sesionNueva.horaInicio.hora == h.horaFin.hora && sesionNueva.horaInicio.minuto == h.horaFin.minuto
+        ){
             return true
         }
         return false
@@ -1329,4 +1345,62 @@ const ValidarEcepcion = async (excepcion: Excepcion): Promise<number> => {
     if (!AulaDisponibleSesiones(aula, sesion) || !AulaDisponibleExcepciones(aula, excepcion)) return 2;
 
     return 1;
+}
+
+const ExcepcionesToSesionesAsig = (excepciones: Excepcion[]): Sesion[] => {
+    
+    const sesiones = excepciones.map((elem)=>{
+        return ExcepcionToSesionAsig(elem) 
+    })
+    return sesiones;
+}
+const ExcepcionesToSesionesAula = (excepciones: ExcepcionAula[]): SesionAula[] => {
+    
+    const sesiones = excepciones.map((elem)=>{
+        return ExcepcionToSesionAula(elem) 
+    })
+    return sesiones;
+}
+const ExcepcionToSesionAsig = (excepcion: Excepcion): Sesion => {
+    const dia = FechaToDia(excepcion.fecha)
+    const sesion:Sesion = {
+            aula: excepcion.aula,
+            dia: dia,
+            horaInicio: excepcion.horaInicio,
+            horaFin: excepcion.horaFin
+        }
+    return sesion;
+}
+const ExcepcionToSesionAula = (excepcion: ExcepcionAula): SesionAula => {
+    const dia = FechaToDia(excepcion.fecha)
+    const sesion:SesionAula = {
+            asignatura: excepcion.asignatura,
+            dia: dia,
+            horaInicio: excepcion.horaInicio,
+            horaFin: excepcion.horaFin
+        }
+        return sesion;
+}
+const FechaToDia = (fecha:string) =>{
+    const [yyyy, mm, dd] = fecha.split('-').map(Number);
+    const date = new Date(yyyy, mm-1, dd )
+    let dia :  'L' | 'M' | 'X' | 'J' | 'V';
+    switch (date.getDay()){
+        case 1:
+            dia='L'
+            break;
+        case 2:
+            dia='M'
+            break;
+        case 3:
+            dia='X'
+            break;
+        case 4:
+            dia='J'
+            break;
+        default:
+            dia='V'
+            break;
+    }
+    return dia;
 }

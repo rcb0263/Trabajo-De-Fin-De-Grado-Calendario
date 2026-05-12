@@ -257,8 +257,9 @@ export type ListaHorariosProps = {
 
 };
 export const formatearHora = (h:Hora) =>{
-
-  return (h.hora+':'+h.minuto)
+  const hora = h.hora<10?('0'+h.hora):h.hora
+  const minuto = h.minuto<10?('0'+h.minuto):h.minuto
+  return (hora+':'+minuto)
 };
 export const ListaHorarios = ({horarios, data, tipo, tipoAcceso}: ListaHorariosProps) => {
 

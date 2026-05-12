@@ -1,7 +1,6 @@
 import { Router } from "express"
 import { getDb } from "../mongo"
-import { añadirAdminPrivilegios, añadirMiembroPrivilegios, crearAdminGrupo, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, eliminarGrupoPrivilegios, eliminarMiembroPrivilegios,esAdmin,GetGrupoPrivilegios,GetGrupoPrivilegiosObjetivo,ObtenerGruposPrivilegios, verifyAdmin } from "../collections/privilegios";
-import { CrearAdmin, CrearTrueUser, logIn } from "../collections/usuarios";
+import { añadirAdminPrivilegios, añadirMiembroPrivilegios, CrearAdmin, crearAdminGrupo, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, CrearTrueUser, eliminarGrupoPrivilegios, eliminarMiembroPrivilegios,esAdmin,GetGrupoPrivilegios,GetGrupoPrivilegiosObjetivo,logIn,ObtenerGruposPrivilegios, verifyAdmin } from "../collections/privilegios";
 import { verifyToken } from "../middleware/verifytoken";
 const router = Router();
 
@@ -22,7 +21,7 @@ router.post("/CrearAdministrador", /*verifyToken, verifyAdmin, */ async (req, re
     res.status(404).json(error)
  }
 })
-router.post("/CrearTrueUser", ()=>{return false} , async (req, res)=>{
+router.post("/CrearTrueUser",async (req, res)=>{
  try {
     await CrearTrueUser(req,res)
  } catch (error) {
