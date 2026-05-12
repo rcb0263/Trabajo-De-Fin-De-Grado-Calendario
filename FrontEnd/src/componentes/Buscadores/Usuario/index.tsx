@@ -55,16 +55,9 @@ export const BuscadorUsuarios = () => {
                     });
                     setResult(respuesta)
                 }
-                alert("OK");
               
             } catch (err: any) {
-              const mensaje = err.response?.data?.mensaje;
 
-              if (Array.isArray(mensaje)) {
-                alert(mensaje.join("\n"));
-              } else {
-                alert(mensaje || "Error desconocido");
-              }
             }
         }}>Buscar</button>
       </div>

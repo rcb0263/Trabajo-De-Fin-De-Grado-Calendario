@@ -53,17 +53,13 @@ const Page = () => {
                 await AñadirAdmin({mail})
                 setError('')
 
-                alert("OK");
 
               } catch (err: any) {
                 const mensaje = err.response?.data?.message;
 
                 if (Array.isArray(mensaje)) {
-                  alert(mensaje.join("\n"));
                   setError(mensaje.join("\n"))
-                } else {
-                  alert(mensaje || "Error desconocido");
-                }
+                } 
               }
           }}>Crear</button>
         </div >
@@ -80,16 +76,12 @@ const Page = () => {
                 try {            
                   await EliminarAdmin({mail: mail2})
                   setError('')
-                  alert("OK");
 
                 } catch (err: any) {
                   const mensaje = err.response?.data?.message;
 
                   if (Array.isArray(mensaje)) {
-                    alert(mensaje.join("\n"));
                     setError(mensaje.join("\n"))
-                  } else {
-                    alert(mensaje || "Error desconocido");
                   }
                 }
             }}>Añadir</button>
@@ -108,16 +100,13 @@ const Page = () => {
                   await AñadirAdmin({mail: mail2})
                   setError('')
 
-                  alert("OK");
 
                 } catch (err: any) {
                   const mensaje = err.response?.data?.message;
 
                   if (Array.isArray(mensaje)) {
-                    alert(mensaje.join("\n"));
                     setError(mensaje.join("\n"))
                   } else {
-                    alert(mensaje || "Error desconocido");
                   }
                 }
             }}>Eliminar</button>

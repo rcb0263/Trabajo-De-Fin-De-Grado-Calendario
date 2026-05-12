@@ -75,7 +75,7 @@
     width: 50px;
     display: flex;
     flex-direction: column;
-    background-color: transparent;; /* azul outlook claro */
+    background-color: transparent;
     border-radius: 8px;
 
     transition:

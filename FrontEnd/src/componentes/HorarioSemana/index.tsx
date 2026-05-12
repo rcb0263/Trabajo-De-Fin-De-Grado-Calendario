@@ -18,7 +18,7 @@ export const HorarioSemana =(props: HorarioSemanaProps)=>{
     const rellenarDia =  (sesionesDia: SesionAsig[], dia: string): SesionAsig[] => {
       const resultado: SesionAsig[] = sesionesDia;
 
-      for (let h = 8; h <= 22; h++) {//rellenar un dia de 08:00 a 22:00
+      for (let h = 8; h < 22; h++) {//rellenar un dia de 08:00 a 22:00
         for (let m = 0; m < 60; m += 30) {//X:00 o X:30, después se pasa
           const inicio = { hora: h, minuto: m };
           const fin = m === 0 ? { hora: h, minuto: 30 }: { hora: h + 1, minuto: 0 };

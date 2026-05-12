@@ -1,20 +1,20 @@
 import { Router } from "express"
 import { eliminarUsuario, getHorarios, getProfesores, getUsuario, SearchUsuario } from "../collections/usuarios";
 import { AuthRequest, verifyToken } from "../middleware/verifytoken";
-import { crearUsuario, esAdmin, logIn } from "../collections/privilegios";
+import { crearUsuario, verifyAdmin, logIn } from "../collections/privilegios";
 const router = Router();
 
 router.get("/",(req, res)=>{
     res.send("Se ha conectado a la ruta profesores correctamente")
 })
-router.post("/Crear", verifyToken, esAdmin, async (req, res)=>{
+router.post("/Crear", verifyToken, verifyAdmin, async (req, res)=>{
  try {
     await crearUsuario(req,res, 'Profesor')
  } catch (error) {
     res.status(404).json(error)
  }
 })
-router.post("/Eliminar",verifyToken, esAdmin, async (req, res)=>{
+router.post("/Eliminar",verifyToken, verifyAdmin, async (req, res)=>{
  try {
   
    await eliminarUsuario(req,res, 'Alumno')
@@ -23,7 +23,7 @@ router.post("/Eliminar",verifyToken, esAdmin, async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.get("/Get", verifyToken, esAdmin, async (req, res)=>{
+router.get("/Get", verifyToken, verifyAdmin, async (req, res)=>{
  try {
    const result = await getProfesores()
    res.status(201).json(result)
@@ -54,7 +54,7 @@ router.post("/GetHorarios", verifyToken, async (req: AuthRequest, res)=>{
    res.status(404).json(error)
  }
 })
-router.post("/SearchProfesor", verifyToken, esAdmin,async (req, res)=>{
+router.post("/SearchProfesor", verifyToken, verifyAdmin,async (req, res)=>{
  try {
    await SearchUsuario(req,res, 'Profesor')
  } catch (error) {

@@ -27,7 +27,6 @@ export const CrearAdmin = async ( props: CrearAdminProps ) => {
   );
   return response;
 };
-//const token = localStorage.getItem("token");
 export const AñadirAdmin = async ( props: AñadirAdminProps ) => {
   const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
     const response = await api.put('/privilegios/addAdmin', 

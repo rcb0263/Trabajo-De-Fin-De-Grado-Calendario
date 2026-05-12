@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  gap: 15px; /* 👈 separación entre contenedores */
+  gap: 15px; 
 }
 
 .contenedor {
@@ -47,7 +47,7 @@
   width: clamp(15px, 30%, 80px);
   padding: 10px 16px;
 
-  background-color: #4f46e5; /* azul moderno */
+  background-color: #4f46e5; 
   color: white;
 
   border: none;

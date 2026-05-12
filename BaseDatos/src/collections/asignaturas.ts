@@ -2,7 +2,6 @@ import { ObjectId } from "mongodb"
 import { getDb } from "../mongo"
 
 import { Asignatura, Aula, Excepcion, ExcepcionAula, GrupoAsignatura, GrupoPrivilegio, GrupoPrivilegioTipo, Hora, PrivilegiosAsignatura, PrivilegiosAula, PrivilegiosGrupoAsignatura, PrivilegiosUsuario, Sesion, SesionAula, Usuario } from "../tipos"
-import { response } from "express"
 
 
 const ColeccionAsignaturas = "Asignaturas"
@@ -859,7 +858,6 @@ export const eliminarSesion= async (req: any, res: any)=>{ //crea el grupo y lue
     }
 }
 
-//Funciona verifyIsAdmin or verify privilegios datosAvanzados=true
 export const asignarProfesor= async (req:any, res: any)=>{
     const nombre: string = req.body?.nombre;
     const curso: number= req.body?.curso;
@@ -936,7 +934,6 @@ export const asignarProfesor= async (req:any, res: any)=>{
     }
 
 }
-//Funciona verifyIsAdmin or verify privilegios datosAvanzados=true
 export const quitarProfesor= async (req:any, res: any)=>{
     const nombre: string = req.body?.nombre;
     const curso: number= req.body?.curso;
@@ -1014,7 +1011,6 @@ export const quitarProfesor= async (req:any, res: any)=>{
     }
 }
 
-//Funciona verifyIsAdmin or verifyIsAlumno mover a usuarios
 export const asignarAlumno= async (req:any, res: any)=>{
     const nombre: string = req.body?.nombre;
     const curso: number= req.body?.curso;
@@ -1090,7 +1086,6 @@ export const asignarAlumno= async (req:any, res: any)=>{
             {result1: result, result2: result2})
     }
 }
-//Funciona verifyIsAdmin or verifyIsAlumno mover a usuarios
 export const quitarAlumno= async (req:any, res: any)=>{
     const nombre: string = req.body?.nombre;
     const curso: number= req.body?.curso;
@@ -1268,7 +1263,6 @@ const AulaDisponibleSesiones = (aula: Aula, sesionNueva: Sesion)=>{ // A[10:00, 
 }
 const AulaDisponibleSesionesExcepciones = (exepciones: ExcepcionAula[], sesionNueva: Sesion)=>{ // A[10:00, 11:00] B[10:30, 11:30]
     const fechasAula= ExcepcionesToSesionesAula(exepciones)
-    console.log({excepciones:exepciones})
 
     const disponible = fechasAula.every(h => {
         if (h.dia !== sesionNueva.dia) return true;

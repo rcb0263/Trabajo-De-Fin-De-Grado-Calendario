@@ -30,5 +30,6 @@ ir a la carpeta del proyecto
 paginas:
 Administrador:
 tiene un menu a la iquierda para llevar a cabo las tareas. en Buscar (pagina inicial del administrador) viene un buscador para los elementos haciendo las modificaciones desde ahí es mas sencillo
-Profesor: Se pueden ver los horarios, los profesores pueden hacer cambios a sus asignaturas
+Usuarios y Profesor: Se pueden ver los horarios, los profesores pueden hacer cambios a sus asignaturas
 
+La aplicación es actualmente funcional, su principal mejora de este momento a la entrega final es depuración y mayor facilidad para interactuar con la API

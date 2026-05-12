@@ -66,15 +66,11 @@ const Page = () => {
                 });
               }
 
-              alert("OK");
-
             } catch (err: any) {
               const mensaje = err.response?.data?.message;
               if (Array.isArray(mensaje)) {
-                alert(mensaje.join("\n"));
                 setError(mensaje.join("\n"))
               } else {
-                alert(mensaje || "Error desconocido");
               }
             }
         }}>Crear</button>

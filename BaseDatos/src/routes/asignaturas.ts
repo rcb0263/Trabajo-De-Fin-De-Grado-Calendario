@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { asignarAlumno, asignarProfesor, crearAsignatura, crearExcepcion, crearGrupoAsignatura, crearSesion, eliminarAsignatura, eliminarExcepcion, EliminarGrupoAsignatura, eliminarSesion, GetAsignatura, getAsignaturas, GetGrupoAsignatura, GetGrupoAsignaturaSinTipo, ModificarAsignaturaBasico, ModificarGrupoAsignaturaBasico, quitarAlumno, quitarProfesor, SearchAsignaturas } from "../collections/asignaturas";
-import { verifyAdmin } from "../collections/privilegios";
+import { esPrivilegiadoGrupoAsignaturaProfesores, verifyAdmin } from "../collections/privilegios";
 import { verifyToken } from "../middleware/verifytoken";
 
 const router = Router();
@@ -106,7 +106,7 @@ router.put("/Grupo/Horario/Eliminar", verifyToken, verifyAdmin, async (req, res)
  }
 })
 
-router.put("/Grupo/Excepcion/Crear",verifyToken, async (req, res)=>{
+router.put("/Grupo/Excepcion/Crear",verifyToken, esPrivilegiadoGrupoAsignaturaProfesores, async (req, res)=>{
  try {
    await crearExcepcion(req,res)
  } catch (error) {
@@ -114,7 +114,7 @@ router.put("/Grupo/Excepcion/Crear",verifyToken, async (req, res)=>{
  }
 })
 
-router.put("/Grupo/Excepcion/Eliminar", verifyToken,async (req, res)=>{
+router.put("/Grupo/Excepcion/Eliminar", verifyToken, esPrivilegiadoGrupoAsignaturaProfesores, async (req, res)=>{
  try {
    await eliminarExcepcion(req,res)
  } catch (error) {

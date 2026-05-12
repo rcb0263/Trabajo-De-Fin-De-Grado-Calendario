@@ -10,6 +10,7 @@ export const AdminMenu =()=>{
         <div className="admin-cell" onClick={()=>{router.push(`/admin/crear/crearasignatura`)}}>Crear Asignatura</div>
         <div className="admin-cell" onClick={()=>{router.push(`/admin/crear/creargrupoasignatura`)}}>Crear Grupo Asignatura</div>
         <div className="admin-cell" onClick={()=>{router.push(`/admin/crear/crearusuario`)}}>Crear Usuario</div>
+        <div className="admin-cell" onClick={()=>{router.push(`/admin/crear/crearaula`)}}>Crear Aula</div>
         <div className="admin-cell" onClick={()=>{router.push(`/admin/crear/creareliminaradministrador`)}}>Administradores</div>
         <div className="admin-cell" onClick={()=>{router.push(`/admin/crear/crearprivilegios`)}}>Crear Privilegios</div>
         <div className="admin-cell" onClick={()=>{router.push(`/admin/crear/cambiarprivilegios`)}}>Cambiar Privilegios</div>

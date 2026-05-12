@@ -12,7 +12,7 @@
   flex-direction: column;
 }
 
-/* Cada "celda" del menú */
+/* Cada celadas del menú */
 .admin-cell {
   padding: 15px;
   color: white;
@@ -25,7 +25,7 @@
   background-color: #333;
 }
 
-/* contenido */
+/* contenido admin */
 .admin-content {
   flex: 1;
   padding: 20px;

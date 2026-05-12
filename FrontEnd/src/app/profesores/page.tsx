@@ -51,8 +51,7 @@ useEffect(() => {
   if(grupo && cambio==true){
     fetchFechas()
   }
-  console.log({datos: grupo?.fechas,
-    mensaje:'cambio: '+(cambio==true?'1':'0')})
+
   setCambio(false)
 }, [mail,cambio]);
 

@@ -59,7 +59,6 @@ export const crearAdminGrupo = async (req: any, res: any)=>{
     if(grupo){
         eMsg.push('Ya existe un grupo de administradores')
     }
-    console.log({m:eMsg})
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
@@ -113,7 +112,6 @@ export const crearUsuario = async (req: any, res: any, tipoUsuario:string)=>{
     const nombre:string = req.body?.nombre //   grupo: string
     const mail:string = req.body?.mail //   grupo: string
     const password:string = req.body?.password
-    console.log('pepper: '+PEPPER)
     let coleccion = ''
     const db = getDb()
     const eMsg:string[] = []
@@ -716,8 +714,8 @@ export const GetGrupoPrivilegiosObjetivo = async (req: any, res: any) => {
 }
 
 //Expandir
-export const ObtenerGruposPrivilegios = async (req: any, res: any) => {
-    const privilegios: string[] = req.body.privilegios
+export const ObtenerGruposPrivilegios = async (req: any, res: any, Idsprivilegios?: string []) => {
+    const privilegios: string[] = Idsprivilegios||req.body.privilegios
     const db = getDb()
     const IdsPrivilegios = privilegios.map(id => new ObjectId(id))
     const grupos = await db.collection<GrupoPrivilegioTipo>(ColeccionPrivilegios).find(
@@ -760,11 +758,28 @@ export const esPrivilegiadoUsuarioAsignaturas = async (req: any, res: any, next:
 }
     //Grupo Asignatura
 export const esPrivilegiadoGrupoAsignaturaProfesores  = async (req: any, res: any, next: NextFunction) =>{
-    const grupos:PrivilegiosGrupoAsignatura[] = await ObtenerGruposPrivilegios(req, res) as PrivilegiosGrupoAsignatura[];
+    const esAdministrador = await esAdmin(req, res)
+    if (!esAdministrador) {
+        const db = getDb()
+    const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: req.body.nombre, curso: req.body.curso})
+        let idsPrivilegios = []
+            if(!existeAsignatura){
+                return res.status(403).json({ message: "No tienes permisos de profesores" })
+            }else{
+                let coleccion='';
+                if(req.body.tipo=='Teoria'){
+                    coleccion=ColeccionTeoria
+                }else{
+                    coleccion=ColeccionPractica
+                }
+                const existeGrupo = await db.collection<GrupoAsignatura>(coleccion).findOne({ asignatura: String(existeAsignatura._id), grupo:req.body.grupo });
+                idsPrivilegios= existeGrupo!.privilegios
+            }
+        const grupos:PrivilegiosGrupoAsignatura[] = await ObtenerGruposPrivilegios(req, res, idsPrivilegios) as PrivilegiosGrupoAsignatura[];
     if (!grupos.some((grupo)=>grupo.profesores == true) || await esAdmin(req, res)) {
         return res.status(403).json({ message: "No tienes permisos de profesores" })
     }
-
+    }
     next()
 }
 
@@ -775,7 +790,6 @@ export const esAdmin = async (req: any, res: any) => {
         admin: 'Admin',
         "miembros.miembro": req.user.mail
     });
-    
     if(grupos) {
         return true
 

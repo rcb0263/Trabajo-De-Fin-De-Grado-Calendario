@@ -11,6 +11,9 @@ interface GetAulaProps{
 interface EliminarAulaProps{
   aula: string
 }
+interface CrearAulaProps{
+  nombre: string
+}
 
 export const SearchAulas = async ( props: SearchAulasProps ) => {
       const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
@@ -41,7 +44,7 @@ export const GetAula = async ( props: GetAulaProps ) => {
 };
 
 export const EliminarAula = async ( props: EliminarAulaProps ) => {
-      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+   const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
 
     const response = await api.delete('/aulas/Eliminar', {
       data: props,
@@ -49,5 +52,19 @@ export const EliminarAula = async ( props: EliminarAulaProps ) => {
         authorization: token,
       },
     });
+    return response.data;
+};
+
+export const crearAula = async ( props: CrearAulaProps ) => {
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+
+    const response = await api.post('/aulas/Crear',             
+      props,
+    {
+      headers: {
+        authorization: `${token}`,
+      },
+    }
+  );
     return response.data;
 };

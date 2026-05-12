@@ -16,8 +16,6 @@ export const SesionBox=(props: Props)=>{
     )
     const nombre = props.sesion.asignatura.split('Teoria')
     const nom = props.sesion.asignatura.split('Practica')
-    sesion.aula!=='Libre'?console.log(props.sesion.asignatura):''
-    const grupo = 'Teoria'.search(props.sesion.asignatura)?'Teoria':'Practica'
   useEffect(() => {
 
   }, [props]);

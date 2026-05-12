@@ -28,7 +28,6 @@ const LoginAdmin = () => {
             const token = await loginAdmin(mail, password);
             setToken(token);
             document.cookie = `token=${token}; max-age=3600; path=/; Secure; SameSite=Strict`;
-//            localStorage.setItem("token", token);
 
             setError(false);
             if(token!=''){

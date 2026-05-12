@@ -32,10 +32,7 @@ export const CrearSesionComponente = ({data}:Props) =>{
   const [horaInicio, setHoraInicio] = useState<string>('')
   const [horaFin, setHoraFin] = useState<string>('')
 
-  /*
 
-    tipo:string,
-*/
   const [error, setError]= useState<string>('');
 
   return(
@@ -158,17 +155,13 @@ export const CrearSesionComponente = ({data}:Props) =>{
                 horaFin
             });
             setError('')
-            alert("OK");
             data?.setCambio(true)
 
           } catch (err: any) {
             const mensaje = err.response?.data?.message;
 
             if (Array.isArray(mensaje)) {
-              alert(mensaje.join("\n"));
               setError(mensaje.join("\n"))
-            } else {
-              alert(mensaje || "Error desconocido");
             }
           }
       }}>Crear</button>

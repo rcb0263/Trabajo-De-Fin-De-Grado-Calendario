@@ -78,17 +78,13 @@ export const PrivilegiosAsignatura = ({data}: Props) =>{
               nombre, nombreAsignatura, curso, basicos, avanzados
             });
             setError('')
-            alert("OK");
             data?.setCambio(true)
           } catch (err: any) {
             const mensaje = err.response?.data?.message;
 
             if (Array.isArray(mensaje)) {
-              alert(mensaje.join("\n"));
               setError(mensaje.join("\n"))
-            } else {
-              alert(mensaje || "Error desconocido");
-            }
+            } 
           }
       }}>Crear</button>
 
