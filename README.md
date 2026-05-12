@@ -33,3 +33,19 @@ tiene un menu a la iquierda para llevar a cabo las tareas. en Buscar (pagina ini
 Usuarios y Profesor: Se pueden ver los horarios, los profesores pueden hacer cambios a sus asignaturas
 
 La aplicación es actualmente funcional, su principal mejora de este momento a la entrega final es depuración y mayor facilidad para interactuar con la API
+
+usuario admin por defecto: 
+calne@mailcom
+contraseña:
+calne123
+
+
+
+
+
+
+
+
+
+
+
