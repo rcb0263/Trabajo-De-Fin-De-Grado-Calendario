@@ -29,51 +29,7 @@ router.get("/",(req, res)=>{
     res.send("Se ha conectado a la ruta auth correctamente")
 })
 
-router.post("/register", async (req,res)=>{
-    try {
-        const {mail, password} = req.body as {mail: string, password:string}
-        const users = colleccion()
-        const exists = await users.findOne({mail: mail})
-        if(exists){
-            return res.status(400).json({message:" Ya existe"})
-        }
-        const passEncripta = await bcrypt.hash(password+PEPPER,10)
-        const datos: Usuario = {
-            nombre: "",
-            mail,
-            passwordHash: passEncripta,
-            asignaturas: [],
-            fechaDeCreacion: new Date(),
-            privilegios: []
-        }
-        
-        await users.insertOne(datos)
 
-        res.status(201).json({message: "Usuario creado correctamente"})
-    }catch (error) {
-        res.status(500).json({message:error})
-    }
-})
-router.post("/login", async (req,res)=>{
-    try {
-        const {mail, password, username} = req.body as {mail: string, password:string, username:string}
-        const users = colleccion()
-
-        const user = await users.findOne({mail: mail})
-        if(!user) return res.status(400).json({message:" mail incorrecto"})
-        
-        const validPass = await bcrypt.compare(password+PEPPER, user.passwordHash)
-        if(!validPass) return res.status(201).json({message: " contraseña incorrecta"})
-        
-        const token = jwt.sign({id: user._id?.toString(), mail: user.mail}, SECRET,{
-            expiresIn: "1h"
-        })
-
-        res.status(201).json({message: {mail: user.mail, token: "Bearer "+token}})
-    } catch (error) {
-        res.status(500).json({message:error})
-    }
-})
 
 router.post("/esAdmin", verifyToken, async (req, res)=>{
     await esAdmin(req,res).then((e)=>{

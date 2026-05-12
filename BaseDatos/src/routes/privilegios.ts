@@ -94,7 +94,7 @@ router.put("/eliminarMiembro", verifyToken, verifyAdmin, async (req, res)=>{
  }
 })
 
-router.post("/Get/Gruposprivilegiados", async (req, res)=>{
+router.post("/Get/Gruposprivilegiados", verifyToken, verifyAdmin, async (req, res)=>{
  try {
    const result = await ObtenerGruposPrivilegios(req, res)
    res.status(201).json(result)
@@ -103,14 +103,14 @@ router.post("/Get/Gruposprivilegiados", async (req, res)=>{
  }
 })
 
-router.post("/Get/GrupoPrivilegiado", async (req, res)=>{
+router.post("/Get/GrupoPrivilegiado", verifyToken, verifyAdmin, async (req, res)=>{
  try {
    await GetGrupoPrivilegios(req, res)
  } catch (error) {
     res.status(404).json(error)
  }
 })
-router.post("/Get/GruposPrivilegiadoObjetivo", async (req, res)=>{
+router.post("/Get/GruposPrivilegiadoObjetivo", verifyToken, verifyAdmin, async (req, res)=>{
  try {
    await GetGrupoPrivilegiosObjetivo(req, res)
  } catch (error) {

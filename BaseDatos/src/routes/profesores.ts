@@ -7,7 +7,7 @@ const router = Router();
 router.get("/",(req, res)=>{
     res.send("Se ha conectado a la ruta profesores correctamente")
 })
-router.post("/Crear", async (req, res)=>{
+router.post("/Crear", verifyToken, esAdmin, async (req, res)=>{
  try {
     await crearUsuario(req,res, 'Profesor')
  } catch (error) {
@@ -23,7 +23,7 @@ router.post("/Eliminar",verifyToken, esAdmin, async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.get("/Get",async (req, res)=>{
+router.get("/Get", verifyToken, esAdmin, async (req, res)=>{
  try {
    const result = await getProfesores()
    res.status(201).json(result)
@@ -54,14 +54,14 @@ router.post("/GetHorarios", verifyToken, async (req: AuthRequest, res)=>{
    res.status(404).json(error)
  }
 })
-router.post("/SearchProfesor", async (req, res)=>{
+router.post("/SearchProfesor", verifyToken, esAdmin,async (req, res)=>{
  try {
    await SearchUsuario(req,res, 'Profesor')
  } catch (error) {
     res.status(404).json(error)
  }
 })
-router.post("/getProfesor", async (req, res)=>{
+router.post("/getProfesor", verifyToken, async (req, res)=>{
  try {
    await getUsuario(req,res, 'Profesor')
  } catch (error) {

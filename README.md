@@ -13,4 +13,6 @@ MAIL_UV=correo del usuarioverdadero
 
 MONGO_URI_ONLINE=urlde mongo
 MONGO_URI_LOCAL=url de mongo en local en caso de usarse
-
+usuario inicial:
+UV
+administrador con privilegios

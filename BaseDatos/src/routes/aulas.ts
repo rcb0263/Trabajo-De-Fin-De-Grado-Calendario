@@ -28,7 +28,7 @@ try {
    res.status(404).json(error)
  }
 })
-router.post("/SearchAulas", async (req, res)=>{
+router.post("/SearchAulas", verifyToken, async (req, res)=>{
 try {
    await SearchAulas(req,res)
 } catch (error) {

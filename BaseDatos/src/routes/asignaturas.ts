@@ -8,7 +8,7 @@ const router = Router();
 router.get("/",(req, res)=>{
     res.send("Se ha conectado a la ruta Asignaturas correctamente")
 })
-router.get("/Get",async (req, res)=>{
+router.get("/Get", verifyToken, async (req, res)=>{
  try {
    const result = await getAsignaturas()
    res.status(201).json(result)
@@ -16,7 +16,7 @@ router.get("/Get",async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.post("/SearchAsignaturas", async (req, res)=>{
+router.post("/SearchAsignaturas", verifyToken, async (req, res)=>{
  try {
    await SearchAsignaturas(req,res)
  } catch (error) {
@@ -24,21 +24,21 @@ router.post("/SearchAsignaturas", async (req, res)=>{
  }
 })
 
-router.post("/getAsignatura", async (req, res)=>{
+router.post("/getAsignatura", verifyToken, async (req, res)=>{
  try {
    await GetAsignatura(req,res)
  } catch (error) {
     res.status(404).json(error)
  }
 })
-router.post("/getGrupoAsignatura", async (req, res)=>{
+router.post("/getGrupoAsignatura", verifyToken, async (req, res)=>{
  try {
    await GetGrupoAsignatura(req,res)
  } catch (error) {
     res.status(404).json(error)
  }
 })
-router.post("/getGrupoAsignaturaSinTipo", async (req, res)=>{
+router.post("/getGrupoAsignaturaSinTipo", verifyToken, async (req, res)=>{
  try {
    await GetGrupoAsignaturaSinTipo(req,res)
  } catch (error) {
@@ -46,7 +46,7 @@ router.post("/getGrupoAsignaturaSinTipo", async (req, res)=>{
  }
 })
 
-router.post("/Crear", async (req, res)=>{
+router.post("/Crear", verifyToken,  verifyAdmin,async (req, res)=>{
  try {
    await crearAsignatura(req,res)
  } catch (error) {
@@ -61,7 +61,7 @@ router.delete("/Eliminar", verifyToken, verifyAdmin, async (req, res)=>{
  }
 })
 
-router.put("/Modificar/Basico", verifyToken, verifyToken, verifyAdmin, async (req, res)=>{
+router.put("/Modificar/Basico",verifyToken, verifyAdmin, async (req, res)=>{
  try {
     await ModificarAsignaturaBasico(req,res)
  } catch (error) {
@@ -69,7 +69,7 @@ router.put("/Modificar/Basico", verifyToken, verifyToken, verifyAdmin, async (re
  }
 })
 
-router.post("/Grupo/Crear",  async (req, res)=>{
+router.post("/Grupo/Crear", verifyToken, async (req, res)=>{
  try {
    await crearGrupoAsignatura(req,res)
  } catch (error) {
@@ -106,7 +106,7 @@ router.put("/Grupo/Horario/Eliminar", verifyToken, verifyAdmin, async (req, res)
  }
 })
 
-router.put("/Grupo/Excepcion/Crear", async (req, res)=>{
+router.put("/Grupo/Excepcion/Crear",verifyToken, async (req, res)=>{
  try {
    await crearExcepcion(req,res)
  } catch (error) {
@@ -114,7 +114,7 @@ router.put("/Grupo/Excepcion/Crear", async (req, res)=>{
  }
 })
 
-router.put("/Grupo/Excepcion/Eliminar", async (req, res)=>{
+router.put("/Grupo/Excepcion/Eliminar", verifyToken,async (req, res)=>{
  try {
    await eliminarExcepcion(req,res)
  } catch (error) {

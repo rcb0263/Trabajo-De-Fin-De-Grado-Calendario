@@ -9,7 +9,7 @@ const colleccion = () => {return getDb().collection('Alumnos');}
 router.get("/",(req, res)=>{
     res.send("Se ha conectado a la ruta alumnos correctamente")
 })
-router.post("/Crear", verifyAdmin, async (req, res)=>{
+router.post("/Crear", verifyToken, verifyAdmin, async (req, res)=>{
  try {
     await crearUsuario(req,res, 'Alumno')
  } catch (error) {
@@ -25,14 +25,14 @@ router.delete("/Eliminar", verifyToken, verifyAdmin, async (req, res)=>{
     res.status(404).json(error)
  }
 })
-router.get("/GetAsignaturas",  async (req, res)=>{
+router.get("/GetAsignaturas", verifyToken, async (req, res)=>{
  try {
    await getAsignaturas(req,res, 'Alumno')
  } catch (error) {
     res.status(401).json(error)
  }
 })
-router.post("/Login", async (req, res)=>{
+router.post("/Login", verifyToken, async (req, res)=>{
  try {
     const result = await logIn(req,res, 'Alumno')
  } catch (error) {
@@ -49,21 +49,21 @@ router.get("/GetUserIdFromToken", verifyToken, async (req: AuthRequest, res)=>{
  }
 })
 
-router.get("/Get",async (req, res)=>{
+router.get("/Get", verifyToken, async (req, res)=>{
  try {
    await getAlumnos()
  } catch (error) {
     res.status(409).json(error)
  }
 })
-router.post("/SearchAlumno", async (req, res)=>{
+router.post("/SearchAlumno", verifyToken, async (req, res)=>{
  try {
    await SearchUsuario(req,res, 'Alumno')
  } catch (error) {
     res.status(404).json(error)
  }
 })
-router.post("/getAlumno", async (req, res)=>{
+router.post("/getAlumno", verifyToken, async (req, res)=>{
  try {
    await getUsuario(req,res, 'Alumno')
  } catch (error) {
