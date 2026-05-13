@@ -288,11 +288,16 @@ export const getHorarios = async (req: any, res: any, tipoUsuario:string) => {
         return res.status(400).json({message: eMsg})
     }else{
         
-        const existeMail = await db
+        let existeMail = await db
         .collection<Usuario>(coleccion)
         .findOne({ mail });
         if (!existeMail) {
+            existeMail = await db
+            .collection<Usuario>(ColeccionAlumnos)
+            .findOne({ mail });
+        if (!existeMail) {
             return res.status(400).json({message: "No existe ese "+ tipoUsuario })
+        }
         }
         const asignaturasIds = existeMail.asignaturas;
         

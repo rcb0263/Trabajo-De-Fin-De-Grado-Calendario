@@ -14,7 +14,7 @@ const LoginAlumnos = ()  =>{
 
   useEffect(()=>{
     if(token!=''){
-      router.push(`/Alumno`)
+      router.push(`/alumnos`)
     }
   },[token])
     return(

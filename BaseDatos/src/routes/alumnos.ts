@@ -32,15 +32,15 @@ router.get("/GetAsignaturas", verifyToken, async (req, res)=>{
     res.status(401).json(error)
  }
 })
-router.post("/Login", verifyToken, async (req, res)=>{
+router.post("/Login", async (req, res)=>{
  try {
-    const result = await logIn(req,res, 'Alumno')
+    await logIn(req,res, 'Alumno')
  } catch (error) {
     res.status(404).json(error)
  }
 })
 
-router.get("/GetUserIdFromToken", verifyToken, async (req: AuthRequest, res)=>{
+router.post("/GetUserIdFromToken", verifyToken, async (req: AuthRequest, res)=>{
  try {
    const result = req.user
    res.status(201).json(result)
