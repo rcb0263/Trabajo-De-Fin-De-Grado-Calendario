@@ -27,7 +27,10 @@ calne123
 usuario inicial:
 UV
 administrador con privilegios
-
+Si se quiere cambiar manualmente
+SECRET=passsupersecret
+PEPPER_SECRET=lapepamemato,
+tendrá que hacerse el cambio iniciando sesión como administrador, haciendo el cambioo en el codigo para PEPPER_SECRET y creando un nuevo administrador con privilegios de administrador. después de ello ya no se podrá logar con el original (calne@mailcom)
 Lanzar el programa:
 ir a la carpeta del proyecto
 1 ir a la carpeta BaseDatos
