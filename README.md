@@ -10,7 +10,7 @@ TFG/
  ├── Ejecutar aquí
 
 OPCIÓN 2:
-Crear tu propia base de datos (ver documentación Mongo%db Atlas)
+Crear tu propia base de datos (ver documentación MongoDB Atlas)
 
 .env:
 
@@ -22,9 +22,11 @@ MONGO_URI_ONLINE=urlde mongo (base de datos online)
 MONGO_URI_LOCAL=url de mongo en local
 
 si se usa la base de datos de backup (Opción 1):
-SECRET=passsupersecret
+SECRET=a elegir
 PEPPER_SECRET=lapepamemato
-MAIL_UV=calne@mail.com
+MAIL_UV=a elegir
+MONGO_URI_ONLINE= la url de conexion a MongoDB Atlas de la base de datos
+
 usuario admin por defecto: 
   calne@mailcom
   contraseña:
@@ -80,12 +82,12 @@ router.post("/Admin/Crear", async (req, res)=>{
 Lanzar el programa:
  0 ir a la carpeta del proyecto
  1 ir a la carpeta /BaseDatos
- 2 Abrir una terminal
- 3 npm install
- 4 ejecutar npm run dev
+ 2 crear el archivo .env y rellenarlo (SECRET, PEPPER_SECRET, MAIL_UV, MONGO_URI_ONLINE)
+ 3 Abrir una terminal en la ruta /BaseDatos
+ 4 npm install
+ 5 ejecutar npm run dev
 
- 5 ir a la carpeta /FrontEnd
- 6 Abrir una terminal
+ 6 Abrir una terminal en la ruta /FrontEnd
  7 npm install
  8 ejecutar npm run dev
 
