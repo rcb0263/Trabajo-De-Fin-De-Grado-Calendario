@@ -29,6 +29,7 @@ export const UsuarioDetalleCard = (params: UsuarioProps) => {
   const [derecha, setDerecha] = useState<string>('')
   const [privilegio, setPrivilegio] = useState<GrupoPrivilegioTipo | null>(null);
   const [asignaturas, setAsignaturas] = useState<GrupoAsignaturacomp[]>([])
+  const [grupo, setGrupo]= useState<GrupoAsignaturacomp|null>(null);
   const router = useRouter();
   useEffect(()=>{
     if(cambio==true){
@@ -85,9 +86,9 @@ useEffect(() => {
               key={e._id}
               asignatura={e}
               data={{
-                setGrupo: params.data!.setGrupo,
-                setDerecha: params.data!.setDerecha,
-                usuario: params.data!.usuario,
+                setGrupo: params.data?.setGrupo||setGrupo,
+                setDerecha: params.data?.setDerecha||setDerecha,
+                usuario: params.data?.usuario||usuario.mail,
                 derecha: derecha
               }}
             />
