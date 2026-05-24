@@ -274,6 +274,7 @@ export const eliminarAsignatura = async (req: any, res: any)=>{
     const curso = req.body?.curso //   curso: number,
     const eMsg:string[] = []
     const db = getDb()
+    let asignaturaId='';
 
     if(!curso ||typeof(curso)!= "number" ){
         eMsg.push("curso debe ser un numero")
@@ -284,12 +285,15 @@ export const eliminarAsignatura = async (req: any, res: any)=>{
         const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
         if(!existeAsignatura){
             eMsg.push("No existe una asignatura con ese nombre para ese año ")
+        }else{
+            asignaturaId=String(existeAsignatura._id)
         }
     }
     
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
     }else{
+        EliminarAsignaturaTP(asignaturaId)
         const result = await db
             .collection(ColeccionAsignaturas)
             .deleteOne({nombre: nombre, curso: curso})
@@ -464,7 +468,7 @@ export const EliminarGrupoAsignatura = async (req: any, res: any)=>{
     const db = getDb()
     const eMsg:string[] = []
     let asignaturaId='';
-
+    let coleccion = '';
     if(!curso ||typeof(curso)!= "number" ){
         eMsg.push("curso debe ser un numero")
     }
@@ -480,38 +484,29 @@ export const EliminarGrupoAsignatura = async (req: any, res: any)=>{
     }
     if(!tipo || typeof(tipo)!="string" || (tipo!= 'Teoria' && tipo!='Practica') ){
         eMsg.push("tipo debe ser un string")
+    }else if(tipo=='Teoria'){
+        coleccion=ColeccionTeoria
+    }else if(tipo=='Practica'){
+        coleccion=ColeccionPractica
     }
     if(!grupo ||typeof(grupo)!= "string" ){
         eMsg.push("grupo debe ser un string")
     }
     if(eMsg.length >0){
         return res.status(400).json({message: eMsg})
-    }else{
-        if (tipo=='Teoria'){
-            const existeGrupo = await db.collection<GrupoAsignatura>(ColeccionTeoria).findOne({asignatura: asignaturaId, grupo: grupo})
-            if(!existeGrupo){
-                return res.status(400).json({message: "No existe ese grupo"})
-            }
-            const result = await db.collection<Asignatura>(ColeccionAsignaturas).updateOne(
-                {_id: new ObjectId(asignaturaId)},
-                {$pull: {teoria: String(existeGrupo._id)}}
-            )
-            const result2 = await db.collection<GrupoAsignatura>(ColeccionTeoria).deleteOne({_id: existeGrupo._id})
-            return res.status(201).json(result2)
-        }else if (tipo=='Practica'){
-            const existeGrupo = await db.collection<GrupoAsignatura>(ColeccionPractica).findOne({asignatura: asignaturaId, grupo: grupo})
-            
-            if(!existeGrupo){
-                return res.status(400).json({message: "No existe ese grupo"})
-            }
-            const result = await db.collection<Asignatura>(ColeccionAsignaturas).updateOne(
-                {_id: new ObjectId(asignaturaId)},
-                {$pull: {practicas:  String(existeGrupo._id)}}
-            )
-            const result2 = await db.collection<GrupoAsignatura>(ColeccionPractica).deleteOne({_id: existeGrupo._id})
-
-            return res.status(201).json(result2)
+    }else{//eliminarGrupoSEPA
+        const existeGrupo = await db.collection<GrupoAsignatura>(coleccion).findOne({asignatura: asignaturaId, grupo: grupo})
+        if(!existeGrupo){
+            return res.status(400).json({message: "No existe ese grupo"})
         }
+        eliminarGrupoSEPA(String(existeGrupo._id)).then(async ()=>{
+            const result = await db.collection<Asignatura>(ColeccionAsignaturas).updateOne(
+            {_id: new ObjectId(asignaturaId)},
+            {$pull: {teoria: String(existeGrupo._id)}}
+            )
+            const result2 = await db.collection<GrupoAsignatura>(coleccion).deleteOne({_id: existeGrupo._id})
+            return res.status(201).json(result2)
+        })
     }
 }
 //Funciona
@@ -695,10 +690,15 @@ export const eliminarExcepcion= async (req:any, res: any)=>{
             {_id: new ObjectId(idGrupo)},
             { $pull: { fechas: excepcion } }
         )
-
+        const ecepcionAula: ExcepcionAula = {
+            asignatura: idGrupo,
+            fecha: excepcion.fecha,
+            horaInicio: excepcion.horaInicio,
+            horaFin: excepcion.horaFin
+        }
         const result2 = await db.collection<Aula>(ColeccionAula).updateOne(
         { aula: excepcion.aula },
-        { $pull: { exepciones: excepcion } }
+        { $pull: { exepciones: ecepcionAula } }
         )
         return res.status(200).json(result)
     }
@@ -1161,6 +1161,170 @@ export const quitarAlumno= async (req:any, res: any)=>{
         })
     }
 }
+
+const EliminarAsignaturaTP = async (AsignaturaId:string)=>{
+    const db = getDb()
+    const eMsg:string[] = []
+    
+    if(eMsg.length >0){
+        return {message: eMsg}
+    }else{
+        const existeGrupo = await db.collection<Asignatura>(ColeccionAsignaturas).findOne({_id: new ObjectId(AsignaturaId)})
+        if(!existeGrupo){
+            return {message: "No existe ese grupo"}
+        }
+        const resultTeoria = existeGrupo.teoria.map(async grupo=>{
+            await EliminarGrupo(grupo, 'Teoria', AsignaturaId)
+        })
+        const resultPractica= existeGrupo.practicas.map(async grupo=>{
+            await EliminarGrupo(grupo, 'Teoria', AsignaturaId)
+        })
+        return {teoria: resultTeoria, practica: resultPractica}
+    }
+}
+const EliminarGrupo = async (GrupoAsignaturaId:string, tipo:string, asignaturaId: string )=>{
+    const db = getDb()
+    const eMsg:string[] = []
+    let coleccion = '';
+    
+    if(!tipo || typeof(tipo)!="string" || (tipo!= 'Teoria' && tipo!='Practica') ){
+        eMsg.push("tipo debe ser un string")
+    }else if(tipo=='Teoria'){
+        coleccion=ColeccionTeoria
+    }else if(tipo=='Practica'){
+        coleccion=ColeccionPractica
+    }
+    
+    if(eMsg.length >0){
+        return {message: eMsg}
+    }else{
+        const existeGrupo = await db.collection<GrupoAsignatura>(coleccion).findOne({_id: new ObjectId(GrupoAsignaturaId)})
+        if(!existeGrupo){
+            return {message: "No existe ese grupo"}
+        }
+        eliminarGrupoSEPA(String(existeGrupo._id)).then(async (SEPA)=>{
+            const result = await db.collection<Asignatura>(ColeccionAsignaturas).updateOne(
+            {_id: new ObjectId(asignaturaId)},
+            {$pull: {teoria: String(existeGrupo._id)}}
+            )
+            const result2 = await db.collection<GrupoAsignatura>(coleccion).deleteOne({_id: existeGrupo._id})
+            return {result, result2, SEPA}
+        })
+    }
+}
+
+export const eliminarGrupoSEPA= async (GrupoAsignaturaId:string )=>{
+
+    let existeAsignatura;
+    let coleccion = ColeccionTeoria;
+    const eMsg:string[] = []
+    const db = getDb()
+    if(!GrupoAsignaturaId || !ObjectId.isValid(GrupoAsignaturaId)){
+        eMsg.push("GrupoAsignaturaId debe ser un ObjectId numero")
+    }else{
+        existeAsignatura = await db.collection<GrupoAsignatura>(ColeccionTeoria).findOne({_id: new ObjectId(GrupoAsignaturaId)})
+        if(!existeAsignatura){
+            coleccion= ColeccionPractica;
+            existeAsignatura = await db.collection<GrupoAsignatura>(ColeccionPractica).findOne({_id: new ObjectId(GrupoAsignaturaId)})
+            if(!existeAsignatura){
+                eMsg.push("No existe una asignatura con ese nombre para ese año ")
+            }
+        }
+    }
+
+    if(eMsg.length >0|| !existeAsignatura){
+        return {message: eMsg}
+    }else{
+        const resultSesiones = await EliminarSesiones(existeAsignatura, coleccion)
+        const resultExcepciones = await  EliminarExcepciones(existeAsignatura, coleccion)
+        const resultAlumnos = await  EliminarAlumnos(existeAsignatura, coleccion)
+        const resultProfesores = await  EliminarProfesores(existeAsignatura, coleccion)
+    return {sesiones: resultSesiones, excepciones: resultExcepciones, alumnos: resultAlumnos, profesores: resultProfesores}
+    }
+}
+const EliminarSesiones = async (grupo: GrupoAsignatura, coleccion: string)=> {
+    const db = getDb()
+    const GrupoAsignaturaId =String(grupo._id)
+    const sesiones = grupo.horarios
+    const result: any[]=sesiones.map(async (sesion)=>{
+        const horarioAula: SesionAula = {
+            asignatura: GrupoAsignaturaId,
+            dia: sesion.dia,
+            horaInicio: sesion.horaInicio,
+            horaFin: sesion.horaFin
+        }
+        const result2 = await db.collection<Aula>(ColeccionAula).updateOne(
+        { aula: sesion.aula },
+        { $pull: { horarios: horarioAula } }
+        )
+        const result = await db.collection<GrupoAsignatura>(coleccion).updateOne(
+            {_id: new ObjectId(GrupoAsignaturaId)},
+            { $pull: { horarios: sesion } }
+        )
+        return {result, result2}
+    })
+    return result
+}
+const EliminarExcepciones = async (grupo: GrupoAsignatura, coleccion: string)=> {
+    const db = getDb()
+    const GrupoAsignaturaId =String(grupo._id)
+    const excepciones = grupo.fechas
+    const result: any[]=excepciones.map(async (excepcion)=>{
+        const ecepcionAula: ExcepcionAula = {
+            asignatura: GrupoAsignaturaId,
+            fecha: excepcion.fecha,
+            horaInicio: excepcion.horaInicio,
+            horaFin: excepcion.horaFin
+        }
+        const result2 = await db.collection<Aula>(ColeccionAula).updateOne(
+        { aula: excepcion.aula },
+        { $pull: { exepciones: ecepcionAula } }
+        )
+        const result = await db.collection<GrupoAsignatura>(coleccion).updateOne(
+            {_id: new ObjectId(GrupoAsignaturaId)},
+            { $pull: { horarios: excepcion } }
+        )
+        return {result, result2}
+    })
+    return result
+}
+const EliminarAlumnos= async (grupo: GrupoAsignatura, coleccion: string)=>{
+ const db = getDb()
+    const GrupoAsignaturaId =String(grupo._id)
+    const profesores = grupo.profesores
+    const result: any[]=profesores.map(async (mail)=>{
+
+        const result = await db.collection<GrupoAsignatura>(coleccion).updateOne(
+            { _id: new ObjectId(GrupoAsignaturaId) },
+            { $pull: { alumnos: mail } }
+        )
+        const result2 = await db.collection<Usuario>(ColeccionProfesores).updateOne(
+            { mail: mail },
+            { $pull: { asignaturas: GrupoAsignaturaId } }
+        )
+        return {result, result2}
+    })
+    return result
+}
+const EliminarProfesores= async (grupo: GrupoAsignatura, coleccion: string)=>{
+ const db = getDb()
+    const GrupoAsignaturaId =String(grupo._id)
+    const profesores = grupo.profesores
+    const result: any[]=profesores.map(async (mail)=>{
+
+        const result = await db.collection<GrupoAsignatura>(coleccion).updateOne(
+            { _id: new ObjectId(GrupoAsignaturaId) },
+            { $pull: { profesores: mail } }
+        )
+        const result2 = await db.collection<Usuario>(ColeccionAlumnos).updateOne(
+            { mail: mail },
+            { $pull: { asignaturas: GrupoAsignaturaId } }
+        )
+        return {result, result2}
+    })
+    return result
+}
+
 
 const validarNoSolape = async (sesiones: Sesion[]): Promise<boolean> => {
 
