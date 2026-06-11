@@ -6,16 +6,20 @@
 
   display: flex;
   justify-content: space-between; 
+  padding-left: 220px;
+  padding-right: 220px;
   align-items: center; 
-  padding: 0 10px;
   box-sizing: border-box;
 }
 
 .logo {
   text-align: left;
   cursor: pointer;
+  margin-top: 4px;
 }
-
+.imagen{
+    border-radius: 20px;
+  }
 .usuario {
   display: flex;
   flex-direction: row;

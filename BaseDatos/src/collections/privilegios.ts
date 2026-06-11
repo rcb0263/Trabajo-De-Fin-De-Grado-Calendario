@@ -19,9 +19,69 @@ const ColeccionProfesores = "Profesores"
 const ColeccionAdmin = "Admin"
 const ColeccionTrue = "UV"
 const SECRET = process.env.SECRET||""; 
+const GADMIN = process.env.GADMIN||""; 
+const ADMINNOMBRE = process.env.ADMINNOMBRE||""; 
+const ADMINMAIL = process.env.ADMINMAIL||""; 
+const ADMINPASSWORD = process.env.ADMINPASSWORD||""; 
 const PEPPER = process.env.PEPPER_SECRET||"";
 const MAIL_UV = process.env.MAIL_UV||"";
 
+export const CrearDB = async (req: any, res: any)=>{
+    const nombre:string = GADMIN
+    const nombreAdmin:string =ADMINNOMBRE
+    const mail:string = ADMINMAIL
+    const password:string = ADMINPASSWORD
+
+    const db = getDb()
+    const eMsg:string[] = []
+    const eMsg2:string[] = []
+    //crear admin grupo si no hay
+    let result1;
+
+    const nombreValido=await verifyNameValid(nombre)
+    if(nombreValido.length!==0){
+        eMsg.push(...nombreValido)
+    }
+    
+    if(eMsg.length >0){
+    }else{
+        const grupo = await db.collection(ColeccionAdmin).deleteOne({admin:'Admin'})
+        const datos:PrivilegiosAdmin ={
+            nombre: nombre,
+            miembros: [],
+            admin: "Admin"
+        }
+        result1 = await db.collection(ColeccionPrivilegios).insertOne(datos)
+    }
+
+
+    if(!nombreAdmin || typeof(nombreAdmin)!="string"){
+        eMsg2.push("nombreAdmin debe ser un string")
+    }
+    if(!password || typeof(password)!="string"){
+        eMsg2.push("password debe ser un string")
+    }
+    if(!mail || typeof(mail)!="string"||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){
+        eMsg2.push("mail debe ser un correo electronico valido")
+    }else{
+        const existeMail = await db
+        .collection(ColeccionAdmin)
+        .deleteOne({ mail });
+    }
+    if(eMsg2.length >0){
+        return res.status(400).json({message: [...eMsg,...eMsg2]})
+    }else{
+        const passEncripta = await bcrypt.hash(password+PEPPER,10)
+        const datos:Administrador ={
+            nombre: nombreAdmin,
+            mail: mail,
+            passwordHash: passEncripta,
+            fechaDeCreacion: new Date()
+        }
+        const result2 = await db.collection(ColeccionAdmin).insertOne(datos)
+        return res.status(201).json({message: [result1, result2]})
+    }
+}
 
 export const CrearTrueUser = async (req: any, res: any)=>{
     const db = getDb()

@@ -19,12 +19,14 @@ const LoginAlumnos = ()  =>{
   },[token])
     return(
         <div className="contenedorLogin">
+        <h3>Alumno</h3>
         <input 
           value={mail}
           onChange={e=>setMail(e.target.value)}
           placeholder="Mail"/>
         <input 
           value={password}
+          type="password"
           onChange={e=>setPassword(e.target.value)}
           placeholder="Contraseña"/>
         {error&&token=='' && <p>datos incorrectos</p>}
@@ -40,7 +42,7 @@ const LoginAlumnos = ()  =>{
             } catch (err) {
             setError(true);
             }
-        }}>Iniciar Sesion Como Alumno</button>
+        }}>Login</button>
         </div>
     )
 }

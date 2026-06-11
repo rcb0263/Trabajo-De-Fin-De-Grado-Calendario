@@ -1,10 +1,17 @@
 import { Router } from "express"
-import { añadirAdminPrivilegios, añadirMiembroPrivilegios, CrearAdmin, crearAdminGrupo, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, CrearTrueUser, eliminarGrupoPrivilegios, eliminarMiembroPrivilegios,esAdmin,esTrueUser,GetGrupoPrivilegios,GetGrupoPrivilegiosObjetivo,logIn,ObtenerGruposPrivilegios, verifyAdmin } from "../collections/privilegios";
+import { añadirAdminPrivilegios, añadirMiembroPrivilegios, CrearAdmin, crearAdminGrupo, CrearDB, crearPrivilegiosAsignatura, crearPrivilegiosAula, crearPrivilegiosGrupoAsignatura, crearPrivilegiosUsuario, CrearTrueUser, eliminarGrupoPrivilegios, eliminarMiembroPrivilegios,esAdmin,esTrueUser,GetGrupoPrivilegios,GetGrupoPrivilegiosObjetivo,logIn,ObtenerGruposPrivilegios, verifyAdmin } from "../collections/privilegios";
 import { verifyToken } from "../middleware/verifytoken";
 const router = Router();
 
 router.get("/",(req, res)=>{
     res.send("Se ha conectado a la ruta profesores correctamente")
+})
+router.get("/ResetAdminYGrupo",async (req, res)=>{
+   try {
+      await CrearDB(req,res)
+   } catch (error) {
+      res.status(404).json(error)
+   }
 })
 router.post("/Login", async (req, res)=>{
  try {

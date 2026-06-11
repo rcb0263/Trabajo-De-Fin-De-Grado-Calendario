@@ -139,7 +139,7 @@ export const GrupoLista = ({ titulo, grupos, urlBase, tipo, curso, nombre, setCa
     <div className="lista-grupos-row lista">
       <div className="titulo-row">
       <h4>{titulo}:</h4>
-        <button className="row-button" onClick={()=>setDerecha(tipo=='/Teoria' ?'crearAsignaturaT':'crearAsignaturaP')}>Añadir</button>
+        <button className="row-button" onClick={()=>setDerecha(tipo=='/teoria' ?'crearAsignaturaT':'crearAsignaturaP')}>Añadir</button>
       </div>
       <div >
       {grupos.length > 0 ? (
@@ -168,7 +168,7 @@ export const GrupoLista = ({ titulo, grupos, urlBase, tipo, curso, nombre, setCa
             </div>
           ))
         ) : (
-          <button>Crear</button>
+          <></>
         )}
     </div>
       </div>

@@ -5,11 +5,14 @@
   justify-content: space-around;
   align-items: stretch;
   width: clamp(100px, 20vw, 200px);
-  height: 20vh;
+  height: 22vh;
   margin: 3%;
   border: 3px solid #ccc;
   border-radius: 10px;
   padding: 10px;
+  h3{
+  align-self: center;
+  }
 }
 .searchParams {
   align-self:flex-start;

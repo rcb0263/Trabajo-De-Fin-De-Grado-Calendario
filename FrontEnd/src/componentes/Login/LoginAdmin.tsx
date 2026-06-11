@@ -14,12 +14,14 @@ const LoginAdmin = () => {
 
   return(
       <div className="contenedorLogin">
+        <h3>Admin</h3>
       <input 
         value={mail}
         onChange={e=>setMail(e.target.value)}
         placeholder="Mail"/>
       <input 
         value={password}
+        type="password"
         onChange={e=>setPassword(e.target.value)}
         placeholder="Contraseña"/>
       {error&&token=='' && <p>datos incorrectos</p>}
@@ -36,7 +38,7 @@ const LoginAdmin = () => {
           } catch (err) {
             setError(true);
           }
-      }}>Iniciar Sesion como admin</button>
+      }}>Login</button>
       </div>
   )
 }

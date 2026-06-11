@@ -281,7 +281,7 @@ export const eliminarAsignatura = async (req: any, res: any)=>{
     }
     if(!nombre || typeof(nombre)!="string"){
         eMsg.push("nombre debe ser un string")
-    }else if(eMsg.length>0){
+    }else if(eMsg.length==0){
         const existeAsignatura = await db.collection(ColeccionAsignaturas).findOne({nombre: nombre, curso: curso})
         if(!existeAsignatura){
             eMsg.push("No existe una asignatura con ese nombre para ese año ")
@@ -1198,6 +1198,9 @@ const EliminarGrupo = async (GrupoAsignaturaId:string, tipo:string, asignaturaId
     if(eMsg.length >0){
         return {message: eMsg}
     }else{
+        if(!GrupoAsignaturaId || !ObjectId.isValid(GrupoAsignaturaId)){
+            eMsg.push("GrupoAsignaturaId debe ser un ObjectId numero")
+        }
         const existeGrupo = await db.collection<GrupoAsignatura>(coleccion).findOne({_id: new ObjectId(GrupoAsignaturaId)})
         if(!existeGrupo){
             return {message: "No existe ese grupo"}

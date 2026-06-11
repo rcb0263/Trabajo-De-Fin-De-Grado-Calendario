@@ -8,8 +8,7 @@ import "./mainPage.css"
 const Page = () => {
 
   return (
-    <div>
-      <h1>Pagina principal</h1>
+    <div className="maincontainer">
       <div className="logins">
         <LoginProfesores  />
         <LoginAlumnos />
