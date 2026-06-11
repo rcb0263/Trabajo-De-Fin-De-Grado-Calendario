@@ -62,7 +62,7 @@ export const BuscadorUsuarios = () => {
         }}>Buscar</button>
       </div>
       <div className="listas">
-        {result && result.length!==0 && result.map(e=>
+        {result && result.map(e=>
         <UsuarioBox
           key={e._id}
           id={e._id}

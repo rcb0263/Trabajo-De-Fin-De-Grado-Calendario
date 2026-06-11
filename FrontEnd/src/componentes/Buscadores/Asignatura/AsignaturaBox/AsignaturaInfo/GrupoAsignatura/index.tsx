@@ -362,7 +362,7 @@ export const ListaFechas = ({ fechas, data, tipoExcepcion}: ListaFechasProps) =>
                 </p>
               </div>
 
-              <button 
+              { tipoExcepcion == "grupo" && (<button 
               className="row-button eliminar-btn"
               onClick={()=>{
               EliminarExcepcion({
@@ -380,7 +380,7 @@ export const ListaFechas = ({ fechas, data, tipoExcepcion}: ListaFechasProps) =>
               
              }}>
                 Eliminar
-              </button>
+              </button>)}
             </div>
           ))}
         </div>

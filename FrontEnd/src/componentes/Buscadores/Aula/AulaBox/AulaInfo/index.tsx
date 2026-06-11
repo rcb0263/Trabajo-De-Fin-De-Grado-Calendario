@@ -57,8 +57,8 @@ export const AulaDetalleCard = (params: AulaProps) => {
           </div>
           <div>
               <ListaFechas 
-              fechas={aula.exepciones}
-              />
+                fechas={aula.exepciones} 
+                tipoExcepcion={""}              />
           </div>
         </div>
       

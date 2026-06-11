@@ -10,29 +10,23 @@ api.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
 
-    switch (status) {
-      case 400:
-        console.warn("otro error o no autenticado");
-        break;
-
-      case 401:
-        console.warn("Sesión expirada o no autenticado");
-        break;
-
-      case 402:
-        console.warn("Permisos insuficientes");
-        break;
-
-      case 403:
-        console.warn("Acceso denegado");
-        break;
-
-      default:
-        console.error("Error de API:", error);
-        break;
+    let message = "Error inesperado";
+    const url = error.config?.url;
+    console.log(url)
+    if (url === "/profesores/Login"||url === "/alumnos/Login"||url === "/privilegios/Login") {
+      return Promise.reject(error);
     }
+    if (status === 400) message = "Datos incorrectos";
+    if (status === 401) message = "No autorizado";
+    if (status === 402) message = "Sin permisos";
+    if (status === 403) message = "Acceso denegado";
 
-    // Mantiene el error para que el componente decida qué hacer
-    return Promise.reject(error);
+    return {
+      data: null,
+      error: message,
+      message: error.response?.data?.message,
+      status,
+      ok: false,
+    };
   }
 );

@@ -66,7 +66,7 @@ useEffect(() => {
       <div className="asignatura-detalle">
         <div className="Titulo_eliminar">
           <h4>{usuario.nombre}</h4>  
-          <button 
+          {params.notAdmin && params.notAdmin !=='user' && <button 
           onClick={()=>{
             EliminarUsuario({
               id,
@@ -75,7 +75,7 @@ useEffect(() => {
             router.push('/admin')
           }
           }
-          >Eliminar </button> 
+          >Eliminar </button>} 
           </div> 
         <p>Usuario: {usuario.nombre}</p>
         <p>Correo: {usuario.mail}</p>

@@ -9,7 +9,7 @@ export const BuscadorAsignaturas = () => {
   const [nombre, setNombre] = useState<string>('')
   const [curso, setCurso] = useState<number>(cursoActual)
   const [grado, setGrado] = useState<string>('')
-  const [result, setResult] = useState<Asignatura[]>([])
+  const [result, setResult] = useState<Asignatura[]|null>([])
 
   return (
     <div className="SearchConenedor contenedor">
@@ -53,7 +53,6 @@ export const BuscadorAsignaturas = () => {
                 nombre, curso, grado
               });
               setResult(respuesta)
-              
             } catch (err: any) {
               const mensaje = err.response?.data?.mensaje;
 
@@ -64,7 +63,7 @@ export const BuscadorAsignaturas = () => {
         }}>Buscar</button>
       </div>
       <div className="listas">
-        {result.length!==0 && result.map(e=>
+        {result && result.map(e=>
         <AsignaturaBox
           key={e._id}
           nombre={e.nombre}

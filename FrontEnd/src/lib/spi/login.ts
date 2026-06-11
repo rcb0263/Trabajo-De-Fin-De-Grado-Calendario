@@ -22,6 +22,7 @@ export const loginAdmin = async (mail: string, password: string) => {
     const response = await api.post('/privilegios/Login', {
         mail,
         password
-    });
+    }
+);
     return response.data;
 };

@@ -35,14 +35,8 @@ useEffect(() => {
     <div className="paginaUsuario">
       <h1>Alumno {nombre}</h1>
       <button onClick={()=>{
-        setModo('dia')
-      }}>DIA</button>
-      <button onClick={()=>{
         setModo('semana')
       }}>SEMANA</button>
-      <button onClick={()=>{
-        setModo('mes')
-      }}>MES</button>
       <div className="row">
           <div>
           {modo==='semana' && mail &&<HorarioSemana mail={mail}/>}

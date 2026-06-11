@@ -77,14 +77,8 @@ useEffect(() => {
         {derecha=='calendario' &&
           <div>
           <button onClick={()=>{
-            setModo('dia')
-          }}>DIA</button>
-          <button onClick={()=>{
             setModo('semana')
           }}>SEMANA</button>
-          <button onClick={()=>{
-            setModo('mes')
-          }}>MES</button>
           {modo==='semana' && mail &&<HorarioSemana mail={mail}/>}
           {modo==='dia' && mail &&<CalendarioDia mail={mail}/>}
           </div>}

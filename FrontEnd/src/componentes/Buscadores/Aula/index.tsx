@@ -36,7 +36,7 @@ export const BuscadorAulas = () => {
         }}>Buscar</button>
       </div>
       <div className="listas">
-        {result && result.length!==0 && result.map(e=>
+        {result && result.map(e=>
         <AulaBox
           key={e._id}
           id={e._id}

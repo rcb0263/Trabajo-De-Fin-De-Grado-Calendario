@@ -1,10 +1,11 @@
 'use client'
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
 import "./styles.css"
 
 export const Layout =()=>{
   const router = useRouter()
+  const pathname = usePathname()
 
     return(
         <div className="header">
@@ -13,11 +14,13 @@ export const Layout =()=>{
                 className="imagen"
                     src="/imagenes/Planifica_Logo.jpg"
                     alt="Logo"
-                    width={120}
-                    height={60}
+                    width={70}
+                    height={46}
                 /></div>
             <div className="usuario">
-                <h2>Usuario</h2>
+                { pathname.includes('admin')  &&<h2>Admin</h2>}
+                { pathname.includes('profesores')  &&<h2>Profesor</h2>}
+                { pathname.includes('alumnos')  &&<h2>Alumno</h2>}
                 <button onClick={()=>{
                     router.push(`/`)
                     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
