@@ -39,13 +39,13 @@ export const CrearDB = async (req: any, res: any)=>{
     let result1;
 
     const nombreValido=await verifyNameValid(nombre)
-    if(nombreValido.length!==0){
-        eMsg.push(...nombreValido)
+    if(nombre==''||nombre==null){
+        eMsg.push('nommbre no valido')
     }
     
     if(eMsg.length >0){
     }else{
-        const grupo = await db.collection(ColeccionAdmin).deleteOne({admin:'Admin'})
+        const grupo = await db.collection(ColeccionPrivilegios).deleteMany({admin:'Admin'})
         const datos:PrivilegiosAdmin ={
             nombre: nombre,
             miembros: [],
@@ -79,7 +79,14 @@ export const CrearDB = async (req: any, res: any)=>{
             fechaDeCreacion: new Date()
         }
         const result2 = await db.collection(ColeccionAdmin).insertOne(datos)
-        return res.status(201).json({message: [result1, result2]})
+        const datosM: MiembroGrupo ={
+            miembro: mail
+        }
+        const result3 = await db.collection<GrupoPrivilegio>(ColeccionPrivilegios).updateOne(
+            { admin: 'Admin' },
+            { $addToSet: { miembros: datosM } }
+        )
+        return res.status(201).json({message: [result1, result2, result3]})
     }
 }
 

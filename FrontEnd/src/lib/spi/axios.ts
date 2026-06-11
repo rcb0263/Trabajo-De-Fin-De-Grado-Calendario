@@ -12,7 +12,6 @@ api.interceptors.response.use(
 
     let message = "Error inesperado";
     const url = error.config?.url;
-    console.log(url)
     if (url === "/profesores/Login"||url === "/alumnos/Login"||url === "/privilegios/Login") {
       return Promise.reject(error);
     }

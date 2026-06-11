@@ -49,14 +49,14 @@ router.post("/GetUserIdFromToken", verifyToken, async (req: AuthRequest, res)=>{
  }
 })
 
-router.get("/Get", verifyToken, async (req, res)=>{
+router.get("/Get", verifyToken, verifyAdmin, async (req, res)=>{
  try {
    await getAlumnos()
  } catch (error) {
     res.status(409).json(error)
  }
 })
-router.post("/SearchAlumno", verifyToken, async (req, res)=>{
+router.post("/SearchAlumno", verifyToken, verifyAdmin, async (req, res)=>{
  try {
    await SearchUsuario(req,res, 'Alumno')
  } catch (error) {
